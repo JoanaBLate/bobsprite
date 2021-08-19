@@ -2,6 +2,7 @@
 A free online drawing tool especially designed for Pixel Art
 
 This version is for desktop only.
+
 You don't need a local server to run it.
 
 You can use it freely at https://www.bobsprite.com .
