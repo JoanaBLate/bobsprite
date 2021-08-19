@@ -7,6 +7,7 @@ You don't need a local server to run it.
 You can use it freely at https://www.bobsprite.com .
 
 You may study the code and copy a small bit here and there.
+
 You may NOT copy or distribute the application or most part of it.
 
 
