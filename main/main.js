@@ -45,7 +45,7 @@ function afterIconsAndFonts() {
     //    
     window.onresize = resetBigDivPosition // cannot come before initInterface!
     //
-    window.onbeforeunload = setDataInLocalStorage
+    window.onbeforeunload = function () { setDataInLocalStorage(); return "leaving?" }
     //
     initKeyboard()
     mainLoop()
