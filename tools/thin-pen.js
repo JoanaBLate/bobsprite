@@ -6,6 +6,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 function thinPen() { 
+    //
+    adjustTopLayer()
+    //
     const x1 = getTopLayerX()
     const y1 = getTopLayerY()
     //
@@ -30,7 +33,7 @@ function thinPen() {
 }
 
 function paintThinPen(x, y) { 
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     const ctx = layer.canvas.getContext("2d")
     //
     const changed = paintPerfectPixel(ctx, x, y, executeds)

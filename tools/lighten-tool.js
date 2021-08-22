@@ -19,6 +19,8 @@ function startLighten() {
 
 function continueLighten() { 
     //
+    adjustTopLayer()
+    //
     const x = getTopLayerX()
     const y = getTopLayerY()
     if (x == null  ||  y == null) { lightenLastX = null; lightenLastY = null; return }
@@ -36,7 +38,7 @@ function continueLighten() {
 }
 
 function paintLighten(x, y) {
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     const ctx = layer.canvas.getContext("2d")
     const width = layer.canvas.width
     const height = layer.canvas.height

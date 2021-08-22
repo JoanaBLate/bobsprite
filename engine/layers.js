@@ -47,6 +47,16 @@ function getTopLayer() {
     return null
 }
 
+function getTopLayerAdjusted() { // or else user could not draw on displaced layer
+    //
+    const layer = getTopLayer()
+    if (layer == null) { return null } 
+    //
+    if (shallAdjustLayer(layer)) { adjustLayerCore(layer) }
+    //
+    return layer
+}
+
 function getTrueTopLayerForced() {
     //
     const top = getTopLayer()
@@ -161,12 +171,21 @@ function showSuperLayerOnly() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function adjustTopLayer() {
+    //
     const layer = getTopLayer()
+    //
     if (layer == null) { return }
     //
-    startBlinkingIconOnTopBar("scissor")
-    //
     if (! shallAdjustLayer(layer)) { return }
+    //
+    adjustLayerCore(layer)
+    //
+    memorizeTopLayer()
+}
+
+function adjustLayerCore(layer) {
+    //
+    startBlinkingIconOnTopBar("scissor")
     //
     const cnv = createCanvas(canvas.width, canvas.height)
     const ctx = cnv.getContext("2d")
@@ -175,8 +194,6 @@ function adjustTopLayer() {
     layer.left = 0
     layer.top = 0
     layer.canvas = cnv
-    //
-    memorizeTopLayer()
 }
 
 function shallAdjustLayer(layer) {
@@ -239,6 +256,7 @@ function sendImageToTopLayer(cnv, shallResetPosition) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function centerLayers() { 
+    //
     if (getTopLayer() == null) { return }
     //
     shallRepaint = true 
@@ -247,43 +265,16 @@ function centerLayers() {
     for (const layer of layers) {
         if (! layer.enabled) { continue }
         //
-        layer.left = Math.floor((canvas.width - layer.canvas.width) / 2)
-        layer.top  = Math.floor((canvas.height - layer.canvas.height) / 2)
+        centerLayerCore(layer)
         //
         if (! shiftPressed) { return }
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-function rotateLayerWithCanvas(layer) { // shall not memorize
-    const cnv = layer.canvas
-    const width = cnv.width
-    const height = cnv.height
+function centerLayerCore(layer) {
     //
-    if (layer.memory.length == 1) { // virgin
-        if (width == height) { return }
-        cnv.width = height
-        cnv.height = width
-        return
-    }
-    //
-    rotate90(cnv) 
-}
-
-function reverseRotateLayerWithCanvas(layer) { // shall not memorize
-    const cnv = layer.canvas
-    const width = cnv.width
-    const height = cnv.height
-    //
-    if (layer.memory.length == 1) { // virgin
-        if (width == height) { return }
-        cnv.width = height
-        cnv.height = width
-        return
-    }
-    //
-    reverseRotate90(cnv)
+    layer.left = Math.floor((canvas.width - layer.canvas.width) / 2)
+    layer.top  = Math.floor((canvas.height - layer.canvas.height) / 2)
 }
 
 ///////////////////////////////////////////////////////////////////////////////

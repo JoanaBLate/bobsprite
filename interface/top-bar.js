@@ -13,11 +13,10 @@ var topBarScheme = [
     "",
     "scissor",
     "",
-    "rotate",
-    "rotate-rev",
     "",
-    "plus",
     "minus",
+    "plus",
+    "",
     "",
     "halves",
     "tile-set",
@@ -36,6 +35,8 @@ var topBarScheme = [
     "load",
     "save",
     "save2",
+    "",
+    "",
     "",
     "help"
 ]
@@ -62,11 +63,11 @@ function initTopBar2() {
 }
 
 function fillTopBarLefts() {
-    let left = 166
+    let left = 162
     //
     for (const id of topBarScheme) {
         topBarLefts.push(left)
-        left += (id == "" ? 17 : 37)
+        left += (id == "" ? 19 : 37)
     }
 }
 
@@ -162,18 +163,16 @@ function topBarClicked(e) {
     if (id == "redo") { setTask(redo); return }
     if (id == "save") { saveImage("png"); return }
     if (id == "roll") { setTask(useRoll); return }
-    if (id == "plus") { setTask(enlarge); return }
-    if (id == "minus") { setTask(shorten); return }
+    if (id == "plus") { setTask(increaseZoom); return }
+    if (id == "next") { setTask(showNextFavorite); return }
+    if (id == "minus") { setTask(decreaseZoom); return }
     if (id == "save2") { setTask(showAlternativeSave); return }
     if (id == "center") { setTask(centerLayers); return }
-    if (id == "rotate") { setTask(rotateCanvas); return }
-    if (id == "next") { setTask(showNextFavorite); return }
     if (id == "scissor") { setTask(adjustTopLayer); return }
     if (id == "tile-set") { setTask(showTileSet); return }
-    if (id == "favorites") { setTask(showFavorites); return }
     if (id == "register") { setTask(canvasToFavorites); return }
     if (id == "previous") { setTask(showPreviousFavorite); return }
-    if (id == "rotate-rev") { setTask(reverseRotateCanvas); return }
+    if (id == "favorites") { setTask(showFavorites); return }
     //
     if (id == "halves") { 
         if (shiftPressed) { setTask(topBottomToCenter) } else { setTask(leftRightToCenter) }

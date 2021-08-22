@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 function useRoll() {
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     if (layer == null) { return }
     //
     shallRepaint = true

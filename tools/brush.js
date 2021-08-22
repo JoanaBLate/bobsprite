@@ -17,6 +17,9 @@ function startBrush() {
 }
 
 function continueBrush() { 
+    //
+    adjustTopLayer()
+    //
     const x = getTopLayerX()
     const y = getTopLayerY()
     if (x == null  ||  y == null) { brushLastX = null; brushLastY = null; return }
@@ -32,7 +35,7 @@ function continueBrush() {
 }
 
 function paintBrush(x, y) {
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     const ctx = layer.canvas.getContext("2d")
     const width = layer.canvas.width
     const height = layer.canvas.height

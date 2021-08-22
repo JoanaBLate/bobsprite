@@ -19,6 +19,8 @@ function startDarken() {
 
 function continueDarken() { 
     //
+    adjustTopLayer()
+    //
     const x = getTopLayerX()
     const y = getTopLayerY()
     if (x == null  ||  y == null) { darkenLastX = null; darkenLastY = null; return }
@@ -36,7 +38,7 @@ function continueDarken() {
 }
 
 function paintDarken(x, y) {
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     const ctx = layer.canvas.getContext("2d")
     const width = layer.canvas.width
     const height = layer.canvas.height

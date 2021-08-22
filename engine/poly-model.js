@@ -9,8 +9,21 @@ var polyModel = null // for colorize, shear and rotate
 
 function makePolyModel() {
     polyModel = null
-    const layer = getTopLayer()
-    if (layer == null) { return }
+    //
+    const natural = getTopLayer()
+    if (natural == null) { return }
+    //
+    let shallMemorize = false
+    //
+    if (natural.top != 0) { shallMemorize = true }
+    if (natural.left != 0) { shallMemorize = true }
+    //
+    if (natural.canvas.width != canvas.width) { shallMemorize = true }
+    if (natural.canvas.height != canvas.height) { shallMemorize = true }
+    //
+    if (shallMemorize) { memorizeTopLayer() }
+    //
+    const layer = getTopLayerAdjusted()
     //
     polyModel = cloneImage(layer.canvas) 
 }
@@ -23,13 +36,30 @@ function cancelPolyModel() {
     panelColorizeResetGadgets()
 }
 
+function makePolyModelIfLayerDisplaced() { // displaced by tool hand
+    //
+    if (polyModel == null) { return } // for safety
+    //
+    const layer = getTopLayer() // must not be ajusted!!
+    if (layer == null) { return } // for safety
+    //
+    if (layer.left == 0  &&  layer.top == 0) { return }
+    //
+    const cnv = createCanvas(polyModel.width, polyModel.height)
+    const ctx = cnv.getContext("2d")
+    //
+    ctx.drawImage(polyModel, layer.left, layer.top)
+    //
+    polyModel = cnv
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function resetLayerByPolyModel() { 
     //
     if (polyModel == null) { return }
     //
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted() 
     if (layer == null) { return }
     //
     const cnv = layer.canvas
@@ -52,11 +82,13 @@ function polyModelRotateLayer(value) {
     if (polyModel == null) { makePolyModel() }
     if (polyModel == null) { panelShearResetGadgets(); return }
     //
+    makePolyModelIfLayerDisplaced()
+    //
     shallRepaint = true
     //
     const rad = 2 * Math.PI * value
     //
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     if (layer == null) { return } // for safety
     //
     const cnv = layer.canvas
@@ -89,9 +121,11 @@ function polyModelShearLayer() {
     if (polyModel == null) { makePolyModel() }
     if (polyModel == null) { panelShearResetGadgets(); return }
     //
+    makePolyModelIfLayerDisplaced()
+    //
     shallRepaint = true
     // 
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     if (layer == null) { return } // for safety
     //
     const cnv = layer.canvas
@@ -130,9 +164,11 @@ function polyModelColorizeLayer() {
     if (polyModel == null) { makePolyModel() }
     if (polyModel == null) { panelColorizeResetGadgets(); return }
     //
+    makePolyModelIfLayerDisplaced()
+    //
     shallRepaint = true
     // 
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     if (layer == null) { return } // for safety
     //    
     const hue = sliderColorizeHue.value * 360

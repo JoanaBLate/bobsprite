@@ -18,10 +18,9 @@ function paintCanvasHelp1() {
 function paintCanvasHelp1Left() {
     let y = 30
     let x = 20
+    y = 20 + helpBobSprite(x, y)
     y = 20 + helpHelp(x, y)
     y = 20 + helpProtection(x, y)
-    y = 20 + helpZoomCanvas(x, y)
-    y = 20 + helpZoomMonitorBox(x, y)
     y = 20 + helpMoveCanvas(x, y)
     y = 20 + helpCenterCanvas(x, y)
 }
@@ -49,6 +48,16 @@ function paintCanvasHelp1Right() {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function helpBobSprite(x, y) {
+    y += 30
+    y += writeOnCanvasHelp("BOBSPRITE", x, y)
+    y += writeOnCanvasHelp("  > BobSprite is a free online drawing tool especially", x, y)
+    y += writeOnCanvasHelp("     designed for *Pixel Art*", x, y)
+    y += writeOnCanvasHelp("  > you can learn more at the home page:", x, y)
+    y += writeOnCanvasHelp("     www.bobsprite.com", x, y)
+    return y
+}
+
 function helpHelp(x, y) {
     y += drawIconOnCanvasHelp("help", x + 170, y)
     y += writeOnCanvasHelp("Help", x, y)
@@ -63,21 +72,8 @@ function helpProtection(x, y) {
     y += writeOnCanvasHelp("      blank (rgba 0 0 0 0)", x, y)
     y += writeOnCanvasHelp("      black (rgba 0 0 0 255)", x, y)
     y += writeOnCanvasHelp("  > some tools and effects cannot change them", x, y)
-    return y
-}
-
-function helpZoomCanvas(x, y) {
-    y += drawIconOnCanvasHelp("zoom-in", x + 170, y)
-    y += writeOnCanvasHelp("Zoom level of the canvas  (no icon)", x, y)
-    y += writeOnCanvasHelp("  > spin the mouse wheel when the mouse is over it", x, y)
-    y += writeOnCanvasHelp("  > hotkeys: Minus (-), Plus (+)", x, y)
-    return y
-}
-
-function helpZoomMonitorBox(x, y) {
-    y += drawIconOnCanvasHelp("zoom-out", x + 170, y)
-    y += writeOnCanvasHelp("Zoom level of the monitor box  (no icon)", x, y)
-    y += writeOnCanvasHelp("  > spin the mouse wheel when the mouse is over it", x, y)
+    y += writeOnCanvasHelp("  > effect Weaken Black Pixels turns (rgba 0 0 0 255)", x, y)
+    y += writeOnCanvasHelp("     pixels into (rgba 1 1 1 255) pixels", x, y)
     return y
 }
 

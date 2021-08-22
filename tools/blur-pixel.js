@@ -26,6 +26,8 @@ function continueBlur() {
     if (paintControlCtx == null) { resetPaintControlCtx(true) }
     if (paintControlCtx == null) { blurLastX = null; blurLastY = null; return }
     //
+    adjustTopLayer()
+    //
     const x = getTopLayerX()
     const y = getTopLayerY()
     if (x == null  ||  y == null) { blurLastX = null; blurLastY = null; return }
@@ -41,7 +43,7 @@ function continueBlur() {
 }
 
 function paintBlur(x, y) {
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     const ctx = layer.canvas.getContext("2d")
     const width = layer.canvas.width
     const height = layer.canvas.height

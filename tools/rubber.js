@@ -18,6 +18,8 @@ function startRubber() {
 
 function continueRubber() { 
     //
+    adjustTopLayer()
+    //
     const x = getTopLayerX()
     const y = getTopLayerY()
     if (x == null  ||  y == null) { rubberLastX = null; rubberLastY = null; return }
@@ -33,7 +35,7 @@ function continueRubber() {
 }
 
 function paintRubber(x, y) {
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     const ctx = layer.canvas.getContext("2d")
     const width = layer.canvas.width
     const height = layer.canvas.height

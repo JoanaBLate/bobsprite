@@ -105,40 +105,6 @@ function centerCanvas() { // only by keyboard
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function rotateCanvas() {
-    if (getTopLayer() == null) { return }
-    //
-    shallRepaint = true
-    startBlinkingIconOnTopBar("rotate")
-    //
-    for (const layer of layers) { rotateLayerWithCanvas(layer) }
-    //
-    rotateCanvasCore()
-}
-
-function reverseRotateCanvas() {
-    if (getTopLayer() == null) { return }
-    //
-    shallRepaint = true
-    startBlinkingIconOnTopBar("rotate-rev")
-    //
-    for (const layer of layers) { reverseRotateLayerWithCanvas(layer) }
-    //
-    rotateCanvasCore()
-}
-
-function rotateCanvasCore() {
-    const width = canvas.width
-    const height = canvas.height
-    //
-    canvas.width = height 
-    canvas.height = width
-    setCanvasChessBox()
-    centerCanvas()
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 function canvasToPicture() {
     //
     const cnv = createCanvas(canvas.width, canvas.height)

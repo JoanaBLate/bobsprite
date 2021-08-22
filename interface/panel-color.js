@@ -8,9 +8,9 @@
 
 var hslOrRgba = "hsl"
 
-var referenceRed   =  90
-var referenceGreen = 130
-var referenceBlue  = 200
+var referenceRed   = 255 // 90
+var referenceGreen =  81 // 130
+var referenceBlue  =  55 // 200
 var referenceAlpha = 255
 
 ///////////////////////////////////////////////////////////////////////////////

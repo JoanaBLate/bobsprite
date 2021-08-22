@@ -128,7 +128,7 @@ function helpLightenTool(x, y) {
 function helpScaleTool(x, y) {
     y += drawIconOnCanvasHelp("scale", x + 170, y)
     y += writeOnCanvasHelp("Scale Tool", x, y)
-    y += writeOnCanvasHelp("  > avoid releasing the mouse button often", x, y)
+    y += writeOnCanvasHelp("  > avoid releasing the mouse button more than once", x, y)
     return y
 }
 

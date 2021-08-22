@@ -19,7 +19,7 @@ function startScale() {
     scaleLastY = null
     scaleOriginal = null
     //
-    const layer = getTopLayer()
+    const layer = getTopLayer() // not adjusted!
     if (layer == null) { return }
     //
     scaleOriginal = cloneImage(layer.canvas)
@@ -53,7 +53,7 @@ function continueScaleCore() {
     // happens when mousedrag returns to layer
     if (deltaWidth == 0  &&  deltaHeight == 0) { return } 
     //
-    const layer = getTopLayer()
+    const layer = getTopLayer() // not adjusted!
     if (layer == null) { return } // for safety
     const cnv = layer.canvas
     //
@@ -69,7 +69,7 @@ function continueScaleCore() {
 function finishScale() {
     if (scaleOriginal == null) { return } // filtering bad call (precocious or redundant)
     //
-    const layer = getTopLayer()
+    const layer = getTopLayer() // not adjusted!
     //
     let different = false
     if (layer.width  != scaleOriginal.width)  { different = true }

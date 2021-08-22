@@ -81,7 +81,7 @@ function applyEffect1(func) {
     if (func == antialiasingStrong) { applyEffect2(func); return }
     if (func == antialiasingStandard) { applyEffect2(func); return }
     //
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     if (layer == null) { return }
     //
     const changed = func(layer.canvas)
@@ -89,7 +89,7 @@ function applyEffect1(func) {
 }
 
 function applyEffect2(func) {
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted() 
     if (layer == null) { return }
     //
     const cnv = cloneImage(layer.canvas)
@@ -122,7 +122,7 @@ function managerSelectArea() {
 }
 
 function managerSelectAreaCore() {
-    if (canvasX == null) { return }
+    if (canvasX == null  ||  canvasY == null) { return }
     const superlayer = layers[0]
     const src = canvasToPicture()
     superlayer.canvas = getArea(src, canvasX, canvasY)
@@ -137,11 +137,12 @@ function managerPaintArea() {
 }
 
 function managerPaintAreaCore() {
+    //
+    const layer = getTopLayerAdjusted() // must come first
+    if (layer == null) { return }
+    //
     const x = getTopLayerX()
     const y = getTopLayerY()
-    const layer = getTopLayer()
-    //
-    if (x == null  ||  y == null) { return }
     //
     let changed 
     if (shiftPressed) {
@@ -160,11 +161,12 @@ function managerPaintEvery() {
 }
 
 function managerPaintEveryCore() {
+    //
+    const layer = getTopLayerAdjusted() // must come first
+    if (layer == null) { return }
+    //
     const x = getTopLayerX()
     const y = getTopLayerY()
-    const layer = getTopLayer()
-    //
-    if (x == null  ||  y == null) { return }
     //
     let changed 
     if (shiftPressed) {
@@ -183,11 +185,12 @@ function managerPaintBorder() {
 }
 
 function managerPaintBorderCore() {
+    //
+    const layer = getTopLayerAdjusted()
+    if (layer == null) { return }
+    //
     const x = getTopLayerX()
     const y = getTopLayerY()
-    const layer = getTopLayer()
-    //
-    if (x == null  ||  y == null) { return }
     //
     let changed 
     if (shiftPressed) {
@@ -206,11 +209,12 @@ function managerBlurBorder() {
 }
 
 function managerBlurBorderCore() {
+    //
+    const layer = getTopLayerAdjusted()
+    if (layer == null) { return }
+    //
     const x = getTopLayerX()
     const y = getTopLayerY()
-    const layer = getTopLayer()
-    //
-    if (x == null  ||  y == null) { return }
     //
     let changed = blurBorder(layer.canvas, x, y)
     if (changed) { memorizeLayer(layer) }
@@ -221,7 +225,7 @@ function managerBlurBorderCore() {
 function leftRightToCenter() {
     shallRepaint = true
     //
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     if (layer == null) { return }
     //
     startBlinkingIconOnTopBar("halves")
@@ -250,7 +254,7 @@ function leftRightToCenter() {
 function topBottomToCenter() {
     shallRepaint = true
     //
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     if (layer == null) { return }
     //
     startBlinkingIconOnTopBar("halves") 

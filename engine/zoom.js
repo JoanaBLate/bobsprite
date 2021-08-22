@@ -9,11 +9,17 @@ var zooms = [ 1, 2, 3, 4, 5, 6, 10, 15, 20 ]
 ///////////////////////////////////////////////////////////////////////////////
 
 function decreaseZoom() {
-    if (ZOOM != 1) { setZoom(-1) }
+    if (ZOOM == 1) { return }
+    //    
+    startBlinkingIconOnTopBar("minus") 
+    setZoom(-1) 
 }
 
 function increaseZoom() {
-    if (ZOOM != 20) { setZoom(+1) }
+    if (ZOOM == 20) { return }
+    //    
+    startBlinkingIconOnTopBar("plus") 
+    setZoom(+1) 
 }
 
 function setZoom(delta) {

@@ -85,7 +85,7 @@ function rotate90(dst) { // works in place
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function reverseRotate90(dst) { // works in place
+function __reverseRotate90(dst) { // works in place
     const src = cloneImage(dst)
     const srcwidth  = src.width
     const srcheight = src.height

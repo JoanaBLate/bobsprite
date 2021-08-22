@@ -19,6 +19,8 @@ function startFeather() {
 
 function continueFeather() { 
     //
+    adjustTopLayer()
+    //
     const x = getTopLayerX()
     const y = getTopLayerY()
     if (x == null  ||  y == null) { featherLastX = null; featherLastY = null; return }

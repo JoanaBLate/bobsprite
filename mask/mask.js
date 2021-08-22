@@ -39,7 +39,7 @@ function applyMask(respectBlanks) { // for line, rectangle and ellipse
     const srcHeight = mask.height
     const srcData = maskCtx.getImageData(0, 0, srcWidth, srcHeight).data
     //
-    const layer = getTopLayer()
+    const layer = getTopLayerAdjusted()
     if (layer == null) { hideMask(); return }
     //
     const dstWidth  = layer.canvas.width

@@ -66,6 +66,8 @@ function deleteFavorite(n) {
     f.enabled = true
     //
     paintFavorites()
+    //
+    indexOfSelectedFavorite = nextFavoriteIndexAfterDelete()
 }
 
 function toggleFavoriteEnabled(n) {
@@ -139,7 +141,7 @@ function previousFavoriteIndex() {
         n -= 1
         if (n < 0) { break}
         const f = favorites[n]
-        if (f.canvas != null) { return n }
+        if (f.canvas != null) { return n } // excludes link to canvas
     }
     //
     return indexOfSelectedFavorite
@@ -152,9 +154,20 @@ function nextFavoriteIndex() {
         n += 1
         if (n > 48) { break }
         const f = favorites[n]
-        if (f.canvas != null) { return n }
+        if (f.canvas != null) { return n } // excludes link to canvas
     }
     //
     return indexOfSelectedFavorite
+}
+
+function nextFavoriteIndexAfterDelete() {
+    //
+    let n = nextFavoriteIndex()
+    if (n != indexOfSelectedFavorite) { return n }
+    //
+    n = previousFavoriteIndex()
+    if (n != indexOfSelectedFavorite) { return n }
+    //
+    return emptyFavoriteIndex()
 }
 

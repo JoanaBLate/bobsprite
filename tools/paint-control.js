@@ -11,7 +11,8 @@ var paintControlCtx = null
 ///////////////////////////////////////////////////////////////////////////////
 
 function resetPaintControlCtx(shallFill) { 
-    const layer = getTopLayer()
+    //
+    const layer = getTopLayerAdjusted()
     if (layer == null) { paintControlCtx = null; return }
     //
     const width = layer.canvas.width

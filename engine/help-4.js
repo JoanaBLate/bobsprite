@@ -29,15 +29,13 @@ function paintCanvasHelp4Center() {
     y = 20 + helpPanelShear(x, y)
     y = 20 + helpPanelConfig(x, y)
     y = 20 + helpMonitorBox(x, y)
-    y = 20 + helpPanelOpacity(x, y)
 }
 
 function paintCanvasHelp4Right() {
     let y = 30
     let x = 895
     y = 20 + helpPanelLayers(x, y)
-    y = 20 + helpAlternativeSave(x, y)
-    y = 20 + helpBobSprite(x, y)
+    y = 20 + helpPanelOpacity(x, y)
     y = 20 + helpVersion(x, y)
 }
 
@@ -79,8 +77,6 @@ function helpPanelEffect(x, y) {
     y += drawIconOnCanvasHelp("effect", x + 170, y)
     y += writeOnCanvasHelp("Panel Effect", x, y)
     y += writeOnCanvasHelp("  > notice the 5 checkboxes for selecting subpanels", x, y)
-    y += writeOnCanvasHelp("  > effect Weaken Black Pixels turns (rgba 0 0 0 255)", x, y)
-    y += writeOnCanvasHelp("     pixels into (rgba 1 1 1 255) pixels", x, y)
     return y
 }
 
@@ -111,24 +107,14 @@ function helpPanelConfig(x, y) {
 }
 
 function helpMonitorBox(x, y) {
-    y += 25
+    y += drawIconOnCanvasHelp("zoom-in", x + 170, y)
     y += writeOnCanvasHelp("Panel Monitor", x, y)
-    y += writeOnCanvasHelp("  > it runs the animation (checkbox 'animat')", x, y)
+    y += writeOnCanvasHelp("  > it runs the *animation* (checkbox 'animat')", x, y)
     y += writeOnCanvasHelp("  > mark checkbox 'pixel' for pixelated zooming in", x, y)
     y += writeOnCanvasHelp("  > a frozen image works as a reference for drawing", x, y)
     y += writeOnCanvasHelp("  > if frozen, it cannot change zoom or pixelated option", x, y)
     y += writeOnCanvasHelp("  > spin the mouse wheel over it to change the zoom level", x, y)
     y += writeOnCanvasHelp("  > if image is too big, it matches the position of the canvas", x, y)
-    return y
-}
-
-function helpPanelOpacity(x, y) {
-    y += 25
-    y += writeOnCanvasHelp("Panel Opacity", x, y)
-    y += writeOnCanvasHelp("  > only shows sliders for enabled layers", x, y)
-    y += writeOnCanvasHelp("  > sets the displaying (on the screen) opacity only", x, y)
-    y += writeOnCanvasHelp("  > does not affect the true opacity of the layer", x, y)
-    y += writeOnCanvasHelp("     (try Panel Colorize for the true opacity)", x, y)
     return y
 }
 
@@ -141,6 +127,8 @@ function helpPanelLayers(x, y) {
     y += writeOnCanvasHelp("  > there are 5 standard layers: A, B, C, D and E", x, y)
     y += writeOnCanvasHelp("  > the special layer Selection shows the result of using", x, y)
     y += writeOnCanvasHelp("     selection tools", x, y)
+    y += writeOnCanvasHelp("  > some actions automatically adjusts a layer to match", x, y)
+    y += writeOnCanvasHelp("     size and position of the canvas", x, y)
     y += writeOnCanvasHelp("  > *dragging* a layer over other one, exchanges the", x, y)
     y += writeOnCanvasHelp("     contents of the layers; their names do not change", x, y)
     y += writeOnCanvasHelp("  > using Merge Down Protecting: blank and black pixels", x, y)
@@ -150,21 +138,13 @@ function helpPanelLayers(x, y) {
     return y
 }
 
-function helpAlternativeSave(x, y) {
-    y += drawIconOnCanvasHelp("save2", x + 170, y)
-    y += writeOnCanvasHelp("Save image (alternative method)", x, y)
-    y += writeOnCanvasHelp("  > the saved image ignores the *displaying* opacities", x, y)
-    y += writeOnCanvasHelp("  > you can save it by Right Clicking it", x, y)
-    return y
-}
-
-function helpBobSprite(x, y) {
-    y += 30
-    y += writeOnCanvasHelp("BOBSPRITE", x, y)
-    y += writeOnCanvasHelp("  > BobSprite is a free online drawing tool especially", x, y)
-    y += writeOnCanvasHelp("     designed for *Pixel Art*", x, y)
-    y += writeOnCanvasHelp("  > you can learn more at the home page:", x, y)
-    y += writeOnCanvasHelp("     www.bobsprite.com", x, y)
+function helpPanelOpacity(x, y) {
+    y += 25
+    y += writeOnCanvasHelp("Panel Opacity", x, y)
+    y += writeOnCanvasHelp("  > only shows sliders for enabled layers", x, y)
+    y += writeOnCanvasHelp("  > sets the displaying (on the screen) opacity only", x, y)
+    y += writeOnCanvasHelp("  > does not affect the true opacity of the layer", x, y)
+    y += writeOnCanvasHelp("     (try Panel Colorize for the true opacity)", x, y)
     return y
 }
 
