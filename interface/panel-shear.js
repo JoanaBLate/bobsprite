@@ -34,7 +34,7 @@ function initPanelShear() {
 function initPanelShear2() {
     const ctx = panelShearCtx
     //
-    sliderRotate = createSlider(sliderRotate, ctx, 10, 40, 220, 0, rotateLayer)
+    sliderRotate = createSlider(sliderRotate, ctx, 10, 40, 220, 0.5, rotateLayer)
     //
     sliderShearV = createSlider(sliderShearV, ctx, 10, 122, 220, 0.5, shearLayer)
     //
@@ -119,7 +119,7 @@ function resetSliderShearH() {
 }
 
 function resetSliderRotate() { 
-    resetSlider(sliderRotate, 0)
+    resetSlider(sliderRotate, 0.5)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ function updateShearButtons() {
 function shearPanelChanging() {
     if (sliderShearV.value != 0.5) { return true }
     if (sliderShearH.value != 0.5) { return true }
-    if (sliderRotate.value != 0) { return true }
+    if (sliderRotate.value != 0.5) { return true }
     return false
 }
 
