@@ -86,6 +86,7 @@ function polyModelRotateLayer(value) {
     //
     shallRepaint = true
     //
+    value -= 0.5
     const rad = 2 * Math.PI * value
     //
     const layer = getTopLayerAdjusted()
