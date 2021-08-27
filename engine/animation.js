@@ -8,7 +8,7 @@ var indexOfLastAnimatedFrame = -1
 
 var animatedImageForPhoto = null
 
-var frameDuration = 16 // 16 matches middle of slider
+var frameDuration = 7 // 16 matches middle of slider
 
 ///////////////////////////////////////////////////////////////////////////////
 

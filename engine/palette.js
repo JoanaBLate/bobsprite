@@ -67,7 +67,7 @@ function savePalette() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function loadPalette() {
-    const msg = "shall replace colors of palette '" + paletteName + "'?" +
+    const msg = "replace colors of palette '" + paletteName + "'?" +
                 "\n(translucent colors will be ignored or converted)"
      //
     customConfirm(msg, loadPalette2)

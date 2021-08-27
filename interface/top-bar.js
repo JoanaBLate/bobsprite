@@ -18,7 +18,8 @@ var topBarScheme = [
     "plus",
     "",
     "",
-    "halves",
+    "halves-h",
+    "halves-v",
     "tile-set",
     "",
     "",
@@ -35,8 +36,6 @@ var topBarScheme = [
     "load",
     "save",
     "save2",
-    "",
-    "",
     "",
     "help"
 ]
@@ -94,8 +93,8 @@ function paintTopBarBg() {
 }
 
 function paintBobSpriteLogo() {
-    let bobsprite = icons["bobsprite"]
-    if (isDarkInterface)  { bobsprite = icons["bobsprite-dark"] }
+    let bobsprite = specialIcons["bobsprite"]
+    if (isDarkInterface)  { bobsprite = specialIcons["bobsprite-dark"] }
     topBarCtx.drawImage(bobsprite, 26, 7)
 }
 
@@ -120,7 +119,7 @@ function paintIconOnTopBar(id, left) {
         paintBgOff25(topBarCtx, left, 3)    
     }
     //
-    const icon = icons[id]
+    const icon = getIcon25(id)
     topBarCtx.drawImage(icon, left, 3)
 }
 
@@ -170,14 +169,11 @@ function topBarClicked(e) {
     if (id == "center") { setTask(centerLayers); return }
     if (id == "scissor") { setTask(adjustTopLayer); return }
     if (id == "tile-set") { setTask(showTileSet); return }
+    if (id == "halves-h") { setTask(leftRightToCenter); return }
+    if (id == "halves-v") { setTask(topBottomToCenter); return }
     if (id == "register") { setTask(canvasToFavorites); return }
     if (id == "previous") { setTask(showPreviousFavorite); return }
     if (id == "favorites") { setTask(showFavorites); return }
-    //
-    if (id == "halves") { 
-        if (shiftPressed) { setTask(topBottomToCenter) } else { setTask(leftRightToCenter) }
-        return
-    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

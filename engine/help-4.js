@@ -108,7 +108,7 @@ function helpPanelConfig(x, y) {
 
 function helpMonitorBox(x, y) {
     y += drawIconOnCanvasHelp("zoom-in", x + 170, y)
-    y += writeOnCanvasHelp("Panel Monitor", x, y)
+    y += writeOnCanvasHelp("Panel Monitor  (no icon)", x, y)
     y += writeOnCanvasHelp("  > it runs the *animation* (checkbox 'animat')", x, y)
     y += writeOnCanvasHelp("  > mark checkbox 'pixel' for pixelated zooming in", x, y)
     y += writeOnCanvasHelp("  > a frozen image works as a reference for drawing", x, y)
@@ -125,15 +125,12 @@ function helpPanelLayers(x, y) {
     y += 30
     y += writeOnCanvasHelp("Panel Layers", x, y)
     y += writeOnCanvasHelp("  > there are 5 standard layers: A, B, C, D and E", x, y)
-    y += writeOnCanvasHelp("  > the special layer Selection shows the result of using", x, y)
-    y += writeOnCanvasHelp("     selection tools", x, y)
-    y += writeOnCanvasHelp("  > some actions automatically adjusts a layer to match", x, y)
+    y += writeOnCanvasHelp("  > the special layer Selection shows the result of", x, y)
+    y += writeOnCanvasHelp("     using selection tools", x, y)
+    y += writeOnCanvasHelp("  > drag a layer button to *swap* the contents of layers;", x, y)
+    y += writeOnCanvasHelp("     their names do not change", x, y)
+    y += writeOnCanvasHelp("  > most actions automatically adjust a layer to match", x, y)
     y += writeOnCanvasHelp("     size and position of the canvas", x, y)
-    y += writeOnCanvasHelp("  > *dragging* a layer over other one, exchanges the", x, y)
-    y += writeOnCanvasHelp("     contents of the layers; their names do not change", x, y)
-    y += writeOnCanvasHelp("  > using Merge Down Protecting: blank and black pixels", x, y)
-    y += writeOnCanvasHelp("     of the bottom layer remain untouched; if the whole", x, y)
-    y += writeOnCanvasHelp("     bottom layer is blank, nothing happens", x, y)
     y += writeOnCanvasHelp("  > hotkeys: 0, 1, 2, 3, 4, 5", x, y)
     return y
 }

@@ -174,7 +174,7 @@ function polyModelColorizeLayer() {
     //    
     const hue = sliderColorizeHue.value * 360
     const sat = sliderColorizeSat.value
-    const lum = sliderColorizeLum.value
+    const lum = softLumValue(sliderColorizeLum.value)
     const opacity = sliderColorizeOpa.value
     //
     layer.canvas.getContext("2d").clearRect(0, 0, layer.canvas.width, layer.canvas.height)
@@ -193,5 +193,24 @@ function polyModelColorizeLayer() {
     }
     //
     updateColorizeButtons()
+}
+
+function softLumValue(value) { // returns from 0.2 to 0.8
+    //
+    if (value == 0.5) { return 0.5 }
+    //
+    return (value < 0.5) ? softLumValueLow(value) : softLumValueHigh(value)
+}
+
+function softLumValueLow(value) {
+    //
+    const factor = value / 0.5
+    return 0.2 + (0.3 * factor)
+}
+
+function softLumValueHigh(value) {
+    //
+    const factor = (value - 0.5) / 0.5
+    return 0.5 + (0.3 * factor)
 }
 

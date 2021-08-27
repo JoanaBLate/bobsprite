@@ -7,6 +7,7 @@ var panelConfig
 var panelConfigCtx
 
 var checkboxDark
+var checkboxRedYellowCursor
 var surfaceBgTable
 var sliderSpeed
 
@@ -42,14 +43,16 @@ function initPanelConfig() {
 
 function initPanelConfig2() {
     //
-    checkboxDark = createCheckbox("dark", panelConfigCtx, 130, 31, 12, toggleDarkness, isDarkInterface)
+    checkboxDark = createCheckbox("dark", panelConfigCtx, 130, 16, 12, toggleDarkness, isDarkInterface)
     //
-    surfaceBgTable = createSurface("bg-table", panelConfigCtx, 3, 85,  6*paletteSide, 3*paletteSide)
+    checkboxRedYellowCursor = createCheckbox("dark", panelConfigCtx, 160, 42, 12, null, false)
+    //
+    surfaceBgTable = createSurface("bg-table", panelConfigCtx, 3, 90,  6*paletteSide, 3*paletteSide)
     configSurfaceBgTable()
     //
-    sliderSpeed = createSlider("speed", panelConfigCtx, 10, 255, 220, 0.5, changeFrameDuration)
+    sliderSpeed = createSlider("speed", panelConfigCtx, 10, 255, 220, 0.8, changeFrameDuration)
     //
-    panelConfigGadgets = [ checkboxDark, surfaceBgTable, sliderSpeed ]
+    panelConfigGadgets = [ checkboxDark, checkboxRedYellowCursor, surfaceBgTable, sliderSpeed ]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,10 +72,13 @@ function paintPanelConfig() {
     panelConfigCtx.fillStyle = wingColor()
     panelConfigCtx.fillRect(0, 0, 240, 305)
     //
-    write(panelConfigCtx, "dark interface", 20, 30)
+    write(panelConfigCtx, "dark interface", 20, 18)
     paintCheckbox(checkboxDark)
     //
-    write(panelConfigCtx, "canvas background", 20, 65)
+    write(panelConfigCtx, "red & yellow cursor", 20, 44)
+    paintCheckbox(checkboxRedYellowCursor)
+    //
+    write(panelConfigCtx, "canvas background", 20, 70)
     //
     greyOuterEdgeByGadget(surfaceBgTable) 
     paintSurface(surfaceBgTable)

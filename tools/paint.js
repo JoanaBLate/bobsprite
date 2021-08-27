@@ -36,7 +36,7 @@ var toolSizesFor = {
     "pen"        : [ 1, 3, 5, 7, 15, 21 ],
     "rubber"     : [ 1, 3, 5, 7, 15, 21 ],
     "brush"      : [ 1, 3, 5, 7, 15, 21 ],
-    "spray"      : [ 5, 7, 15, 21 ],
+    "spray"      : [ 3, 5, 7, 15, 21 ],
     "thin-pen"   : [ 1, 1 ],
     "mirror-pen" : [ 1, 1 ]
 }

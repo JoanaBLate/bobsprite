@@ -98,7 +98,7 @@ function paintIconOnToolbox(id, left, top) {
         paintBgOff30(toolboxCtx, left, top)    
     }
     //
-    const icon = icons[id]
+    const icon = getIcon30(id)
     toolboxCtx.drawImage(icon, left, top)
 }
 

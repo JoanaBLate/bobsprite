@@ -16,7 +16,6 @@ var buttonLayer4
 var buttonLayer5
 
 var buttonMergeDown
-var buttonMergeProtec
 var buttonReverseOrder
 var buttonDisplayOpacity
 
@@ -46,13 +45,12 @@ function initPanelLayers2() {
     buttonLayer4 = createButton("layer-4", ctx, 40, 185, 80, 27, "layer D",   null, true)
     buttonLayer5 = createButton("layer-5", ctx, 40, 225, 80, 27, "layer E",   null, true)
     //
-    buttonMergeDown = createButton("merge-down", ctx, 13, 280, 134, 25, "merge down", mergeDown, true)
-    buttonMergeProtec = createButton("merge-protec", ctx, 13, 313, 134, 25, "merge down protec", mergeDownProtected, true)
-    buttonReverseOrder = createButton("rev-order", ctx, 13, 346, 134, 25, "reverse order", reverseOrder, false)
-    buttonDisplayOpacity = createButton("opacity", ctx, 13, 379, 134, 25, "display opacity", showPanelOpacity, false)
+    buttonMergeDown = createButton("merge-down", ctx, 13, 280, 134, 30, "merge down", mergeDown, true)
+    buttonReverseOrder = createButton("rev-order", ctx, 13, 325, 134, 30, "reverse order", reverseOrder, false)
+    buttonDisplayOpacity = createButton("opacity", ctx, 13, 370, 134, 30, "display opacity", showPanelOpacity, false)
     //
     panelLayersGadgets = [ buttonLayer0, buttonLayer1, buttonLayer2, buttonLayer3, buttonLayer4, buttonLayer5,
-                           buttonMergeDown, buttonMergeProtec, buttonReverseOrder, buttonDisplayOpacity ]
+                           buttonMergeDown, buttonReverseOrder, buttonDisplayOpacity ]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,8 +72,8 @@ function paintPanelLayers() {
     //
     greyTraceH(panelLayersCtx, 5, 0, 150)
     //
-    panelLayersCtx.drawImage(icons["down"], 10, 28)
-    panelLayersCtx.drawImage(icons["up"], 130, 229)
+    panelLayersCtx.drawImage(specialIcons["down"], 10, 28)
+    panelLayersCtx.drawImage(specialIcons["up"], 130, 229)
     //
     paintButton(buttonLayer0)
     paintButton(buttonLayer1)
@@ -85,7 +83,6 @@ function paintPanelLayers() {
     paintButton(buttonLayer5)
     //
     paintButton(buttonMergeDown)
-    paintButton(buttonMergeProtec)
     paintButton(buttonReverseOrder)
     paintButton(buttonDisplayOpacity)
 }
@@ -188,9 +185,6 @@ function updateLayerButtons() {  // helper
     //
     buttonMergeDown.disabled = count < 2
     paintButton(buttonMergeDown)    
-    //
-    buttonMergeProtec.disabled = count < 2
-    paintButton(buttonMergeProtec)  
     //
     buttonReverseOrder.disabled = count < 2
     paintButton(buttonReverseOrder)

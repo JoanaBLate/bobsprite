@@ -3,7 +3,10 @@
 "use strict"
 
 
-var icons = { }
+var icons50 = { }
+var icons30 = { }
+var icons25 = { }
+var specialIcons = { }
 
 var iconSheet = null // also works as areIconsReady
 
@@ -64,7 +67,8 @@ var iconGuide = {
     "lighten": [14, 4],
     "darken": [14, 5],
     "exchange": [15, 1],
-    "halves": [15, 2],
+    "halves-h": [15, 2],
+    "halves-v": [15, 2],
     "shear": [15, 4],
     "plus": [16, 1],
     "minus": [16, 2],
@@ -88,21 +92,19 @@ function initIcons() {
 }
 
 function iconSheetDownloaded(img) {
+    //
     iconSheet = cloneImage(img)
     //
-    for (const id of toolboxScheme) { makeIcon(id, 30) }
-    //  
-    for (const id of topBarScheme) { makeIcon(id, 25) }       
-    //  
-    for (const id of miniBarScheme) { makeIcon(id, 25) } 
+    for (const id of Object.keys(iconGuide)) { createIcon50(id) }
     //
-    makeSuperHandIcon()
+    rotateIcon50("halves-v")
+    //  
     makeBigTrashcanIcon()
     //
-    makeIcon("up", 20)
-    makeIcon("down", 20)
-    atenuateIcon("up", 0.2)
-    atenuateIcon("down", 0.2)
+    makeScaledIcon("up", 20, specialIcons)
+    makeScaledIcon("down", 20, specialIcons)
+    atenuateIcon(specialIcons["up"], 0.2)
+    atenuateIcon(specialIcons["down"], 0.2)
     //
     makeBobSpriteIcon()
     makeBobSpriteIconDark()
@@ -112,53 +114,86 @@ function iconSheetDownloaded(img) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function makeIcon(id, side) {
-    if (id == "") { return }
+function getIcon25(id) {
+    //
+    let icon = icons25[id]
+    if (icon == undefined) { makeScaledIcon(id, 25, icons25); icon = icons25[id] }
+    return icon
+}
+
+function getIcon30(id) {
+    //
+    let icon = icons30[id]
+    if (icon == undefined) { makeScaledIcon(id, 30, icons30); icon = icons30[id] }
+    return icon
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function createIcon50(id) {
+    //
+    const cnv = createCanvas(50, 50)
+    const ctx = cnv.getContext("2d")
     //
     const row = iconGuide[id][0] // base one
     const col = iconGuide[id][1] // base one
     //
-    icons[id] = createIcon(row, col, side)
-}
-
-function createIcon(row, col, side) { 
-    // row and col come base one //
-    const cnv = createCanvas(side, side)
-    const ctx = cnv.getContext("2d")
     const left = (col - 1) * 50
     const top  = (row - 1) * 50
     //
-    ctx.drawImage(iconSheet, left,top,50,50, 0,0,side,side)
-    return cnv
+    ctx.drawImage(iconSheet, -left, -top)
+    //
+    icons50[id] = cnv
+}
+
+function rotateIcon50(id) {
+    const src = icons50[id]
+    const ctx = src.getContext("2d")
+    const clone = cloneImage(src)
+    //
+    ctx.clearRect(0, 0, 50, 50)
+    ctx.save()
+    ctx.translate(25, 25)
+    ctx.rotate(Math.PI/2)
+    ctx.drawImage(clone, -25, -25)
+    ctx.restore()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function atenuateIcon(id, ga) {
-    const src = icons[id]
-    const cnv = createCanvas(src.width, src.height)
+function makeScaledIcon(id, side, dict) {
+    //
+    if (id == "") { return }
+    //
+    const src = icons50[id]
+    //
+    const cnv = createCanvas(side, side)
+    cnv.getContext("2d").drawImage(src, 0,0,50,50, 0,0,side,side)
+    //
+    dict[id] = cnv
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function atenuateIcon(cnv, ga) {
+    const clone = cloneImage(cnv)
     const ctx = cnv.getContext("2d")
+    //
+    ctx.clearRect(0, 0, cnv.width, cnv.height)
+    //
     ctx.globalAlpha = ga
-    ctx.drawImage(src, 0, 0)
+    ctx.drawImage(clone, 0, 0)
     ctx.globalAlpha = 1
-    icons[id] = cnv
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function makeSuperHandIcon() {
-    icons["superhand"] = createIcon(5, 1, 50)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function makeBigTrashcanIcon() {
+    const src = icons50["trashcan"]
     const cnv = createCanvas(100, 100)
-    const ctx = cnv.getContext("2d")
-    const src = createIcon(5, 4, 120)
-    ctx.drawImage(src, -10, -10)
+    cnv.getContext("2d").drawImage(src, 5,5,40,40, 0,0,100,100)
     //
-    icons["big-trashcan"] = cnv
+    specialIcons["big-trashcan"] = cnv
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -167,14 +202,14 @@ function makeBobSpriteIcon() {
     const cnv = createCanvas(105, 21)
     const ctx = cnv.getContext("2d")
     ctx.drawImage(iconSheet, -2, -850)
-    icons["bobsprite"] = cnv
+    specialIcons["bobsprite"] = cnv
 }
 
 function makeBobSpriteIconDark() {
     const cnv = createCanvas(105, 21)
     const ctx = cnv.getContext("2d")
     ctx.drawImage(iconSheet, -125, -850)
-    icons["bobsprite-dark"] = cnv
+    specialIcons["bobsprite-dark"] = cnv
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -191,7 +226,7 @@ function makeTextIcons() {
         const cnv = createCanvas(width, 10)
         cnv.getContext("2d").drawImage(iconSheet, -left, -top)
         //
-        icons[id] = cnv
+        specialIcons[id] = cnv
     }
 }
 

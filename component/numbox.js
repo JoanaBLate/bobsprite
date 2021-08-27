@@ -162,7 +162,7 @@ function drawTextOnNumbox(numbox, ctx) {
     //
     for (const c of txt) { 
         //
-        const spr = icons[c]
+        const spr = specialIcons[c]
         ctx.drawImage(spr, left, numbox.textTop)
         //
         left += spr.width + 1 // +1 as spacer

@@ -117,6 +117,7 @@ function helpFeather(x, y) {
     y += writeOnCanvasHelp("  > NO EFFECT on blank or black", x, y)
     y += writeOnCanvasHelp("  > Shift spin the mouse wheel to change its size", x, y)
     y += writeOnCanvasHelp("  > Ctrl spin the mouse wheel to change its intensity", x, y)
+    y += writeOnCanvasHelp("  > must release mouse button to affect same pixels again", x, y)
     return y
 }
 

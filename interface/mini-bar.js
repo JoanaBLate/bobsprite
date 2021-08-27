@@ -84,7 +84,7 @@ function paintMiniBarBg() {
 function paintIconOnMiniBar(id, left) {
     if (id == selectedOnMiniBar) { paintBgOn25(miniBarCtx, left, 2) }
     //
-    const icon = icons[id]
+    const icon = getIcon25(id)
     miniBarCtx.drawImage(icon, left, 2)
 }
 

@@ -207,6 +207,10 @@ function shallAdjustLayer(layer) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function mergeDown() {
+    customConfirm("protect blank and black pixels of bottom layer?", mergeDownProtected, mergeDownUnprotected)
+}
+
+function mergeDownUnprotected() {    
     setTask(function () { mergeDownCore(false) })
 }
 

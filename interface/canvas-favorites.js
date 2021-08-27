@@ -140,7 +140,7 @@ function paintFavorites() {
         }
     }
     //
-    favoritesCtx.drawImage(icons["big-trashcan"], 1185, 510)
+    favoritesCtx.drawImage(specialIcons["big-trashcan"], 1185, 515)
     //
     markFavorite(indexOfSelectedFavorite)
 }

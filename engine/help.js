@@ -50,13 +50,7 @@ function hideHelp() {
 
 function drawIconOnCanvasHelp(id, x, y) {
     //
-    const row = iconGuide[id][0] // base one
-    const col = iconGuide[id][1] // base one
-    //
-    const left = (col - 1) * 50
-    const top  = (row - 1) * 50
-    //
-    canvasHelpCtx.drawImage(iconSheet, left,top,50,50, x,y,30,30)
+    canvasHelpCtx.drawImage(getIcon30(id), x, y)
     //
     return 35
 }

@@ -71,10 +71,10 @@ function helpIncreaseZoom(x, y) {
 }
 
 function helpSwapHalves(x, y) {
-    y += drawIconOnCanvasHelp("halves", x + 170, y)
+    drawIconOnCanvasHelp("halves-h", x + 140, y)
+    y += drawIconOnCanvasHelp("halves-v", x + 200, y)
     y += writeOnCanvasHelp("Swap halves", x, y)
-    y += writeOnCanvasHelp("  > swaps left and right halves of the top layer (adjusted)", x, y)
-    y += writeOnCanvasHelp("  > if Shift pressed, swaps top and bottom halves instead", x, y)
+    y += writeOnCanvasHelp("  > swaps halves of the top layer (adjusted)", x, y)
     y += writeOnCanvasHelp("  > an odd dimension will be rounded up before swapping,", x, y)
     y += writeOnCanvasHelp("     by inserting one thin blank row or col", x, y)
     y += writeOnCanvasHelp("  > useful for creating a tile set of one sprite only", x, y)

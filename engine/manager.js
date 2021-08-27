@@ -43,7 +43,7 @@ function afterLoadImage(cnv, __filename) {
     //
     if (cnv.width == canvas.width  &&  cnv.height == canvas.height) { return }
     //
-    customConfirm("shall resize canvas to match layer size?", resizeCanvasByLayer)
+    customConfirm("resize canvas to match layer size?", resizeCanvasByLayer)
 }
 
 ///////////////////////////////////////////////////////////////////////////////

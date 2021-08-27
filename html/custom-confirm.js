@@ -76,7 +76,7 @@ function customConfirm(message, callback, callback2) {
     buttonCancel.style.margin = "10px 0px 10px 20px"
     buttonCancel.style.width  = "80px"
     buttonCancel.style.fontSize = "17px"
-    buttonCancel.innerHTML = "cancel"
+    buttonCancel.innerHTML = "no"
     buttonCancel.onclick   = function () { close(false) }
     foot.appendChild(buttonCancel)
     //    
@@ -85,7 +85,7 @@ function customConfirm(message, callback, callback2) {
     buttonOk.style.margin = "10px 0px 10px 20px"
     buttonOk.style.width  = "80px"
     buttonOk.style.fontSize = "17px"
-    buttonOk.innerHTML = "ok"
+    buttonOk.innerHTML = "yes"
     buttonOk.onclick   = function () { close(true) }
     foot.appendChild(buttonOk)
     //

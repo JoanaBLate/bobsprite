@@ -3,19 +3,21 @@
 "use strict"
 
 
-var cursorColor = "black-white"  // none, red-yellow
-
 const cursors = { } // "side:color" : cnv
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function drawPictureCursor() {
+    //
     if (! okToDrawCursor()) { stage.style.cursor = "default"; return }
     //
     stage.style.cursor = "none"
     //
     const side = toolSizeFor[tool] * ZOOM
-    const cursor = getCursor(side, cursorColor)
+    //
+    const isRedYellow = checkboxRedYellowCursor.checked 
+    //
+    const cursor = getCursor(side, isRedYellow)
     //   
     const canvasCornerDelta = (toolSizeFor[tool] - 1) / 2 
     const canvasCornerX = canvasX - canvasCornerDelta
@@ -31,39 +33,41 @@ function drawPictureCursor() {
     stageCtx.drawImage(cursor, left, top)
 }
 
-function getCursor(side, color) {
-    const id = side + ":" + color
+function getCursor(side, isRedYellow) {
+    //
+    const id = side + ":" + (isRedYellow ? "red-yellow" : "black-white")
+    //
     let cursor = cursors[id]
     //
     if (cursor == undefined) { 
-        cursor = makeCursor(side, color)
+        cursor = makeCursor(side, isRedYellow)
         cursors[id] = cursor
     }
     //
     return cursor
 }
 
-function makeCursor(innerSide, color) {
+function makeCursor(innerSide, isRedYellow) {
     if (innerSide > 9) { 
-        return makeFatCursor(innerSide, color)
+        return makeFatCursor(innerSide, isRedYellow)
     }
-    return makeThinCursor(innerSide, color)
+    return makeThinCursor(innerSide, isRedYellow)
 }
     
 ///////////////////////////////////////////////////////////////////////////////
 
-function makeFatCursor(innerSide, color) {
+function makeFatCursor(innerSide, isRedYellow) {
     //
     const side = innerSide + 6
     const cnv = createCanvas(side, side)
     const ctx = cnv.getContext("2d")
     //
-    ctx.fillStyle = (color == "red-yellow") ? "red" : "white"
+    ctx.fillStyle = (isRedYellow ? "red" : "white")
     //
     ctx.fillRect(0, 0, side, side)
     ctx.clearRect(3, 3, side - 6, side - 6)
     //
-    ctx.fillStyle = (color == "red-yellow") ? "yellow" : "black"
+    ctx.fillStyle = (isRedYellow ? "yellow" : "black")
     //
     let len = Math.floor(side / 2) // middle part
     let rest = side - len // sum of two beacons
@@ -85,18 +89,18 @@ function makeFatCursor(innerSide, color) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function makeThinCursor(innerSide, color) {
+function makeThinCursor(innerSide, isRedYellow) {
     //
     const side = innerSide + 4
     const cnv = createCanvas(side, side)
     const ctx = cnv.getContext("2d")
     //
-    ctx.fillStyle = (color == "red-yellow") ? "red" : "white"
+    ctx.fillStyle = (isRedYellow ? "red" : "white")
     //
     ctx.fillRect(0, 0, side, side)
     ctx.clearRect(2, 2, side - 4, side - 4)
     //
-    ctx.fillStyle = (color == "red-yellow") ? "yellow" : "black"
+    ctx.fillStyle = (isRedYellow ? "yellow" : "black")
     //
     let len = Math.floor(side / 2) // middle part
     let rest = side - len // sum of two beacons
@@ -119,14 +123,10 @@ function makeThinCursor(innerSide, color) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function okToDrawCursor() { 
+    //
     if (canvasX == null) { return false }
     //
-    return cursorIsSpecial()
-}
-
-function cursorIsSpecial() { // used by module mouse 
     if (toolSizeFor[tool] == 1) { return false }
-    if (cursorColor == "none") { return false }
     //
     if (tool == "pen")     { return true }
     if (tool == "rubber")  { return true }
