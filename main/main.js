@@ -45,11 +45,11 @@ function afterIconsAndFonts() {
     //    
     window.onresize = resetBigDivPosition // cannot come before initInterface!
     //
-    window.onbeforeunload = function () { setDataInLocalStorage(); return "leaving?" }
+    window.onbeforeunload = function () { setDataInLocalStorage(); return "leaving?" } 
     //
     initKeyboard()
     mainLoop()
-    showOrHideHelp()
+    showOrHideHelp() 
 
 }
 

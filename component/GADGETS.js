@@ -3,19 +3,23 @@
 "use strict"
 
 
+// a layout (container) is a gadget
+
+
 var currentGadgets = [ ]
 
 var focusedGadget = null     
 var gadgetUnderMouse = null  // for panel-color-hsl and panel-color-rgba
-var mouseLeftGadget = true
+
+var panelDragControl = function () { }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function panelOnMouseLeave() { // keeps focusedGadget (for numbox)
     //
     currentGadgets = [ ]
-    mouseLeftGadget = true
     gadgetUnderMouse = null
+    panelDragControl = function () { }
     //
     eraseMouseColor()
     //
@@ -30,8 +34,10 @@ function resetFocusedGadget() { // for numbox
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function panelOnMouseEnter(gadgets) {
+function panelOnMouseEnter(gadgets, dcCallback) {
+    //
     currentGadgets = gadgets
+    panelDragControl = dcCallback ? dcCallback : function () { } 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,9 +62,9 @@ function panelOnMouseDown(e) {
     const x = e.offsetX
     const y = e.offsetY 
     //
-    mouseLeftGadget = false
-    //
     const gadget = getGadgetUnderMouse(x, y) 
+    //
+    panelDragControl("down", x, y, gadget, false)
     //
     focusedGadget = gadget
     //
@@ -71,31 +77,22 @@ function panelOnMouseDown(e) {
 
 function panelOnMouseUp(e) {
     //
-    if (focusedGadget == null) { return } // mouse dragging started on other panel
-    //
     const x = e.offsetX
     const y = e.offsetY 
     //
     const gadget = getGadgetUnderMouse(x, y) 
     //
-    if (gadget == null) { focusedGadget = null; return }
+    panelDragControl("up", x, y, gadget, false)
     //
-    if (gadget == focusedGadget) { 
-        //
-        if (gadget.kind != "numbox") { focusedGadget = null }
-        //
-        if (mouseLeftGadget) { focusedGadget = null; tryNormalizeCursor(gadget); return } // SPECIAL CASE
-        //
-        if (gadget.onClick) { gadget.onClick(x - gadget.left, y - gadget.top) }
-        //
-        return
-    }
-    // must be a exchange now
-    //   
-    const old = focusedGadget
-    focusedGadget = null
-    // SPECIAL CASE 
-    tryExchangeOnPanelLayers(old, gadget)
+    if (gadget == null) { return }
+    //
+    if (gadget != focusedGadget) { focusedGadget = null; return }
+    //
+    // classic click
+    //
+    if (gadget.kind != "numbox") { focusedGadget = null }
+    //
+    if (gadget.onClick) { gadget.onClick(x - gadget.left, y - gadget.top) }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,48 +103,40 @@ function panelOnMouseMove(e) {
     const y = e.offsetY 
     const dragging = (e.buttons == 1)  
     //
-    const gadget = getGadgetUnderMouse(x, y) 
-    gadgetUnderMouse = gadget
+    const gadget = getGadgetUnderMouse(x, y)
+    //
+    panelDragControl("move", x, y, gadget, dragging) 
     //
     if (gadget == null) {
-        panelOnMouseMoveNoGadget(x, y, dragging)
+        //    
+        eraseMouseColor()
+        //
+        if (focusedGadget == null) { return }
+        //
+        //  focusedGadget != null
+        //
+        if (focusedGadget.onMouseLeave) { focusedGadget.onMouseLeave() }
+        //
+        if (dragging  ||  gadget.kind != "numbox") { focusedGadget = null }
     }
-    else {
-        panelOnMouseMoveOnGadget(gadget, x, y, dragging)    
+    else { // good gadget
+        if (gadget.onMouseMove) { gadget.onMouseMove(x - gadget.left, y - gadget.top, dragging) }
     }
 }
 
-function panelOnMouseMoveNoGadget(x, y, dragging) {
-    //
-    mouseLeftGadget = true
-    //
-    eraseMouseColor()
-    //
-    if (focusedGadget == null) { return }
-    //
-    const gadget = focusedGadget
-    //
-    if (gadget.onMouseLeave) { gadget.onMouseLeave(); return }
-    //
-    // SPECIAL CASE
-    //
-    if (gadget.parentCtx == panelLayersCtx) { rawMovingOnPanelLayers(x, y, dragging) }
-}
-
-function panelOnMouseMoveOnGadget(gadget, x, y, dragging) {
-    //
-    if (focusedGadget == null  &&  gadget != surfaceHsl) { dragging = false }
-    //
-    if (gadget.onMouseMove) { gadget.onMouseMove(x - gadget.left, y - gadget.top, dragging) }        
-}
-
-///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 function getGadgetUnderMouse(x, y)  {
     //
+    gadgetUnderMouse = getGadgetUnderMouseCore(x, y)
+    return gadgetUnderMouse
+}
+
+function getGadgetUnderMouseCore(x, y)  {
+    //
     for (const gadget of currentGadgets) {
-        if (isGadgetUnderMouse(x, y, gadget)) { return gadget }
+        //
+        if (isGadgetUnderMouse(x, y, gadget)) { return gadget } 
     }
     //
     return null

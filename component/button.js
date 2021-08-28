@@ -18,8 +18,6 @@ function Button(id, ctx, left, top, width, height, txt, action, disabled) {
     this.height = height
     //
     this.onClick = function () { buttonClicked(this) }
-    this.onMouseUp = null
-    this.onMouseDown = null
     //
     this.text = txt
     this.disabled = disabled
@@ -70,7 +68,7 @@ function paintButton(button) {
 
 function buttonClicked(button) {
     //
-    if (button.id.startsWith("layer-")) { buttonForLayerClicked(button); return } // special case
+    if (button.id.startsWith("layer-")) { layerButtonClicked(button); return } // special case
     //
     if (button.disabled) { return }
     //
@@ -154,7 +152,7 @@ function makeButtonImageDisabled(width, height, txt, left, top, forlayer) {
     //
     writeCore(ctx, standardFont, txt, left, top)
     //
-    ctx.fillStyle = forlayer ? "lightgrey" : "rgba(140,140,140,0.7)"
+    ctx.fillStyle = forlayer ? "white" : "rgba(140,140,140,0.7)"
     ctx.fillRect(1, 1, width - 2, height - 2)
     //
     return cnv

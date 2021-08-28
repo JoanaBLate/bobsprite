@@ -21,6 +21,8 @@ var buttonDisplayOpacity
 
 var panelLayersGadgets
 
+var panelLayersDragCandidate = null
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function initPanelLayers() {
@@ -49,7 +51,7 @@ function initPanelLayers2() {
     buttonReverseOrder = createButton("rev-order", ctx, 13, 325, 134, 30, "reverse order", reverseOrder, false)
     buttonDisplayOpacity = createButton("opacity", ctx, 13, 370, 134, 30, "display opacity", showPanelOpacity, false)
     //
-    panelLayersGadgets = [ buttonLayer0, buttonLayer1, buttonLayer2, buttonLayer3, buttonLayer4, buttonLayer5,
+    panelLayersGadgets = [ buttonLayer0, buttonLayer1, buttonLayer2, buttonLayer3, buttonLayer4, buttonLayer5, 
                            buttonMergeDown, buttonReverseOrder, buttonDisplayOpacity ]
 }
 
@@ -60,7 +62,7 @@ function startListeningPanelLayers() {
     panelLayers.onmousedown = panelOnMouseDown
     panelLayers.onmousemove = panelOnMouseMove
     panelLayers.onmouseleave = panelOnMouseLeave
-    panelLayers.onmouseenter = function () { panelOnMouseEnter(panelLayersGadgets) }
+    panelLayers.onmouseenter = function () { panelOnMouseEnter(panelLayersGadgets, panelLayersDragControl) }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -105,54 +107,56 @@ function setPanelLayersCursorMove() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function tryExchangeOnPanelLayers(a, b) { // a and b are already checked as panelLayers gadgets
+function panelLayersDragControl(kind, x, y, gadget, dragging) {
     //
-    if (! a.id.startsWith("layer-")) { return }
-    if (! b.id.startsWith("layer-")) { return }
+    if (x < 40  ||  x > 120) { cancelPanelLayersDrag(); return }
+    if (y < 25  ||  y > 255) { cancelPanelLayersDrag(); return }
     //
-    const indexA = parseInt(a.id.replace("layer-", ""))
-    const indexB = parseInt(b.id.replace("layer-", ""))
-    //
-    setPanelLayersCursorDefault()
-    exchangeLayers(indexA, indexB)
-}
-
-function rawMovingOnPanelLayers(x, y, dragging) {
-    //
-    if (draggingLayerButton(x, y, dragging)) { 
-        setPanelLayersCursorMove()
+    if (kind == "down") { 
+        //  
+        if (gadget == null) { cancelPanelLayersDrag() } else { panelLayersDragCandidate = gadget }
+        return 
     }
-    else {
-        focusedGadget = null
-        setPanelLayersCursorDefault()
+    //
+    if (kind == "move") {
+        //
+        if (! dragging  ||  panelLayersDragCandidate == null) { cancelPanelLayersDrag(); return } 
+        //
+        setPanelLayersCursorMove() 
+        return 
     }
-}
-
-function draggingLayerButton(x, y, dragging) {
+    // kind == "up"
     //
-    if (! dragging) { return false }
+    if (gadget == null) { cancelPanelLayersDrag(); return }
     //
-    if (focusedGadget == null) { return false }
-    if (! focusedGadget.id.startsWith("layer-")) { return false }
+    if (panelLayersDragCandidate == null) { cancelPanelLayersDrag(); return }
     //
-    if (x <  35) { return false }
-    if (x > 120) { return false }
-    if (y <  25) { return false }
-    if (y > 250) { return false }
+    if (gadget == panelLayersDragCandidate) { cancelPanelLayersDrag(); return } // standard click
     //
-    return true
-}
-
-function tryNormalizeCursor(gadget) { // necessary for aborted click
-    //
-    if (gadget.parentCtx != panelLayersCtx) { return }
-    //
-    setPanelLayersCursorDefault()
+    finishPanelLayersDrag(panelLayersDragCandidate, gadget)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function buttonForLayerClicked(button) {
+function cancelPanelLayersDrag() {
+    //
+    panelLayersDragCandidate = null
+    setPanelLayersCursorDefault()    
+}
+
+function finishPanelLayersDrag(buttonA, buttonB) {
+    //
+    setPanelLayersCursorDefault()  
+    //
+    const indexA = parseInt(buttonA.id.replace("layer-", ""))
+    const indexB = parseInt(buttonB.id.replace("layer-", ""))
+    //
+    exchangeLayers(indexA, indexB)
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function layerButtonClicked(button) {
     //
     const n = parseInt(button.id.replace("layer-", ""))
     setPanelLayersCursorDefault()
