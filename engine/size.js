@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 /* NEVER FORGET:
     
@@ -10,80 +8,77 @@
 
 */
 
-
 var desiredWidth = 120
 var desiredHeight = 80
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function resizeCanvasByNewDimensions() {
-    resizeCanvas(getNewWidth(), getNewHeight())
-}
-
-function resizeCanvasByLayer() {
-    const layer = getTopLayer()
-    if (layer == null) { return }
-    //
-    resizeCanvas(layer.canvas.width, layer.canvas.height)
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 function resizeLayer() {
+    //
     shallRepaint = true
     // 
-    const layer = getTopLayer()
-    if (layer == null) { return }
+    if (toplayer == null) { return }
     //
-    const cnv = createCanvas(getNewWidth(), getNewHeight())
-    cnv.getContext("2d").drawImage(layer.canvas, 0, 0)
+    const src = toplayer.canvas
     //
-    layer.top = 0
-    layer.left = 0
-    layer.canvas = cnv
+    const newWidth = getNewWidth()
+    const newHeight = getNewHeight()
+    //
+    if (newWidth == src.width  &&  newHeight == src.height) { return }
+    //
+    const cnv = createCanvas(newWidth, newHeight)
+    cnv.getContext("2d").drawImage(src, 0, 0)
+    //
+    toplayer.canvas = cnv
+    centerLayerCore(toplayer)
     memorizeTopLayer()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function scaleLayer() { 
+    //
     shallRepaint = true
     // 
-    const layer = getTopLayer()
-    if (layer == null) { return }
+    if (toplayer == null) { return }
+    //
+    const src = toplayer.canvas
     //
     const newWidth = getNewWidth()
     const newHeight = getNewHeight()
+    //
+    if (newWidth == src.width  &&  newHeight == src.height) { return }
     //
     const cnv = createCanvas(newWidth, newHeight)
     const ctx = cnv.getContext("2d")
     //
     ctx["imageSmoothingEnabled"] = ! checkboxSizePixelated.checked
     ctx["imageSmoothingQuality"] = "high" // VERY IMORTANT!!! (or else lines of some grid disappear)
-    ctx.drawImage(layer.canvas, 0,0,layer.canvas.width,layer.canvas.height, 0,0,newWidth,newHeight)
+    ctx.drawImage(src, 0,0,src.width,src.height, 0,0,newWidth,newHeight)
     ctx["imageSmoothingEnabled"] = true
     //
-    layer.top = 0
-    layer.left = 0
-    layer.canvas = cnv
+    toplayer.canvas = cnv
+    centerLayerCore(toplayer)
     memorizeTopLayer()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function autocropLayer() { 
+    //
     shallRepaint = true
     // 
-    const layer = getTopLayer()
-    if (layer == null) { return }
+    if (toplayer == null) { return }
     //
-    const cnv = autocrop(layer.canvas)
+    const cnv = autocrop(toplayer.canvas)
+    //    
+    const deltaWidth = cnv.width - toplayer.canvas.width
+    const deltaHeight = cnv.height - toplayer.canvas.height
     //
-    if (cnv.width == layer.canvas.width  &&  cnv.height == layer.canvas.height) { return }
+    if (deltaWidth == 0  &&  deltaHeight == 0) { return }
     //
-    layer.top = 0
-    layer.left = 0
-    layer.canvas = cnv
+    toplayer.canvas = cnv
+    centerLayerCore(toplayer)
     memorizeTopLayer()
 }
 

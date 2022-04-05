@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var ctrlPressed  = false
 var shiftPressed = false
@@ -20,13 +18,15 @@ function initKeyboard() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function resetKeyboard() {
+    //
     // there was a horrible bug: (on old version yes; on new version, maybe not)
     // trying to move mask/sprite without it on,
     // raises alert
     // but key keeps 'pressed' under alert window,
     // so each main loop asks again checkMove wich
     // generates new alert window (thousands).
-    // solution is reset keyboard before alert
+    // the solution is reset keyboard before alert
+    //
     ctrlPressed  = false
     shiftPressed = false
     upPressed    = false
@@ -38,6 +38,11 @@ function resetKeyboard() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function keyUpHandler(e) {
+    //
+    resetMoveByKeyboard()
+    //
+    shallRepaint = true
+    //
     ctrlPressed  = e.ctrlKey
     shiftPressed = e.shiftKey
     //
@@ -48,12 +53,17 @@ function keyUpHandler(e) {
     if (low == "arrowleft")  { leftPressed  = false; return false }
     if (low == "arrowright") { rightPressed = false; return false }
     //
+    if (low == " ") { hideSuperHand(); return false }
+    //
     return false
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function keyDownHandler(e) {
+    //
+    shallRepaint = true
+    //
     const low = e.key.toLowerCase()
  // console.log(low)
     //
@@ -75,17 +85,28 @@ function keyDownHandler(e) {
     if (MODE == "favorites") { setTask(hideFavorites); return true }
     if (MODE == "alternative-save") { setTask(hideAlternativeSave); return true }
     //
-    // ########################################### //
-    // ABORTING COMMAND TO NOT MESS WITH MOUSE JOB //
-    // ########################################### //
-    if (mouseBusy) { return false }
+    if (MODE == "animation") { keyDownHandlerAnimationMode(low); return true }
     //
-    if (MODE == "standard") { keyDownHandlerStandardMode(low) }
+    if (MODE == "standard") { keyDownHandlerStandardMode(low); return false }
     //
-    return false
+    return false // should not happen
+}
+
+function keyDownHandlerAnimationMode(low) {
+    //
+    if (low == "arrowleft")  { changeFrameCanvasPosition(-1); return }
+    if (low == "arrowright") { changeFrameCanvasPosition(+1); return }
+    setTask(hideAnimation)
 }
 
 function keyDownHandlerStandardMode(low) {
+    //
+    // ########################################### //
+    // ABORTING COMMAND TO NOT MESS WITH MOUSE JOB //
+    // ########################################### //
+    //
+    if (mouseBusy  ||  superHandOn) { return false }
+    //
     //
     const numbox = focusedNumbox()
     if (numbox != null) { numboxOnKeyDown(numbox, low); return }
@@ -98,7 +119,9 @@ function keyDownHandlerStandardMode(low) {
     if (low == "pageup") { setTask(showPreviousFavorite); return }
     if (low == "pagedown") { setTask(showNextFavorite); return }
     //
-    if (low == "enter") { setTask(canvasToFavorites); return }
+    if (low == "enter") { setTask(pictureToFavorites); return }
+    //
+    if (low == "tab") { managerCapture(); return }
     //
     if (low == "backspace") {
         if (shiftPressed) { setTask(redo) } else { setTask(undo) }; return
@@ -116,8 +139,9 @@ function keyDownHandlerStandardMode(low) {
     if (low == "y"  &&  ctrlPressed)  { setTask(redo); return }
     if (low == "z"  &&  ctrlPressed)  { setTask(undo); return }
     //
-    if (low == " ") { managerCapture(); return }
-    if (low == "c") { centerCanvas(); return }
+    if (low == " ") { showSuperHand(); return }
+    if (low == "a") { setTask(showAnimation); return }
+    if (low == "c") { setTask(centerLayers); return }
     if (low == "d") { setTask(toggleDarkness); return }
     if (low == "f") { setTask(showFavorites); return }
     if (low == "h") { applyEffect(horizontalReverse); return }

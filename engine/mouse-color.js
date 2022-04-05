@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var mouseRed   =  -1 // -1 means mouse not on any color pixel
 var mouseGreen =  -1
@@ -66,5 +64,22 @@ function mouseColorChanged() {
     if (mouseAlpha != oldMouseAlpha) { return true }
     //
     return false
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function updateMouseColorByStage() {
+    //
+    if (stageX == null) { return }
+    //
+    let color = null
+    //
+    for (const layer of layers) {
+        //
+        color = mouseColorOnVisibleLayer(layer)
+        if (color != null) { break }        
+    }
+    //
+    changeMouseColor(color) 
 }
 

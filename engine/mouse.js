@@ -1,33 +1,31 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var mouseBusy = false // flag to abort concurrent keyboard command
 
-var stageX = null // stage true coordinate (matches ZOOM = 1)
-var stageY = null // stage true coordinate (matches ZOOM = 1)
+var stageRawX = null // stage raw coordinate (ignores ZOOM)
+var stageRawY = null // stage raw coordinate (ignores ZOOM)
 
-var canvasX = null // coordinate adjusted to current ZOOM
-var canvasY = null // coordinate adjusted to current ZOOM
+var stageX = null // stage natural coordinate (after unzooming)
+var stageY = null // stage natural coordinate (after unzooming)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateCanvasXY() {
-    canvasX = null
-    canvasY = null
-    if (stageX == null) { return } 
+function updateStageXY() { // also called by module "zoom"
     //
-    if (stageX < canvasLeft) { return }
-    if (stageY < canvasTop)  { return }
+    stageX = null
+    stageY = null
     //
-    canvasX = Math.floor((stageX - canvasLeft) / ZOOM)
-    canvasY = Math.floor((stageY - canvasTop) / ZOOM)
+    if (stageRawX == null) { return } 
     //
-    if (canvasX >= canvas.width  ||  canvasY >= canvas.height) { 
-        canvasX = null
-        canvasY = null
-    }
+    const deltaXZoomed = stageRawX - stageCenterX
+    const deltaYZoomed = stageRawY - stageCenterY
+    //
+    const deltaX = Math.floor(deltaXZoomed / ZOOM)
+    const deltaY = Math.floor(deltaYZoomed / ZOOM)
+    //
+    stageX = stageCenterX + deltaX
+    stageY = stageCenterY + deltaY
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -54,8 +52,10 @@ function mouseWheelHandler(e) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function mouseUpHandler() {
+    //
     shallRepaint = true
     mouseBusy = false
+    //
     finishMouseAction()
     return false
 }
@@ -63,20 +63,24 @@ function mouseUpHandler() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function mouseLeaveHandler() {
+    //
     shallRepaint = true 
     mouseBusy = false
     //
-    stageX = null
-    stageY = null
-    updateCanvasXY()
+    stageRawX = null
+    stageRawY = null
+    updateStageXY()
     //
-    finishMouseAction()    
+    finishMouseAction()
+    eraseMouseColor()    
     return false
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function finishMouseAction() {
+    //
+    if (superHandOn)          { resetMove(); return }
     //
     if (tool == "pen")        { finishPen(); return }
     if (tool == "hand")       { resetMove(); return }
@@ -105,6 +109,8 @@ function mouseDownHandler(e) {
     //
     mouseBusy = true
     //
+    if (superHandOn) { return false }
+    //
     if (e.buttons != 1)  { return false } // avoid mess with right button click
     //    
     if (tool == "hand")        { return false }
@@ -126,7 +132,6 @@ function mouseDownHandler(e) {
     if (tool == "capture")     { managerCapture(); return false }
     if (tool == "rectangle")   { startRectangle(); return false }
     if (tool == "bucket")      { managerPaintArea(); return false }
-    if (tool == "select-area") { managerSelectArea(); return false }
     if (tool == "blur-border") { managerBlurBorder(); return false }
     if (tool == "every")       { managerPaintEvery(); return false }
     if (tool == "border")      { managerPaintBorder(); return false }
@@ -143,17 +148,21 @@ function mouseMoveHandler(e) {
  // mouseBusy = (e.button == 1) // only for pressing and releasing
     mouseBusy = (e.buttons == 1)
     //
-    stageX = e.offsetX
-    stageY = e.offsetY
-    const oldCanvasX = canvasX
-    const oldCanvasY = canvasY
-    updateCanvasXY()
-    //    
+    stageRawX = e.offsetX
+    stageRawY = e.offsetY
+    const oldStageX = stageX
+    const oldStageY = stageY
+    updateStageXY()
+    //
     if (! mouseBusy) { return false } 
     //
-    if (tool == "hand") { moveLayersByMouse(e["movementX"], e["movementY"]); return false }
+    resetFocusedGadget()
+    //    
+    if (superHandOn) { moveLayers(e["movementX"], e["movementY"]); return false }
     //
-    if (canvasX == oldCanvasX  &&  canvasY == oldCanvasY) { return false }
+    if (tool == "hand") { moveTopLayer(e["movementX"], e["movementY"]); return false } 
+    //
+    if (stageX == oldStageX  &&  stageY == oldStageY) { return false }
     //
     if (tool == "thin-pen")   { thinPen(); return false }
     if (tool == "mirror-pen") { mirrorPen(); return false }

@@ -1,16 +1,18 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
+var layers = [ ] // superlayer is the layer for selection
 
-var layers = [ ] // superlayer is the zero layer   
-  
+var toplayer = null 
+
 // constructor ////////////////////////////////////////////////////////////////
 
 function Layer() {
+    //
     this.canvas = createCanvas(desiredWidth, desiredHeight)
-    this.left = 0
-    this.top = 0
+    //
+    this.left = 0 // ignores the zoom level!
+    this.top = 0  // ignores the zoom level!
     //
     this.enabled = false
     this.opacity = 1.0 // presentation opacity
@@ -31,9 +33,41 @@ function initLayers() {
     layers.push(new Layer()) // 4
     layers.push(new Layer()) // 5
     //
-    for (const layer of layers) { memorizeLayerCore(layer) } // must be CORE or else some layers are rejected at memory spooling!!!!
+    for (const layer of layers) { centerLayerCore(layer) }
+    //
+    for (const layer of layers) { memorizeLayerAfterEdition(layer) } // must be the core function:
+                                                                     // avoids some  layer rejection at memory spooling!!!!
     //
     layers[1].enabled = true
+    //
+    toplayer = layers[1]
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function changeLayerVisibility(n) {
+    //
+    shallRepaint = true
+    //
+    const layer = layers[n]
+    layer.enabled = ! layer.enabled
+    //
+    toplayer = getTopLayer()
+    updateLayerButtons()
+    //
+    if (panelOpacityOn) { paintPanelOpacity() }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function selectionIsOn() {
+    //
+    return layers[0].enabled
+}
+
+function alertSuperLayer() {
+    //
+    customAlert("cannot use select or lasso tools on layer 'selection'")
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,56 +81,28 @@ function getTopLayer() {
     return null
 }
 
-function getTopLayerAdjusted() { // or else user could not draw on displaced layer
-    //
-    const layer = getTopLayer()
-    if (layer == null) { return null } 
-    //
-    if (shallAdjustLayer(layer)) { adjustLayerCore(layer) }
-    //
-    return layer
-}
-
-function getTrueTopLayerForced() {
-    //
-    const top = getTopLayer()
-    if (top != null) { return top }
-    //
-    layers[1].enabled = true
-    updateLayerButtons()
-    return layers[1]
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 function getTopLayerX() {
     //
-    if (canvasX == null) { return null } 
+    if (toplayer == null) { return null }
     //
-    const layer = getTopLayer()
-    if (layer == null) { return null }
-    //
-    const x = canvasX - layer.left
+    const x = stageX - toplayer.left
     //
     if (x < 0) { return null }
-    //
-    if (x >= layer.canvas.width)  { return null }
+    if (x > toplayer.width - 1) { return null}
     //
     return x
-}    
+}
 
 function getTopLayerY() {
     //
-    if (canvasY == null) { return null } 
+    if (toplayer == null) { return null }
     //
-    const layer = getTopLayer()
-    if (layer == null) { return null }
-    //
-    const y = canvasY - layer.top
+    const y = stageY - toplayer.top
     //
     if (y < 0) { return null }
-    //
-    if (y >= layer.canvas.height)  { return null }
+    if (y > toplayer.height - 1) { return null}
     //
     return y
 }
@@ -105,8 +111,33 @@ function getTopLayerY() {
 
 function getTopLayerOpacity() {
     //
-    for (const layer of layers) {
-        if (layer.enabled) { return layer.opacity }
+    if (toplayer == null) { return null }
+    return toplayer.opacity
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function getNumberOfTopLayer() {
+    //
+    let n = -1
+    //
+    for (const layer of layers) { 
+        //
+        n += 1
+        if (layer.enabled) { return n }
+    }
+    //
+    return null
+}
+
+function getNumberOfBottomLayer() {
+    //
+    const last = layers.length - 1
+    //
+    for (let n = last; n > -1; n--) { 
+        //
+        const layer = layers[n]
+        if (layer.enabled) { return n }
     }
     //
     return null
@@ -114,19 +145,8 @@ function getTopLayerOpacity() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function changeLayerVisibility(n) {
-    shallRepaint = true
-    //
-    const layer = layers[n]
-    layer.enabled = ! layer.enabled
-    //
-    updateLayerButtons()
-    if (panelOpacityOn) { paintPanelOpacity() }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 function reverseOrder() { // ignores hidden layers
+    //
     shallRepaint = true
     //
     const list = [ ]
@@ -138,123 +158,27 @@ function reverseOrder() { // ignores hidden layers
         const b = list.pop()
         exchangeLayers(a, b)
     }
+    //
+    toplayer = getTopLayer()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function exchangeLayers(a, b) {
+    //
     shallRepaint = true
     //
-    const data = layers[a]
-    const data2 = layers[b]
+    const layerA = layers[a]
+    const layerB = layers[b]
     //
-    layers[a] = data2
-    layers[b] = data  
+    layers[a] = layerB
+    layers[b] = layerA
+    //
+    updateLayerButtons()
+    toplayer = getTopLayer()
     //
     startBlinkingButton(panelLayersGadgets[a])
     startBlinkingButton(panelLayersGadgets[b])
-    //
-    updateLayerButtons()
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function showSuperLayerOnly() {
-    //
-    for (const layer of layers) { layer.enabled = false }
-    //    
-    layers[0].enabled = true
-    //
-    updateLayerButtons()
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function adjustTopLayer() {
-    //
-    const layer = getTopLayer()
-    //
-    if (layer == null) { return }
-    //
-    if (! shallAdjustLayer(layer)) { return }
-    //
-    adjustLayerCore(layer)
-    //
-    memorizeTopLayer()
-}
-
-function adjustLayerCore(layer) {
-    //
-    startBlinkingIconOnTopBar("scissor")
-    //
-    const cnv = createCanvas(canvas.width, canvas.height)
-    const ctx = cnv.getContext("2d")
-    ctx.drawImage(layer.canvas, layer.left, layer.top)
-    //
-    layer.left = 0
-    layer.top = 0
-    layer.canvas = cnv
-}
-
-function shallAdjustLayer(layer) {
-    if (layer.left != 0) { return true }
-    if (layer.top  != 0) { return true }
-    if (layer.canvas.width != canvas.width) { return true }
-    if (layer.canvas.height != canvas.height) { return true } 
-    return false
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function mergeDown() {
-    customConfirm("protect blank and black pixels of bottom layer?", mergeDownProtected, mergeDownUnprotected)
-}
-
-function mergeDownUnprotected() {    
-    setTask(function () { mergeDownCore(false) })
-}
-
-function mergeDownProtected() {
-    setTask(function () { mergeDownCore(true) })
-}
-
-function mergeDownCore(protect) {
-    shallRepaint = true
-    //
-    let index = -1
-    for (let n = 0; n < layers.length; n++) { 
-        if (layers[n].enabled) { index = n } 
-    }
-    //
-    if (index == -1) { return } // for safety
-    //
-    const layer = layers[index]
-    layer.canvas = protect ? canvasToPictureProtected() : canvasToPicture()
-    memorizeLayer(layer)
-    //
-    layer.left = 0 // must come after merging
-    layer.top = 0  // must come after merging
-    //    
-    for (const layer of layers) { layer.enabled = false }
-    layers[index].enabled = true
-    //
-    updateLayerButtons()
-}
- 
-///////////////////////////////////////////////////////////////////////////////
-
-function sendImageToTopLayer(cnv, shallResetPosition) {
-    shallRepaint = true
-    //
-    const layer = getTrueTopLayerForced()
-    layer.canvas.width = cnv.width
-    layer.canvas.height = cnv.height
-    const ctx = layer.canvas.getContext("2d")
-    ctx.clearRect(0, 0, layer.width, layer.height)
-    ctx.drawImage(cnv, 0, 0)
-    //
-    if (shallResetPosition) { layer.left = 0; layer.top = 0 }
-    memorizeLayer(layer)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -270,31 +194,123 @@ function centerLayers() {
         if (! layer.enabled) { continue }
         //
         centerLayerCore(layer)
-        //
-        if (! shiftPressed) { return }
     }
 }
 
-function centerLayerCore(layer) {
+function centerLayerCore(layer) { // ignores zoom level
     //
-    layer.left = Math.floor((canvas.width - layer.canvas.width) / 2)
-    layer.top  = Math.floor((canvas.height - layer.canvas.height) / 2)
+    layer.left = stageCenterX - Math.floor(layer.canvas.width / 2)
+    layer.top  = stageCenterY - Math.floor(layer.canvas.height / 2)
+}
+ 
+///////////////////////////////////////////////////////////////////////////////
+
+function sendImageToTopLayer(cnv) {
+    //
+    shallRepaint = true
+    //
+    if (toplayer == null) { changeLayerVisibility(1) }
+    //
+    const shallMemorize = ! canvasesAreEqual(toplayer.canvas, cnv)
+    //
+    toplayer.canvas = cnv
+    //
+    centerLayerCore(toplayer)
+    if (shallMemorize) { memorizeTopLayer() }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function __keepLayerRelativePosition(layer, newWidth, newHeight) {
-    const width = layer.canvas.width
-    const height = layer.canvas.height
+function mouseColorOnVisibleLayer(layer) {
     //
-    if (newWidth == width  &&  newHeight == height) { return false }
+    if (! layer.enabled) { return null }
     //
-    const middleLeft = layer.left + Math.floor(width  / 2)
-    const middleTop  = layer.top  + Math.floor(height / 2)
+    const x = stageX - layer.left
     //
-    layer.left = middleLeft - Math.floor(newWidth  / 2)
-    layer.top  = middleTop  - Math.floor(newHeight / 2)
+    if (x < 0) { return null }
+    if (x > layer.width - 1) { return null}
     //
-    return true
+    //    
+    const y = stageY - layer.top
+    //
+    if (y < 0) { return null }
+    if (y > layer.height - 1) { return null}
+    //
+    //
+    const data = layer.canvas.getContext("2d").getImageData(x, y, 1, 1).data
+    //
+    if (data[3] == 0) { return null } // blank
+    //
+    return data
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function mergeUp() {
+    //
+    setTask(mergeUpCore)
+}
+
+function mergeUpCore() {
+    //
+    shallRepaint = true
+    //
+    const cnv = makeTopPicture()
+    //
+    if (cnv == null) { return }
+    //
+    if (! canvasesAreEqual(toplayer.canvas, cnv)) {
+        //
+        toplayer.canvas = cnv
+        memorizeTopLayer() 
+    }
+    //
+    for (const layer of layers) { layer.enabled = false }
+    //
+    toplayer.enabled = true
+    //
+    updateLayerButtons()  
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function mergeDown() {
+    //
+    customConfirm("protect blank and black pixels of bottom layer?", mergeDownProtected, mergeDownUnprotected)
+}
+
+function mergeDownUnprotected() {    
+    //
+    setTask(function () { mergeDownCore(false) })
+}
+
+function mergeDownProtected() {
+    //
+    setTask(function () { mergeDownCore(true) })
+}
+
+function mergeDownCore(protect) {
+    //
+    shallRepaint = true
+    //
+    const cnv = makeBottomPicture(protect)
+    //
+    if (cnv == null) { return }
+    //    
+    const bottomlayer = layers[getNumberOfBottomLayer()]
+    //    
+    if (! canvasesAreEqual(bottomlayer.canvas, cnv)) {
+        //
+        bottomlayer.canvas = cnv
+        memorizeLayer(bottomlayer) 
+    }
+    //
+    for (const layer of layers) { layer.enabled = false }
+    //
+    bottomlayer.enabled = true
+    //
+    toplayer = getTopLayer()
+    //
+    updateLayerButtons()  
 }
 

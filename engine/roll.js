@@ -1,19 +1,17 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function useRoll() {
-    const layer = getTopLayerAdjusted()
-    if (layer == null) { return }
+    //    
+    if (toplayer == null) { return }
     //
     shallRepaint = true
     startBlinkingIconOnTopBar("roll")
     //
-    const original = cloneImage(layer.canvas)
-    const cnv = layer.canvas
+    const original = cloneImage(toplayer.canvas)
+    const cnv = toplayer.canvas
     const ctx = cnv.getContext("2d")
     const width  = cnv.width
     const height = cnv.height

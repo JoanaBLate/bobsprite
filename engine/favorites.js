@@ -1,82 +1,73 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
+const favorites = [ ] 
 
-const favorites = [ ] // list of Favorite
-
-var indexOfSelectedFavorite = 0 // always some favorite is selected
+var indexOfSelectedFavorite = -1 
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function Favorite() {
     this.canvas = null
-    this.enabled = true
-    this.isLinkToCanvas = false
+    this.icon = null
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-function initFavorites() {
+function createFavorite(cnv) {
     //
-    for (let n = 0; n < 49; n++) { favorites.push(new Favorite()) }
+    const f = new Favorite()
+    Object.seal(f)
     //
-    favorites[0].isLinkToCanvas = true
+    f.canvas = cloneImage(cnv)
+    f.icon = makeFavoriteIcon(cnv)
+    //
+    return f
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function showPreviousFavorite() {
-    showFavorite("previous", previousFavoriteIndex)
+    //
+    showFavorite("previous", -1)
 }
 
 function showNextFavorite() {
-    showFavorite("next", nextFavoriteIndex)
+    showFavorite("next", +1)
 }
 
-function showFavorite(kind, indexFinder) {
+function showFavorite(kind, delta) {
     //
-    const layer = getTopLayer()
-    if (layer == null) { return }
+    shallRepaint = true
     //
-    const oldIndex = indexOfSelectedFavorite 
-    indexOfSelectedFavorite = indexFinder()
+    if (favorites.length == 0) { customAlert("no favorite to show"); return }
+    //
+    if (toplayer == null) { return }
+    //
+    const max = favorites.length - 1
+    //
+    let index = indexOfSelectedFavorite + delta
+    //
+    if (index < 0) { index = 0 }
+    if (index > max) { index = max }
+    //
+    indexOfSelectedFavorite = index
     //
     const f = favorites[indexOfSelectedFavorite]
-    const cnv = f.canvas
-    if (cnv == null) { return }
     //
-    if (oldIndex == indexOfSelectedFavorite  &&  canvasesAreEqual(cnv, layer.canvas)) { return }
+    const isEdge = (index == 0  ||  index == max)
+    if (isEdge  &&  canvasesAreEqual(f.canvas, toplayer.canvas)) { return }
     //
     startBlinkingIconOnTopBar(kind)
-    layer.canvas = cloneImage(cnv)
-    memorizeLayerFromFavorites(layer)
-    shallRepaint = true
+    toplayer.canvas = cloneImage(f.canvas)
+    memorizeLayerFromFavorites(toplayer)
 }
    
 ///////////////////////////////////////////////////////////////////////////////
 
-function deleteFavorite(n) {
+function deleteFavorite() {
     //
-    const f = favorites[n]
+    favorites.splice(indexOfSelectedFavorite, 1)
     //
-    if (f.isLinkToCanvas) { customAlert("cannot delete link to canvas"); return }
-    //
-    f.canvas = null
-    f.enabled = true
-    //
-    paintFavorites()
-    //
-    indexOfSelectedFavorite = nextFavoriteIndexAfterDelete()
-}
-
-function toggleFavoriteEnabled(n) {
-    //
-    const f = favorites[n]
-    //
-    if (f.canvas == null  &&  ! f.isLinkToCanvas) { return }
-    //
-    f.enabled = ! f.enabled
+    indexOfSelectedFavorite = favorites.length - 1
     //
     paintFavorites()
 }
@@ -90,84 +81,34 @@ function exchangeFavorites(a, b) {
     favorites[b] = favoriteA
     //
     indexOfSelectedFavorite = b
+    //
     paintFavorites()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function fileToFavorites(cnv) { 
+    //
+    toFavoritesCore(cnv)
+}
+
+function pictureToFavorites() { 
+    //
+    if (toplayer == null) { return }
+    //
+    makeCheckedPicture(toFavoritesCore)
+}
+
+function toFavoritesCore(cnv) {
+    //
+    if (favorites.length == 49) { customAlert("no room for another favorite"); return }
+    //
     startBlinkingIconOnTopBar("register")
     //
-    const n = emptyFavoriteIndex()
-    if (n == -1) { customAlert("no room for this favorite"); return }
+    const f = createFavorite(cnv)
     //
-    const f = favorites[n] 
-    f.canvas = cnv
+    favorites.push(f)
     //
-    indexOfSelectedFavorite = n
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function canvasToFavorites() { 
-    if (getTopLayer() == null) { return }
-    //
-    startBlinkingIconOnTopBar("register")
-    //
-    const n = emptyFavoriteIndex()
-    if (n == -1) { customAlert("no room for this favorite"); return }
-    //
-    const f = favorites[n] 
-    f.canvas = canvasToPicture()
-    //
-    indexOfSelectedFavorite = n
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function emptyFavoriteIndex() {
-    for (let n = 0; n < 49; n++) {
-        const f = favorites[n]
-        if (f.isLinkToCanvas) { continue }
-        if (f.canvas == null) { return n }
-    }
-    return -1
-}
-
-function previousFavoriteIndex() {
-    //
-    let n = indexOfSelectedFavorite
-    while (true) {
-        n -= 1
-        if (n < 0) { break}
-        const f = favorites[n]
-        if (f.canvas != null) { return n } // excludes link to canvas
-    }
-    //
-    return indexOfSelectedFavorite
-}
-
-function nextFavoriteIndex() {
-    //
-    let n = indexOfSelectedFavorite
-    while (true) {
-        n += 1
-        if (n > 48) { break }
-        const f = favorites[n]
-        if (f.canvas != null) { return n } // excludes link to canvas
-    }
-    //
-    return indexOfSelectedFavorite
-}
-
-function nextFavoriteIndexAfterDelete() {
-    //
-    let n = nextFavoriteIndex()
-    if (n != indexOfSelectedFavorite) { return n }
-    //
-    n = previousFavoriteIndex()
-    if (n != indexOfSelectedFavorite) { return n }
-    //
-    return emptyFavoriteIndex()
+    indexOfSelectedFavorite = favorites.length - 1
 }
 

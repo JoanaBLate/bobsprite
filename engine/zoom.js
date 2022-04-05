@@ -1,21 +1,21 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
-
 var ZOOM = 5
-var zooms = [ 1, 2, 3, 4, 5, 6, 10, 15, 20 ]
+var zooms = [ 0.5, 1, 2, 3, 4, 5, 6, 10, 15, 20 ]
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function decreaseZoom() {
-    if (ZOOM == 1) { return }
+    if (mouseBusy) { return }
+    if (ZOOM == 0.5) { return }
     //    
     startBlinkingIconOnTopBar("minus") 
     setZoom(-1) 
 }
 
 function increaseZoom() {
+    if (mouseBusy)  { return }
     if (ZOOM == 20) { return }
     //    
     startBlinkingIconOnTopBar("plus") 
@@ -25,43 +25,39 @@ function increaseZoom() {
 function setZoom(delta) {
     shallRepaint = true
     //
-    const oldZoom = ZOOM
     const n = zooms.indexOf(ZOOM) + delta
     ZOOM = zooms[n]
-    keepCanvasFocusAfterZoom(oldZoom)
+    //
+    updateStageXY()
     //
     paintZoomOnBottomBar()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function keepCanvasFocusAfterZoom(oldZoom) {
+function zoomedLeft(layer) { 
     //
-    const focusX = canvasFocusX(oldZoom)
-    const focusY = canvasFocusY(oldZoom)
+    const layerCenterX = layer.left + (layer.canvas.width / 2)
     //
-    const zoomedFocusX = focusX * ZOOM
-    const zoomedFocusY = focusY * ZOOM
+    const layerDisplacementX = stageCenterX - layerCenterX
     //
-    canvasLeft = 450 - zoomedFocusX
-    canvasTop = 300 - zoomedFocusY
+    const layerZoomedCenterX = stageCenterX - (layerDisplacementX * ZOOM)
+    //
+    const halfZoomedWidth = layer.canvas.width * ZOOM / 2
+    //
+    return Math.floor(layerZoomedCenterX - halfZoomedWidth)
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-function canvasFocusX(zoom) { // using custom zoom, not ZOOM
-    const zoomedWidth = canvas.width * zoom
-    let zoomedFocusX = 450 - canvasLeft
-    if (zoomedFocusX < 0) { zoomedFocusX = 0 }
-    if (zoomedFocusX > zoomedWidth - 1) { zoomedFocusX = zoomedWidth - 1 }
-    return Math.floor(zoomedFocusX / zoom)
-}
-
-function canvasFocusY(zoom) { // using custom zoom, not ZOOM
-    const zoomedHeight = canvas.height * zoom
-    let zoomedFocusY = 300 - canvasTop
-    if (zoomedFocusY < 0) { zoomedFocusY = 0 }
-    if (zoomedFocusY > zoomedHeight - 1) { zoomedFocusY = zoomedHeight - 1 }
-    return Math.floor(zoomedFocusY / zoom)
+function zoomedTop(layer) { 
+    //
+    const layerCenterY = layer.top + (layer.canvas.height / 2)
+    //
+    const layerDisplacementY = stageCenterY - layerCenterY
+    //
+    const layerZoomedCenterY = stageCenterY - (layerDisplacementY * ZOOM)
+    //
+    const halfZoomedHeight = layer.canvas.height * ZOOM / 2
+    //
+    return Math.floor(layerZoomedCenterY - halfZoomedHeight)
 }
 

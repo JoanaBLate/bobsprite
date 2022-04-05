@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 function paintCanvasHelp4() {
     resetCanvasHelp()
@@ -12,6 +10,7 @@ function paintCanvasHelp4() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function paintCanvasHelp4Left() {
     let y = 30
@@ -21,26 +20,6 @@ function paintCanvasHelp4Left() {
     y = 20 + helpPanelSize(x, y)
     y = 20 + helpPanelEffect(x, y)
 }
-
-function paintCanvasHelp4Center() {
-    let y = 30
-    let x = 455
-    y = 20 + helpPanelColorize(x, y)
-    y = 20 + helpPanelShear(x, y)
-    y = 20 + helpPanelConfig(x, y)
-    y = 20 + helpMonitorBox(x, y)
-}
-
-function paintCanvasHelp4Right() {
-    let y = 30
-    let x = 895
-    y = 20 + helpPanelLayers(x, y)
-    y = 20 + helpPanelOpacity(x, y)
-    y = 20 + helpVersion(x, y)
-}
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
 function helpPalette(x, y) {
     y += drawIconOnCanvasHelp("palette", x + 170, y)
@@ -83,6 +62,15 @@ function helpPanelEffect(x, y) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function paintCanvasHelp4Center() {
+    let y = 30
+    let x = 455
+    y = 20 + helpPanelColorize(x, y)
+    y = 20 + helpPanelShear(x, y)
+    y = 20 + helpPanelConfig(x, y)
+    y = 20 + helpMonitorBox(x, y)
+}
+
 function helpPanelColorize(x, y) {
     y += drawIconOnCanvasHelp("colorize", x + 170, y)
     y += writeOnCanvasHelp("Panel Colorize", x, y)
@@ -100,26 +88,28 @@ function helpPanelShear(x, y) {
 function helpPanelConfig(x, y) {
     y += drawIconOnCanvasHelp("config", x + 170, y)
     y += writeOnCanvasHelp("Panel Config", x, y)
-    y += writeOnCanvasHelp("  > controls the speed of the animation", x, y)
-    y += writeOnCanvasHelp("  > the background color is NOT part of the image", x, y)
-    y += writeOnCanvasHelp("  > hotkey: D", x, y)
+    y += writeOnCanvasHelp("  > hotkey: D (toggles dark/light interface)", x, y)
     return y
 }
 
 function helpMonitorBox(x, y) {
     y += drawIconOnCanvasHelp("zoom-in", x + 170, y)
     y += writeOnCanvasHelp("Panel Monitor  (no icon)", x, y)
-    y += writeOnCanvasHelp("  > it runs the *animation* (checkbox 'animat')", x, y)
-    y += writeOnCanvasHelp("  > mark checkbox 'pixel' for pixelated zooming in", x, y)
     y += writeOnCanvasHelp("  > a frozen image works as a reference for drawing", x, y)
-    y += writeOnCanvasHelp("  > if frozen, it cannot change zoom or pixelated option", x, y)
     y += writeOnCanvasHelp("  > spin the mouse wheel over it to change the zoom level", x, y)
-    y += writeOnCanvasHelp("  > if image is too big, it matches the position of the canvas", x, y)
     return y
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+function paintCanvasHelp4Right() {
+    let y = 30
+    let x = 895
+    y = 20 + helpPanelLayers(x, y)
+    y = 20 + helpPanelOpacity(x, y)
+    y = 20 + helpVersion(x, y)
+}
 
 function helpPanelLayers(x, y) {
     y += 30
@@ -129,8 +119,6 @@ function helpPanelLayers(x, y) {
     y += writeOnCanvasHelp("     using selection tools", x, y)
     y += writeOnCanvasHelp("  > drag a layer button to *swap* the contents of layers;", x, y)
     y += writeOnCanvasHelp("     their names do not change", x, y)
-    y += writeOnCanvasHelp("  > most actions automatically adjust a layer to match", x, y)
-    y += writeOnCanvasHelp("     size and position of the canvas", x, y)
     y += writeOnCanvasHelp("  > hotkeys: 0, 1, 2, 3, 4, 5", x, y)
     return y
 }
@@ -138,7 +126,7 @@ function helpPanelLayers(x, y) {
 function helpPanelOpacity(x, y) {
     y += 25
     y += writeOnCanvasHelp("Panel Opacity", x, y)
-    y += writeOnCanvasHelp("  > only shows sliders for enabled layers", x, y)
+    y += writeOnCanvasHelp("  > only shows sliders for the active layers", x, y)
     y += writeOnCanvasHelp("  > sets the displaying (on the screen) opacity only", x, y)
     y += writeOnCanvasHelp("  > does not affect the true opacity of the layer", x, y)
     y += writeOnCanvasHelp("     (try Panel Colorize for the true opacity)", x, y)
@@ -148,7 +136,7 @@ function helpPanelOpacity(x, y) {
 function helpVersion(x, y) {
     y += 30
     y += writeOnCanvasHelp("Version", x, y)
-    y += writeOnCanvasHelp("  > August 2021", x, y)
+    y += writeOnCanvasHelp("  > April 2022", x, y)
     return y
 }
 

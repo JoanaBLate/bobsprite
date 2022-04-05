@@ -1,77 +1,126 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
-
-var animationClock = 0
-var indexOfLastAnimatedFrame = -1
-
-var animatedImageForPhoto = null
-
-var frameDuration = 7 // 16 matches middle of slider
+var animationObjs = [ ]
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function changeFrameDuration(slider) { 
+function AnimationObject() {
     //
-    frameDuration = 31 - Math.round(slider.value * 30)
-    if (frameDuration == 31) { frameDuration = 30 }
-    paintFrameDuration()
-    
-   // console.log(frameDuration)
+    this.isOn = true
+    this.isCanvas = false
+    this.favIndex = -1 // index in favorites
+}
+
+function createAnimationObject(favIndex) {
+    //
+    if (favIndex == undefined) { favIndex = -1 }
+    //
+    const obj = new AnimationObject()  
+    Object.seal(obj)
+    //
+    obj.favIndex = favIndex
+    obj.isCanvas = favIndex == -1
+    //
+    return obj
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function manageAnimation() {
+function initAnimation() {
     //
-    if (! checkboxAnimation.checked) { return }
-    //
-    if (LOOP < animationClock + frameDuration) { return }
-    //
-    animationClock = LOOP
-    animatedImageForPhoto = getAnimatedImageForPhoto()
-    shallRepaint = true
+    animationObjs = [ createAnimationObject(-1) ]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function getAnimatedImageForPhoto() {
+function prepareAnimation(pic) {
     //
-    const n = indexOfNextFrame()
-    indexOfLastAnimatedFrame = n 
+    pictureForAnimation = pic
     //
-    if (n == -1) { return null }
+    let temp = [ ]
     //
-    const f = favorites[n]
-    //
-    if (f.isLinkToCanvas) { return canvasToPicture() }
-    //
-    return f.canvas // OK if canvas == null
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function indexOfNextFrame() {
-    //
-    let n = indexOfNextFrameAfter(indexOfLastAnimatedFrame)
-    //
-    if (n != -1) { return n }
-    //
-    return indexOfNextFrameAfter(-1)
-}
-
-function indexOfNextFrameAfter(n) {
-    //
-    while (true) {
-        n += 1
-        if (n > 48) { break }
+    for (const obj of animationObjs) {
         //
-        const f = favorites[n]
-        if (! f.enabled) { continue }
-        if (f.canvas != null) { return n }
-        if (f.isLinkToCanvas) { return n }
+        if (obj.isCanvas) { temp.push(obj); continue }
+        //
+        if (obj.favIndex < favorites.length) { temp.push(obj); continue }    
     }
+    //
+    animationObjs = temp
+    //
+    const count = Math.min(13, favorites.length + 1) // the frame canvas + up to 12 favorites
+    //
+    while (animationObjs.length < count) { 
+        //
+        const index = animationObjs.length - 1 // less one because canvas is already there
+        //
+        const obj = createAnimationObject(index) 
+        animationObjs.push(obj)
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function toggleAnimationFrameOnOff(n) {
+    //
+    animationObjs[n].isOn = ! animationObjs[n].isOn
+    //
+    paintPanelAnimation()
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function changeFrameCanvasPosition(delta) {
+    //
+    const a = indexOfFrameCanvas()
+    const b = a + delta
+    //
+    if (b < 0) { return }
+    if (b > animationObjs.length - 1) { return }
+    //
+    const objA = animationObjs[a]
+    const objB = animationObjs[b]
+    //
+    animationObjs[a] = objB
+    animationObjs[b] = objA
+    //
+    paintPanelAnimation()
+}
+
+function indexOfFrameCanvas() {
+    //
+    let n = -1
+    //
+    for (const obj of animationObjs) {
+        //
+        n += 1
+        if (obj.isCanvas) { return n }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function indexOfNextAnimationObj() {
+    //
+    const off = animationObjs.length
+    //
+    for (let n = 0; n < off; n++) {
+        //
+        if (n <= indexOfLastAnimatedObj) { continue }
+        //
+        const obj = animationObjs[n]
+        //
+        if (obj.isOn) { return n }
+    }
+    // 
+    for (let m = 0; m < off; m++) {
+        //
+        const obj = animationObjs[m]
+        //
+        if (obj.isOn) { return m }
+    }
+    //
     return -1
 }
 

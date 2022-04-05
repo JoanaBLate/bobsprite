@@ -1,9 +1,7 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
-
-// when painting with mouse global mouseBusy blocks input by keyboard!
+// when painting with mouse, global mouseBusy blocks input by keyboard!
 // also, when mouse is painting it is not pressing icons or panel buttons
 // so task management may safely ignore painting by mouse
 
@@ -29,7 +27,8 @@ function runTask() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function loadImage() {
-    if (getTopLayer() == null) { return }
+    //
+    if (toplayer == null) { customAlert("no layer on for image loading"); return }
     //
     startBlinkingIconOnTopBar("load") 
     //
@@ -37,26 +36,32 @@ function loadImage() {
     loadImageFile()
 }
 
-function afterLoadImage(cnv, __filename) {
-    sendImageToTopLayer(cnv, true) // clones the image
+function imageLoaded(cnv) {
+    //
+    sendImageToTopLayer(cloneImage(cnv))
+    //
     fileToFavorites(cnv)
-    //
-    if (cnv.width == canvas.width  &&  cnv.height == canvas.height) { return }
-    //
-    customConfirm("resize canvas to match layer size?", resizeCanvasByLayer)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function saveImage(style) {
-    if (getTopLayer() == null) { return }
+    //
+    if (toplayer == null) { return }
     //
     startBlinkingIconOnTopBar("save") 
     //
     isPaletteFile = false
     saveStyle = style
-    saveImageFile(canvasToPicture())
-    canvasToFavorites()
+    //
+    makeCheckedPicture(saveImage2)
+}
+
+function saveImage2(pic) {
+    //
+    saveImageFile(pic)
+    //
+    toFavoritesCore(pic)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -81,20 +86,18 @@ function applyEffect1(func) {
     if (func == antialiasingStrong) { applyEffect2(func); return }
     if (func == antialiasingStandard) { applyEffect2(func); return }
     //
-    const layer = getTopLayerAdjusted()
-    if (layer == null) { return }
+    if (toplayer == null) { return }
     //
-    const changed = func(layer.canvas)
+    const changed = func(toplayer.canvas)
     if (changed) { memorizeTopLayer() }
 }
 
 function applyEffect2(func) {
-    const layer = getTopLayerAdjusted() 
-    if (layer == null) { return }
+    if (toplayer == null) { return }
     //
-    const cnv = cloneImage(layer.canvas)
-    func(layer.canvas)
-    if (canvasesAreEqual(layer.canvas, cnv)) { return }
+    const cnv = cloneImage(toplayer.canvas)
+    func(toplayer.canvas)
+    if (canvasesAreEqual(toplayer.canvas, cnv)) { return }
     //
     memorizeTopLayer()
 }
@@ -102,8 +105,6 @@ function applyEffect2(func) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function managerCapture() { // very fast, need not to be set as task
-    //
-    if (canvasX == null  ||  canvasY == null) { return }
     //
     if (mouseAlpha <= 0) { return } // mouseAlpha is -1 when mouse is off layer
     //
@@ -117,41 +118,25 @@ function managerCapture() { // very fast, need not to be set as task
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function managerSelectArea() {
-    setTask(managerSelectAreaCore) 
-}
-
-function managerSelectAreaCore() {
-    if (canvasX == null  ||  canvasY == null) { return }
-    const superlayer = layers[0]
-    const src = canvasToPicture()
-    superlayer.canvas = getArea(src, canvasX, canvasY)
-    memorizeLayer(superlayer)
-    showSuperLayerOnly()
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 function managerPaintArea() {
     setTask(managerPaintAreaCore)
 }
 
 function managerPaintAreaCore() {
     //
-    const layer = getTopLayerAdjusted() // must come first
-    if (layer == null) { return }
-    //
     const x = getTopLayerX()
     const y = getTopLayerY()
     //
+    if (x == null  ||  y == null) { return }
+    //
     let changed 
     if (shiftPressed) {
-        changed = paintArea(layer.canvas, x, y, 0, 0, 0, 0)
+        changed = paintArea(toplayer.canvas, x, y, 0, 0, 0, 0)
     }
     else {
-        changed = paintArea(layer.canvas, x, y, RED, GREEN, BLUE, ALPHA)    
+        changed = paintArea(toplayer.canvas, x, y, RED, GREEN, BLUE, ALPHA)    
     }
-    if (changed) { memorizeLayer(layer) }
+    if (changed) { memorizeLayer(toplayer) }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -162,20 +147,19 @@ function managerPaintEvery() {
 
 function managerPaintEveryCore() {
     //
-    const layer = getTopLayerAdjusted() // must come first
-    if (layer == null) { return }
-    //
     const x = getTopLayerX()
     const y = getTopLayerY()
     //
+    if (x == null  ||  y == null) { return }
+    //
     let changed 
     if (shiftPressed) {
-        changed = paintEvery(layer.canvas, x, y, 0, 0, 0, 0)
+        changed = paintEvery(toplayer.canvas, x, y, 0, 0, 0, 0)
     }
     else {
-        changed = paintEvery(layer.canvas, x, y, RED, GREEN, BLUE, ALPHA)    
+        changed = paintEvery(toplayer.canvas, x, y, RED, GREEN, BLUE, ALPHA)    
     }
-    if (changed) { memorizeLayer(layer) }
+    if (changed) { memorizeLayer(toplayer) }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -186,20 +170,19 @@ function managerPaintBorder() {
 
 function managerPaintBorderCore() {
     //
-    const layer = getTopLayerAdjusted()
-    if (layer == null) { return }
-    //
     const x = getTopLayerX()
     const y = getTopLayerY()
     //
+    if (x == null  ||  y == null) { return }
+    //
     let changed 
     if (shiftPressed) {
-        changed = paintBorder(layer.canvas, x, y, 0, 0, 0, 0)
+        changed = paintBorder(toplayer.canvas, x, y, 0, 0, 0, 0)
     }
     else {
-        changed = paintBorder(layer.canvas, x, y, RED, GREEN, BLUE, ALPHA)    
+        changed = paintBorder(toplayer.canvas, x, y, RED, GREEN, BLUE, ALPHA)    
     }
-    if (changed) { memorizeLayer(layer) }
+    if (changed) { memorizeLayer(toplayer) }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -210,71 +193,70 @@ function managerBlurBorder() {
 
 function managerBlurBorderCore() {
     //
-    const layer = getTopLayerAdjusted()
-    if (layer == null) { return }
-    //
     const x = getTopLayerX()
     const y = getTopLayerY()
     //
-    let changed = blurBorder(layer.canvas, x, y)
-    if (changed) { memorizeLayer(layer) }
+    if (x == null  ||  y == null) { return }
+    //
+    let changed = blurBorder(toplayer.canvas, x, y)
+    if (changed) { memorizeLayer(toplayer) }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function leftRightToCenter() {
+    //
     shallRepaint = true
     //
-    const layer = getTopLayerAdjusted()
-    if (layer == null) { return }
+    if (toplayer == null) { return }
     //
     startBlinkingIconOnTopBar("halves")
     //
-    let width = layer.canvas.width
+    let width = toplayer.canvas.width
     if (width % 2 != 0) { width += 1 }
     //
-    const height = layer.canvas.height
+    const height = toplayer.canvas.height
     //
     const cnv = createCanvas(width, height)
     const ctx = cnv.getContext("2d")
     //
     const half = Math.floor(width / 2)
     //
-    ctx.drawImage(layer.canvas, -half, 0)
-    ctx.drawImage(layer.canvas, +half, 0)
+    ctx.drawImage(toplayer.canvas, -half, 0)
+    ctx.drawImage(toplayer.canvas, +half, 0)
     //
-    if (canvasesAreEqual(layer.canvas, cnv)) { return }
+    if (canvasesAreEqual(toplayer.canvas, cnv)) { return }
     //
-    layer.canvas = cnv
+    toplayer.canvas = cnv
     memorizeTopLayer()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function topBottomToCenter() {
+    //
     shallRepaint = true
     //
-    const layer = getTopLayerAdjusted()
-    if (layer == null) { return }
+    if (toplayer == null) { return }
     //
     startBlinkingIconOnTopBar("halves") 
     //
-    let height = layer.canvas.height
+    let height = toplayer.canvas.height
     if (height % 2 != 0) { height += 1 }
     //
-    const width = layer.canvas.width
+    const width = toplayer.canvas.width
     //
     const cnv = createCanvas(width, height)
     const ctx = cnv.getContext("2d")
     //
     const half = Math.floor(height / 2)
     //
-    ctx.drawImage(layer.canvas, 0, -half)
-    ctx.drawImage(layer.canvas, 0, +half)
+    ctx.drawImage(toplayer.canvas, 0, -half)
+    ctx.drawImage(toplayer.canvas, 0, +half)
     //
-    if (canvasesAreEqual(layer.canvas, cnv)) { return }
+    if (canvasesAreEqual(toplayer.canvas, cnv)) { return }
     //
-    layer.canvas = cnv
+    toplayer.canvas = cnv
     memorizeTopLayer()
 }
 

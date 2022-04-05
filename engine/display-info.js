@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 // not all info goes here 
 
@@ -9,11 +7,8 @@
 var infoToolSize = null
 var infoToolIntensity = null
 
-var infoCanvasX = null
-var infoCanvasY = null
-
-var infoCanvasWidth = null
-var infoCanvasHeight = null
+var infoLayerX = null
+var infoLayerY = null
 
 var infoLayerWidth = null
 var infoLayerHeight = null
@@ -31,7 +26,6 @@ function displayGeneralInfo() {
     displayToolIntensity()
     //
     displayMousePosition()
-    displayCanvasSize()
     displayLayerSize()
     displayLayerPosition()
     displayLayerOpacity()
@@ -69,34 +63,23 @@ function displayToolIntensity() {
 
 function displayMousePosition() {
     //
-    if (infoCanvasX == canvasX  &&  infoCanvasY == canvasY) { return }
+    const layerX = getTopLayerX()
+    const layerY = getTopLayerY()
     //
-    infoCanvasX = canvasX
-    infoCanvasY = canvasY
+    if (infoLayerX == layerX  &&  infoLayerY == layerY) { return }
+    //
+    infoLayerX = layerX
+    infoLayerY = layerY
     //
     paintMousePositionOnBottomBar()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function displayCanvasSize() {
-    //
-    if (infoCanvasWidth == canvas.width  &&  infoCanvasHeight == canvas.height) { return }
-    //
-    infoCanvasWidth = canvas.width
-    infoCanvasHeight = canvas.height
-    //
-    paintCanvasSizeOnBottomBar()
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 function displayLayerSize() {
     //
-    const layer = getTopLayer()
-    //
-    const width  = (layer == null) ? null : layer.canvas.width
-    const height = (layer == null) ? null : layer.canvas.height
+    const width  = (toplayer == null) ? null : toplayer.canvas.width
+    const height = (toplayer == null) ? null : toplayer.canvas.height
     //
     if (infoLayerWidth == width  &&  infoLayerHeight == height) { return }
     //
@@ -110,10 +93,8 @@ function displayLayerSize() {
 
 function displayLayerPosition() {
     //
-    const layer = getTopLayer()
-    //
-    const left = (layer == null) ? null : layer.left
-    const top  = (layer == null) ? null : layer.top
+    const left = (toplayer == null) ? null : toplayer.left
+    const top  = (toplayer == null) ? null : toplayer.top
     //
     if (infoLayerLeft == left  &&  infoLayerTop == top) { return }
     //
