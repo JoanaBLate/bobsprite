@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var icons50 = { }
 var icons30 = { }
@@ -98,7 +96,7 @@ function iconSheetDownloaded(img) {
     for (const id of Object.keys(iconGuide)) { createIcon50(id) }
     //
     rotateIcon50("halves-v")
-    //  
+    //
     makeBigTrashcanIcon()
     //
     makeScaledIcon("up", 20, specialIcons)
