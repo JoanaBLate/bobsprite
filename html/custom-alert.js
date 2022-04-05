@@ -1,13 +1,11 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
 // var customAlertCount = 0
 
-
 ///////////////////////////////////////////////////////////////////////////////
 
-function error(message, callback) {
+function customError(message, callback) {
     customAlertCore("Error", message, callback)
 }
 
