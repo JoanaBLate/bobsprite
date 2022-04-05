@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 // avoids make false outline 
 // own pixel replaces value of some invalid neighbour
@@ -25,7 +23,6 @@ function sharpen(cnv) {
     return applyFilter(cnv, [ 0,   -1,   0,    -1,  5,  -1,    0,  -1,   0 ])
 }
 */
-
 
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -1,14 +1,12 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 // does not paint area when mouseColor == color,
 // because it is already painted... and worse:
-// algorithm will go inifinite not because of first step
+// algorithm will run infinitely not because of first step
 // but because of redundancy on future list
 
 // *erases* area when argument [r,g,b,a] == [0,0,0,0]
-
 
 ///////////////////////////////////////////////////////////////////////////////
 

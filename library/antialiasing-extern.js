@@ -1,13 +1,10 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 // standard: 100, 50, 25
 // strong:   140, 70, 35
 // erases/overwrites translucid pixels;
 // antialiases any solid neighbour;
-
 
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -1,16 +1,18 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 // not checking if image changed!
 
-
 ///////////////////////////////////////////////////////////////////////////////
 
-function colorize(cnv, HUE, SAT, LUM, considerHue) {
+function colorize(cnv, intensityOfNewHue, SAT, LUM) {
     //
-    const RGB = hslToRgb([ HUE, 1, 0.5 ]) // max saturation & balanced luminosity = pure color
+    const HSL = rgbToHsl([RED, GREEN, BLUE])
+    const HUE = HSL[0]
+    const RGB = hslToRgb([HUE, 1, 0.5 ]) // max saturation & balanced luminosity = pure color
+    //
+    const factor1 = 1 - intensityOfNewHue
+    const factor2 = intensityOfNewHue
     //
     const width  = cnv.width
     const height = cnv.height
@@ -39,20 +41,28 @@ function colorize(cnv, HUE, SAT, LUM, considerHue) {
         if (a == 0) { return } // blank
         if (r + g + b == 0  &&  a == 255) { return } // solid black
         //
-        const hsl = rgbToHsl([ r, g, b ])
-        const hue = hsl[0]
+        let hsl = rgbToHsl([ r, g, b ])
+        let hue = hsl[0]
         const sat = Math.min(1, hsl[1] * (SAT / 0.5))
         const lum = Math.min(1, hsl[2] * (LUM / 0.5))
-        const rgb = hslToRgb([ hue, sat, lum ])
+        //
+        let rgb = hslToRgb([hue, 1, 0.5])
+        //
+        r = (factor1 * rgb[0]) + (factor2 * RGB[0])
+        g = (factor1 * rgb[1]) + (factor2 * RGB[1])
+        b = (factor1 * rgb[2]) + (factor2 * RGB[2])
+        //
+        r = Math.min(255, Math.round(r))
+        g = Math.min(255, Math.round(g))
+        b = Math.min(255, Math.round(b))
+        //
+        hue = rgbToHsl([r, g, b])[0]
+        //
+        rgb = hslToRgb([ hue, sat, lum ])
+        //
         r = rgb[0]
         g = rgb[1]
         b = rgb[2]
-        //
-        if (considerHue) {
-            r = Math.min(255, Math.round((4 * r + RGB[0]) / 5))
-            g = Math.min(255, Math.round((4 * g + RGB[1]) / 5))
-            b = Math.min(255, Math.round((5 * b + RGB[2]) / 5))
-        }
         //
         if (a == 255  &&  r == 0  &&  g == 0  &&  b == 0) { r = 1; g = 1; b = 1 } // avoid false outline
         //
