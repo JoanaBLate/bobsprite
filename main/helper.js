@@ -1,7 +1,12 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
+///////////////////////////////////////////////////////////////////////////////
+
+function hintAlert(msg) {
+    //
+    if (checkboxHint.checked) { customAlert(msg) }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -57,6 +62,13 @@ function canvasesAreEqual(a, b) {
         if (dataA[n] != dataB[n]) { return false }
     }
     return true
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function getFullImageData(cnv) {
+    //
+    return cnv.getContext("2d").getImageData(0, 0, cnv.width, cnv.height)
 }
 
 ///////////////////////////////////////////////////////////////////////////////

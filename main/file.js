@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var fileSelector
 var downloadLink
@@ -59,27 +57,29 @@ function fileSelectorChanged() {
     console.log("loading:", file.type, "  ", file.name, "  bytes:", file.size)
     //
     const kind = getFileNameExtension(file.name)
-    if (kind == null) { error("file name extension is not valid"); return }
+    if (kind == null) { customError("file name extension is not valid"); return }
     //
     const reader = new FileReader()
     reader.onloadend = function (e) { readerEndedLoading(file.name, e.target.result) }
     reader.readAsDataURL(file)
 }
 
-function readerEndedLoading(filename, data) {
+function readerEndedLoading(__filename, data) {
+    //
     const img = document.createElement("img")
-    img.onload = function () { imageLoaded(img, filename) } // necessary!
+    img.onload = function () { imageOrPaletteLoaded(img) }
     img.src = data
 }
 
-function imageLoaded(img, filename) {
+function imageOrPaletteLoaded(img) {
+    //
     const cnv = cloneImage(img) 
     //
     if (isPaletteFile) { 
         paletteLoaded(cnv)
     }
     else {
-        afterLoadImage(cnv, filename)
+        imageLoaded(cnv)
     }
 }
 
