@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var panelPalette   
 var panelPaletteCtx
@@ -24,6 +22,7 @@ var panelPaletteGadgets
 ///////////////////////////////////////////////////////////////////////////////
 
 function initPanelPalette() {
+    //
     panelPalette = createCanvas(240, 305)
     panelPaletteCtx = panelPalette.getContext("2d")
     //
@@ -60,6 +59,7 @@ function initPanelPalette2() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function setPaletteCursorDefault() {
+    //
     if (panelPaletteCursor == "") { return }
     //
     panelPaletteCursor = ""
@@ -67,6 +67,7 @@ function setPaletteCursorDefault() {
 }
 
 function setPaletteCursorMove() {
+    //
     if (panelPaletteCursor == "move") { return }
     //
     panelPaletteCursor = "move"
@@ -76,6 +77,7 @@ function setPaletteCursorMove() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function startListeningPanelPalette() {
+    //
     panelPalette.onwheel = panelOnWheel
     panelPalette.onmouseup = panelOnMouseUp
     panelPalette.onmousedown = panelOnMouseDown
@@ -120,6 +122,7 @@ function surfacePaletteOnWheel(x, y, sign) {
 }
 
 function surfacePaletteOnMouseDown(x, y) {
+    //
     paletteIndexAtMouseDown = paletteIndexByMouse(x, y)
 }
 
@@ -151,6 +154,7 @@ function surfacePaletteOnClick(x, y) {
 }
 
 function surfacePaletteOnMouseLeave() {
+    //
     paletteIndexAtMouseDown = -1 
     eraseMouseColor()
     setPaletteCursorDefault()
@@ -159,6 +163,7 @@ function surfacePaletteOnMouseLeave() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateMouseColorByPalette(x, y) {
+    //
     const index = paletteIndexByMouse(x, y)
     const color = paletteColorArrayByIndex(index)
     changeMouseColor(color)
@@ -171,6 +176,7 @@ function captureColorFromPalette() {
 }
 
 function addColorToPalette(index) {
+    //
     if (paletteName == "bob") { customAlert("palette 'bob' is not editable"); return }
     //
     palettes[paletteName][index] = RED + "," + GREEN + "," + BLUE
@@ -180,6 +186,7 @@ function addColorToPalette(index) {
 }
 
 function deleteColorInPalette(index) {
+    //
     if (paletteName == "bob") { customAlert("palette 'bob' is not editable"); return }
     //
     palettes[paletteName][index] = "blank"
@@ -189,6 +196,7 @@ function deleteColorInPalette(index) {
 }
 
 function moveColorInPalette(indexA, indexB) {
+    //
     if (paletteName == "bob") { customAlert("palette 'bob' is not editable"); return }
     //
     const palette = palettes[paletteName]
@@ -208,14 +216,17 @@ function moveColorInPalette(indexA, indexB) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function previousPalette() { 
+    //
     changePalette(-1)
 }
 
-function nextPalette() { 
+function nextPalette() {
+    // 
     changePalette(+1)
 }
 
 function changePalette(delta) {
+    //
     const max = paletteNames.length - 1
     //
     let index = paletteNames.indexOf(paletteName) + delta

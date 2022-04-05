@@ -1,27 +1,26 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var panelConfig   
 var panelConfigCtx
 
+var checkboxHint
 var checkboxDark
 var checkboxRedYellowCursor
 var surfaceBgTable
-var sliderSpeed
 
 var panelConfigGadgets
 
 var isDarkInterface = true
 
-var backgroundColor = "blank"
+var shallHintAlert = true // to be configured at initialization
+
+var backgroundColor = "white"
 
 const backgroundColors = [
     
-    "blank", "35,135,25", "35,93,19", "255,145,0", "200,50,0", "131,0,0",    
-    "189,183,127", "240,230,140", "240,240,160", "176,128,96", "178,119,55", "110,78,35",
-     "15,25,75", "85,85,140", "75,150,170", "164,164,164", "255,255,255", "0,0,0"
+    "255,255,255", "237,237,237", "190,190,190", "128,128,128", "54,54,56", "0,0,0", 
+    "240,240,160", "240,230,140", "189,183,127", "131,0,0", "15,25,75", "blank"
 ]
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,16 +42,16 @@ function initPanelConfig() {
 
 function initPanelConfig2() {
     //
-    checkboxDark = createCheckbox("dark", panelConfigCtx, 130, 16, 12, toggleDarkness, isDarkInterface)
+    checkboxHint = createCheckbox("hint", panelConfigCtx, 130, 35, 12, null, shallHintAlert)
     //
-    checkboxRedYellowCursor = createCheckbox("dark", panelConfigCtx, 160, 42, 12, null, false)
+    checkboxDark = createCheckbox("dark", panelConfigCtx, 130, 75, 12, toggleDarkness, isDarkInterface)
     //
-    surfaceBgTable = createSurface("bg-table", panelConfigCtx, 3, 90,  6*paletteSide, 3*paletteSide)
+    checkboxRedYellowCursor = createCheckbox("dark", panelConfigCtx, 160, 115, 12, null, false)
+    //
+    surfaceBgTable = createSurface("bg-table", panelConfigCtx, 3, 160,  6*paletteSide, 2*paletteSide)
     configSurfaceBgTable()
     //
-    sliderSpeed = createSlider("speed", panelConfigCtx, 10, 255, 220, 0.8, changeFrameDuration)
-    //
-    panelConfigGadgets = [ checkboxDark, checkboxRedYellowCursor, surfaceBgTable, sliderSpeed ]
+    panelConfigGadgets = [ checkboxHint, checkboxDark, checkboxRedYellowCursor, surfaceBgTable ]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -72,25 +71,20 @@ function paintPanelConfig() {
     panelConfigCtx.fillStyle = wingColor()
     panelConfigCtx.fillRect(0, 0, 240, 305)
     //
-    write(panelConfigCtx, "dark interface", 20, 18)
+    write(panelConfigCtx, "hint alert on", 20, 35)
+    paintCheckbox(checkboxHint)
+    //
+    write(panelConfigCtx, "dark interface", 20, 75)
     paintCheckbox(checkboxDark)
     //
-    write(panelConfigCtx, "red & yellow cursor", 20, 44)
+    write(panelConfigCtx, "red & yellow cursor", 20, 115)
     paintCheckbox(checkboxRedYellowCursor)
-    //
-    write(panelConfigCtx, "canvas background", 20, 70)
     //
     greyOuterEdgeByGadget(surfaceBgTable) 
     paintSurface(surfaceBgTable)
     //
-    paintFrameDuration()
-    paintSlider(sliderSpeed)
-}
-
-function paintFrameDuration() {
-    panelConfigCtx.fillStyle = wingColor()
-    panelConfigCtx.fillRect(20, 233, 160, 20)
-    write(panelConfigCtx, "animation speed", 22, 235)
+    write(panelConfigCtx, "layer background", 20, 255)
+    write(panelConfigCtx, "(not part of  image)", 20, 275)
 }
 
 ///////////////////////////////////////////////////////////////////////////////

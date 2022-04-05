@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var panelSize   
 var panelSizeCtx
@@ -9,8 +7,6 @@ var panelSizeCtx
 var boxNewWidth
 var boxNewHeight
 
-var buttonResizeCanvas
-var buttonResizeByLayer
 var buttonResizeLayer
 var buttonScaleLayer
 var buttonAutocropLayer
@@ -44,22 +40,16 @@ function initPanelSize2() {
     boxNewWidth = createNumbox("new-width",  ctx,  40, 20, 60, 30, w,  2000, null)
     boxNewHeight = createNumbox("new-height", ctx, 140, 20, 60, 30, h, 2000, null)
     //        
-    buttonResizeCanvas = createButton("resize-canvas", ctx, 40,  80, 160, 28, "resize canvas", 
-                                      resizeCanvasByNewDimensions, false)
     //
-    buttonResizeByLayer = createButton("resize-by-layer", ctx, 40, 120, 160, 28, "resize canvas by layer", 
-                                       resizeCanvasByLayer, false)
+    buttonResizeLayer = createButton("resize-layer", ctx, 40, 90, 160, 40, "resize layer", resizeLayer, false)
     //
-    buttonResizeLayer = createButton("resize-layer", ctx, 40, 160, 160, 28, "resize layer", resizeLayer, false)
+    buttonScaleLayer = createButton("scale-layer", ctx, 40, 150, 160, 40, "scale layer", scaleLayer, false)
     //
-    buttonScaleLayer = createButton("scale-layer", ctx, 40, 200, 160, 28, "scale layer", scaleLayer, false)
+    buttonAutocropLayer = createButton("autocrop-layer", ctx, 40, 210, 160, 40, "autocrop layer", autocropLayer, false)
     //
-    buttonAutocropLayer = createButton("autocrop-layer", ctx, 40, 240, 160, 28, "autocrop layer", autocropLayer, false)
+    checkboxSizePixelated = createCheckbox("pixelated-scale", ctx, 190, 275, 12, null, true)
     //
-    checkboxSizePixelated = createCheckbox("pixelated-scale", ctx, 185, 280, 12, null, true)
-    //
-    panelSizeGadgets = [ boxNewWidth, boxNewHeight, buttonResizeCanvas, buttonResizeByLayer, buttonResizeLayer,
-                         buttonScaleLayer, buttonAutocropLayer, checkboxSizePixelated ]
+    panelSizeGadgets = [ boxNewWidth, boxNewHeight, buttonResizeLayer, buttonScaleLayer, buttonAutocropLayer, checkboxSizePixelated ]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,6 +57,7 @@ function initPanelSize2() {
 function startListeningPanelSize() {
     panelSize.onclick = panelOnMouseUp
     panelSize.onmousedown = panelOnMouseDown
+    panelSize.onmousemove = panelOnMouseMove
     panelSize.onmouseleave = panelOnMouseLeave
     panelSize.onmouseenter = function () { panelOnMouseEnter(panelSizeGadgets) }
 }
@@ -84,13 +75,11 @@ function paintPanelSize() {
     paintNumbox(boxNewWidth)
     paintNumbox(boxNewHeight)
     //
-    paintButton(buttonResizeCanvas)
-    paintButton(buttonResizeByLayer)
     paintButton(buttonResizeLayer)
     paintButton(buttonScaleLayer)
     paintButton(buttonAutocropLayer)
     //
-    write(panelSizeCtx, "pixelated scaling", 55, 280)
+    write(panelSizeCtx, "pixelated scaling", 55, 275)
     paintCheckbox(checkboxSizePixelated)
 }
 

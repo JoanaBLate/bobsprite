@@ -1,10 +1,11 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var panelLayers
 var panelLayersCtx
+
+var iconLayerUp
+var iconLayerDown
 
 var panelLayersCursor = ""
 
@@ -15,6 +16,7 @@ var buttonLayer3
 var buttonLayer4
 var buttonLayer5
 
+var buttonMergeUp
 var buttonMergeDown
 var buttonReverseOrder
 var buttonDisplayOpacity
@@ -40,6 +42,11 @@ function initPanelLayers() {
 function initPanelLayers2() {
     const ctx = panelLayersCtx
     //
+    iconLayerDown = createSurface("layer-down", panelLayersCtx, 10, 28, 20, 20)
+    configIconLayerDown()
+    iconLayerUp = createSurface("layer-up", panelLayersCtx, 130, 229, 20, 20)
+    configIconLayerUp()
+    //
     buttonLayer0 = createButton("layer-0", ctx, 40,  25, 80, 27, "selection", null, true)
     buttonLayer1 = createButton("layer-1", ctx, 40,  65, 80, 27, "layer A",   null, false)
     buttonLayer2 = createButton("layer-2", ctx, 40, 105, 80, 27, "layer B",   null, true)
@@ -47,12 +54,31 @@ function initPanelLayers2() {
     buttonLayer4 = createButton("layer-4", ctx, 40, 185, 80, 27, "layer D",   null, true)
     buttonLayer5 = createButton("layer-5", ctx, 40, 225, 80, 27, "layer E",   null, true)
     //
-    buttonMergeDown = createButton("merge-down", ctx, 13, 280, 134, 30, "merge down", mergeDown, true)
-    buttonReverseOrder = createButton("rev-order", ctx, 13, 325, 134, 30, "reverse order", reverseOrder, false)
-    buttonDisplayOpacity = createButton("opacity", ctx, 13, 370, 134, 30, "display opacity", showPanelOpacity, false)
+    buttonMergeUp = createButton("merge-down", ctx, 13, 270, 134, 30, "merge up", mergeUp, true)
+    buttonMergeDown = createButton("merge-down", ctx, 13, 306, 134, 30, "merge down", mergeDown, true)
+    buttonReverseOrder = createButton("rev-order", ctx, 13, 342, 134, 30, "reverse order", reverseOrder, true)
+    buttonDisplayOpacity = createButton("opacity", ctx, 13, 378, 134, 30, "display opacity", showPanelOpacity, false)
     //
     panelLayersGadgets = [ buttonLayer0, buttonLayer1, buttonLayer2, buttonLayer3, buttonLayer4, buttonLayer5, 
-                           buttonMergeDown, buttonReverseOrder, buttonDisplayOpacity ]
+                           buttonMergeUp, buttonMergeDown, buttonReverseOrder, buttonDisplayOpacity, 
+                           iconLayerUp, iconLayerDown // first 6 positions are reserved for the layer buttons!!!
+                         ]
+}
+
+function configIconLayerDown() {
+    //
+    const ctx = iconLayerDown.canvas.getContext("2d")
+    ctx.drawImage(specialIcons["down"], 0, 0)
+    //
+    iconLayerDown.onMouseDown = function () { customAlert("dragging a layer button changes its order") }
+}
+
+function configIconLayerUp() {
+    //
+    const ctx = iconLayerUp.canvas.getContext("2d")
+    ctx.drawImage(specialIcons["up"], 0, 0)
+    //
+    iconLayerUp.onMouseDown = function () { customAlert("dragging a layer button changes its order") }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,8 +100,8 @@ function paintPanelLayers() {
     //
     greyTraceH(panelLayersCtx, 5, 0, 150)
     //
-    panelLayersCtx.drawImage(specialIcons["down"], 10, 28)
-    panelLayersCtx.drawImage(specialIcons["up"], 130, 229)
+    panelLayersCtx.drawImage(iconLayerDown.canvas, 10, 28)
+    panelLayersCtx.drawImage(iconLayerUp.canvas, 130, 229)
     //
     paintButton(buttonLayer0)
     paintButton(buttonLayer1)
@@ -84,6 +110,7 @@ function paintPanelLayers() {
     paintButton(buttonLayer4)
     paintButton(buttonLayer5)
     //
+    paintButton(buttonMergeUp)
     paintButton(buttonMergeDown)
     paintButton(buttonReverseOrder)
     paintButton(buttonDisplayOpacity)
@@ -166,6 +193,9 @@ function layerButtonClicked(button) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function showPanelOpacity() {
+    //
+    hintAlert("the displaying opacity doesn't affect the image opacity")
+    //
     panelOpacityOn = true
     paintPanelOpacity()
     panelOpacity.style.visibility = "visible"
@@ -176,7 +206,6 @@ function showPanelOpacity() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateLayerButtons() {  // helper 
-    cancelPolyModel()
     //
     let count = 0
     //
@@ -187,11 +216,18 @@ function updateLayerButtons() {  // helper
         if (! button.disabled) { count += 1 }
     }    
     //
+    buttonMergeUp.disabled = count < 2
+    paintButton(buttonMergeUp)    
+    //   
+    //
     buttonMergeDown.disabled = count < 2
     paintButton(buttonMergeDown)    
     //
     buttonReverseOrder.disabled = count < 2
-    paintButton(buttonReverseOrder)
+    paintButton(buttonReverseOrder)   
+    //
+    buttonDisplayOpacity.disabled = count == 0
+    paintButton(buttonDisplayOpacity)
     //
     updateOtherButtons(count == 0)
 }
@@ -200,10 +236,10 @@ function updateLayerButtons() {  // helper
 
 function updateOtherButtons(disabled) {
     //
-    if (buttonResizeByLayer.disabled == disabled) { return } // one represents all
+    if (buttonResizeLayer.disabled == disabled) { return } // one represents all
     //
     const buttons = [
-        buttonResizeByLayer, buttonResizeLayer, buttonScaleLayer, buttonAutocropLayer,
+        buttonResizeLayer, buttonScaleLayer, buttonAutocropLayer,
         effectA1, effectA2, effectA3, effectA4, effectA5, effectA6, effectA7, 
         effectB1, effectB2, effectB3, effectB4, effectB5, effectB6, effectB7, 
         effectC1, effectC2, effectC3, effectC5,  

@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var bottomBar 
 var bottomBarCtx
@@ -34,8 +32,6 @@ function paintBottomBar() {
     bottomBarCtx.fillStyle = "black"
     bottomBarCtx.fillRect(64, 1, 40, 28)
     paintMouseColorOnBottomBar()
-    //
-    paintCanvasSizeOnBottomBar()
     //  
     paintZoomOnBottomBar()   
     //  
@@ -56,23 +52,14 @@ function paintBottomBarBg() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function paintMousePositionOnBottomBar() {
+    //
     bottomBarCtx.fillStyle = bottomBarColor()
     bottomBarCtx.fillRect(5, 0, 55, 30)
-    //    
-    if (canvasX == null) { return }
+    //  
+    if (infoLayerX == null  ||  infoLayerY == null) { return }
     //
-    write(bottomBarCtx, "x  " + canvasX, 10, 1)
-    write(bottomBarCtx, "y  " + canvasY, 10, 15)
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function paintCanvasSizeOnBottomBar() {
-    bottomBarCtx.fillStyle = bottomBarColor()
-    bottomBarCtx.fillRect(315, 0, 170, 30)
-    //    
-    const txt = "canvas size  " + canvas.width + " x " + canvas.height
-    write(bottomBarCtx, txt, 320, 10)
+    write(bottomBarCtx, "x  " + (infoLayerX + 1), 10, 1)
+    write(bottomBarCtx, "y  " + (infoLayerY + 1), 10, 15)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -91,10 +78,9 @@ function paintLayerSizeOnBottomBar() {
     bottomBarCtx.fillStyle = bottomBarColor()
     bottomBarCtx.fillRect(645, 0, 195, 30)
     //
-    const layer = getTopLayer()
-    if (layer == null) { return }
+    if (toplayer == null) { return }
     //
-    const txt = "top layer size  " + layer.canvas.width + " x " + layer.canvas.height
+    const txt = "top layer size  " + toplayer.canvas.width + " x " + toplayer.canvas.height
     write(bottomBarCtx, txt, 650, 10)
 }
 
@@ -104,10 +90,9 @@ function paintLayerPositionOnBottomBar() {
     bottomBarCtx.fillStyle = bottomBarColor()
     bottomBarCtx.fillRect(865, 0, 245, 30)
     //
-    const layer = getTopLayer()
-    if (layer == null) { return }
+    if (toplayer == null) { return }
     //
-    const txt = "top layer position  " + layer.left + " x " + layer.top
+    const txt = "top layer position  " + toplayer.left + " x " + toplayer.top
     write(bottomBarCtx, txt, 870, 10)
 }
 

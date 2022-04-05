@@ -1,10 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
-
-const chessColorDark = "rgb(190,190,190)"
-const chessColorLight = "rgb(200,200,200)"
 
 const wingColorDark = "rgb(102,104,108)" 
 const wingColorLight = "rgb(192,192,192)"
@@ -14,11 +9,13 @@ var bigdiv
 ///////////////////////////////////////////////////////////////////////////////
 
 function initInterface() { 
+    //
     bigdiv = document.getElementById("bigdiv")
     resetBigDivPosition()
     //
     initOverlay() 
     initCanvasFavorites() 
+    initCanvasAnimation()
     initCanvasHelp()
     //
     initTopBar()  
@@ -32,6 +29,8 @@ function initInterface() {
     initPanelMonitor()
     initMiniBar()
     initPolyPanel()
+    //
+    initSuperHand()
     //
     paintInterface()
     startListening()
@@ -87,7 +86,7 @@ function wingColor() {
     return wingColorLight
 }
 
-function stageColor() { 
+function __stageColor() { // unused
  // if (isDarkInterface) { return "rgb(88,90,92)" }
  // return "rgb(110,112,114)"
     if (isDarkInterface) { return "rgb(46,48,52)" }

@@ -1,8 +1,6 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
-/*
 var superHand
 var superHandCtx
 
@@ -19,31 +17,34 @@ function initSuperHand() {
     superHand.style.zIndex = "2"
     superHand.style.visibility = "hidden"
     //
+    paintSuperHand()
+    //
     bigdiv.appendChild(superHand)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function paintSuperHand() {
-    paintSuperHandBg()
     //
-    superHandCtx.drawImage(icons["superhand"], 55, 65)
-}
-
-function paintSuperHandBg() {
-    superHandCtx.fillStyle = wingColor()
+    superHandCtx.fillStyle = "rgb(144,146,148)"
     superHandCtx.fillRect(0, 0, 160, 185)
+    //
+    const src = icons50["hand"]
+    //
+    superHandCtx.drawImage(src, 0,0,50,50, 30,45,100,100)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function showSuperHand() {
+    //
     superHandOn = true
-    superHand.style.visibility = "visible"    
+    superHand.style.visibility = "visible"
 }
 
 function hideSuperHand() {
     superHandOn = false
-    superHand.style.visibility = "hidden"    
+    resetMove()
+    superHand.style.visibility = "hidden" 
 }
-*/
+

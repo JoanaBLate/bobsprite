@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var tool = "thin-pen"
 var toolBeforeCapture = "thin-pen"
@@ -27,19 +25,19 @@ var toolboxScheme = [
     "lighten",
     "rubber",
     "capture",
-    "brush",
+    "feather",
     //
     "blur-pixel",
     "blur-border",
     "scale",    
     "hand",
-    "feather",
+    "", // for finding clicked icon
     //
     "select",
     "lasso",   
-    "select-area",
-    "",  // for finding clicked icon
-    "" // for finding clicked icon
+    "", // for finding clicked icon
+    "", // for finding clicked icon
+    ""  // for finding clicked icon
 ]
 
 ///////////////////////////////////////////////////////////////////////////////

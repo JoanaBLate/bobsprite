@@ -1,25 +1,30 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
-
 var photoZoom = 1
-var shallRepaintPhoto = true
+var frozenPhoto = null
+
+///////////////////////////////////////////////////////////////////////////////
+
+function initFrozenPhoto() {
+    //
+    frozenPhoto = createCanvas(236, 240)
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function changePhotoZoom(e) {
     //
-    if (checkboxFrozen.checked) { return }
-    //
-    shallRepaintPhoto = true
+    shallRepaint = true
     //
     if (e.deltaY > 0) { decreasePhotoZoom(); return false }
     if (e.deltaY < 0) { increasePhotoZoom(); return false }
+    //
     return false
 }
 
 function decreasePhotoZoom() {
+    //
     if (photoZoom == 5) {
         photoZoom = 4
     }
@@ -37,6 +42,7 @@ function decreasePhotoZoom() {
 }
 
 function increasePhotoZoom() {
+    //
     if (photoZoom == 1) {
         photoZoom = 2
     }
@@ -57,103 +63,126 @@ function increasePhotoZoom() {
 
 function paintPhoto() {
     //
-    if (! shallRepaintPhoto) { return }
-    shallRepaintPhoto = false
+    paintPhotoBackground()
     //
-    if (checkboxFrozen.checked) { return }
+    monitorBoxCtx["imageSmoothingEnabled"] = ! checkboxMonitorPixelated.checked
     //
-    if (checkboxAnimation.checked) { paintAnimation(); return }
-    //
-    paintCanvasOnPhoto()
+    if (checkboxFrozen.checked) {
+        paintFrozenPhoto()
+    }
+    else {
+        paintLayersOnPhoto()
+    }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
 function paintPhotoBackground() {
-    //
-    if (backgroundColor == "blank") { paintChessBgOnMonitorBox(); return }
     //
     monitorBoxCtx.fillStyle = backgroundColor
     monitorBoxCtx.fillRect(0, 0, 236, 240)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-function paintAnimation() { // always centered
-    //
-    paintPhotoBackground()
-    //
-    const src = animatedImageForPhoto
-    if (src == null) { return }
-    //
-    const width = photoZoom * src.width
-    const height = photoZoom * src.height
-    //
-    const left = Math.floor((236 - width) / 2)
-    const top = Math.floor((240 - height) / 2)
-    //
-    monitorBoxCtx["imageSmoothingEnabled"] = ! checkboxMonitorPixelated.checked
-    //
-    monitorBoxCtx.drawImage(src, 0,0,src.width,src.height, left,top,width,height)
-}
-
+/////////////////////////  painting layers  ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintCanvasOnPhoto() {
-    const src = canvas
+function paintLayersOnPhoto() {
     //
-    paintPhotoBackground()
+    const last = layers.length - 1
     //
-    const width = photoZoom * src.width
+    for (let n = last; n > -1; n--) { paintLayerOnPhoto(layers[n]) }
+}
+
+function paintLayerOnPhoto(layer) {
+    //
+    if (! layer.enabled) { return }
+    //
+    const left = photoZoomedLeft(layer)
+    const top  = photoZoomedTop(layer)
+    //
+    const src = layer.canvas
+    //
+    const width  = photoZoom * src.width
     const height = photoZoom * src.height
-    //
-    const left = calcPhotoLeft(width)
-    const top = calcPhotoTop(height)
-    //
-    monitorBoxCtx["imageSmoothingEnabled"] = ! checkboxMonitorPixelated.checked
     //
     monitorBoxCtx.drawImage(src, 0,0,src.width,src.height,  left,top,width,height)
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-function calcPhotoLeft(width) {
+function photoZoomedLeft(layer) { 
     //
-    const photoCenteredLeft = Math.floor((236 - width) / 2)
+    // on stage:
     //
-    if (photoCenteredLeft >= 0) { return photoCenteredLeft }
+    const layerCenterX = layer.left + (layer.canvas.width / 2)
     //
-    const zoomedWidth = ZOOM * canvas.width
-    const canvasCenteredLeft = 450 - Math.floor(zoomedWidth / 2)
+    const layerDisplacementX = stageCenterX - layerCenterX
     //
-    const relativeDelta = (canvasCenteredLeft - canvasLeft) / zoomedWidth
+    // on photo:
     //
-    let left = photoCenteredLeft - (relativeDelta * width) 
+    const layerZoomedCenterX = 118 - (layerDisplacementX * photoZoom) // 118 is horizontal center of monitor box
     //
-    const min = 236 - width
-    const max = 0
-    if (left < min) { left = min }
-    if (left > max) { left = max }
-    return left   
+    const halfZoomedWidth = layer.canvas.width * photoZoom / 2
+    //
+    return Math.floor(layerZoomedCenterX - halfZoomedWidth)
 }
 
-function calcPhotoTop(height) {
+function photoZoomedTop(layer) { 
     //
-    const photoCenteredTop = Math.floor((240 - height) / 2)
+    // on stage:
     //
-    if (photoCenteredTop >= 0) { return photoCenteredTop }
+    const layerCenterY = layer.top + (layer.canvas.height / 2)
     //
-    const zoomedHeight = ZOOM * canvas.height
-    const centeredTop = 300 - Math.floor(zoomedHeight / 2)
+    const layerDisplacementY = stageCenterY - layerCenterY
     //
-    const relativeDelta = (centeredTop - canvasTop) / zoomedHeight
+    // on photo:
     //
-    let top = photoCenteredTop - (relativeDelta * height)
+    const layerZoomedCenterY = 120 - (layerDisplacementY * photoZoom) // 120 is vertical center of monitor box
     //
-    const min = 240 - height
-    const max = 0
-    if (top < min) { top = min }
-    if (top > max) { top = max }
-    return top   
+    const halfZoomedHeight = layer.canvas.height * photoZoom / 2
+    //
+    return Math.floor(layerZoomedCenterY - halfZoomedHeight)
+}
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////  painting frozenPhoto  ///////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function paintFrozenPhoto() {
+    //
+    const zoomedWidthHalf = 236 * photoZoom / 2
+    const left = 118 - zoomedWidthHalf
+    //
+    const zoomedHeightHalf = 240 * photoZoom / 2
+    const top = 120 - zoomedHeightHalf
+    //
+    monitorBoxCtx.drawImage(frozenPhoto, 0,0,236,240, left,top,236*photoZoom,240*photoZoom)
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function updateFrozenPhoto() {
+    //
+    const ctx = frozenPhoto.getContext("2d")
+    //
+    ctx.clearRect(0, 0, 236, 240)
+    //
+    const last = layers.length - 1
+    //
+    for (let n = last; n > -1; n--) { paintLayerOnFrozenPhoto(ctx, layers[n]) }
+}
+
+function paintLayerOnFrozenPhoto(ctx, layer) {
+    //
+    if (! layer.enabled) { return }
+    //
+    const halfWidth = Math.floor(layer.canvas.width / 2)
+    const layerCenterX = layer.left + halfWidth
+    const layerDisplacementX = stageCenterX - layerCenterX
+    const left = 118 - layerDisplacementX - halfWidth // 118 is horizontal center of monitor box
+    //
+    const halfHeight = Math.floor(layer.canvas.height / 2)
+    const layerCenterY = layer.top + halfHeight
+    const layerDisplacementY = stageCenterY - layerCenterY
+    const top = 120 - layerDisplacementY - halfHeight // 120 is vertical center of monitor box
+    //
+    ctx.drawImage(layer.canvas, left, top)
 }
 

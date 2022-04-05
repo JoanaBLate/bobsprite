@@ -1,12 +1,8 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var panelColorize   
 var panelColorizeCtx
-
-var checkboxConsider
 
 var sliderColorizeHue
 var sliderColorizeSat
@@ -37,18 +33,16 @@ function initPanelColorize() {
 function initPanelColorize2() {
     const ctx = panelColorizeCtx
     //
-    checkboxConsider = createCheckbox("consider", panelColorizeCtx, 207, 25, 12, colorizeLayer, false)
-    //
-    sliderColorizeHue = createSlider("colorize-hue", ctx, 10, 55, 220, 0, changeHue)
+    sliderColorizeHue = createSlider("colorize-hue", ctx, 10, 50, 220, 0, colorizeLayer)
     sliderColorizeSat = createSlider("colorize-sat", ctx, 10, 100, 220, 0.5, colorizeLayer)
-    sliderColorizeLum = createSlider("colorize-lum", ctx, 10, 145, 220, 0.5, colorizeLayer)
-    sliderColorizeOpa = createSlider("colorize-opa", ctx, 10, 190, 220, 1, colorizeLayer)
+    sliderColorizeLum = createSlider("colorize-lum", ctx, 10, 150, 220, 0.5, colorizeLayer)
+    sliderColorizeOpa = createSlider("colorize-opa", ctx, 10, 200, 220, 1, colorizeLayer)
     //
-    buttonColorizeReset = createButton("colorize-reset", ctx,  13, 250, 97, 30, "reset", panelColorizeReset, true)
-    buttonColorizeApply = createButton("colorize-apply",  ctx, 130, 250, 97, 30, "apply", panelColorizeApply, true)
+    buttonColorizeReset = createButton("colorize-reset", ctx,  13, 255, 97, 30, "reset", panelColorizeReset, true)
+    buttonColorizeApply = createButton("colorize-apply",  ctx, 130, 255, 97, 30, "apply", panelColorizeApply, true)
     //
     panelColorizeGadgets = [ sliderColorizeHue, sliderColorizeSat, sliderColorizeLum, sliderColorizeOpa,
-                             checkboxConsider, buttonColorizeReset, buttonColorizeApply ]
+                             buttonColorizeReset, buttonColorizeApply ]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,22 +64,19 @@ function paintPanelColorize() {
     //   
     const ctx = panelColorizeCtx
     //
-    write(ctx, "consider hue", 120, 25)
-    paintCheckbox(checkboxConsider)
-    //
-    write(ctx, "hue", 10, 40)
+    write(ctx, "intensity of new hue", 10, 35)
     paintSlider(sliderColorizeHue)
     //    
     write(ctx, "saturation", 10, 85)
     paintSlider(sliderColorizeSat)
     //    
-    write(ctx, "luminosity", 10, 130)
+    write(ctx, "luminosity", 10, 135)
     paintSlider(sliderColorizeLum)
     //    
-    write(ctx, "opacity", 10, 175)
+    write(ctx, "opacity", 10, 185)
     paintSlider(sliderColorizeOpa)
     //
-    greyTraceH(ctx, 20, 230, 200)
+    greyTraceH(ctx, 20, 235, 200)
     //
     paintButton(buttonColorizeReset)
     paintButton(buttonColorizeApply)
@@ -93,31 +84,23 @@ function paintPanelColorize() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function changeHue() {
-    //
-    if (! checkboxConsider.checked) { revertCheckbox(checkboxConsider) }
-    //
-    colorizeLayer()
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 function panelColorizeApply() { 
-    polyModel = null
+    //
     panelColorizeResetGadgets()
-    if (getTopLayer() != null) { memorizeTopLayer() }
+    if (toplayer != null) { memorizeTopLayer() }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function panelColorizeReset() { 
+    //
     panelColorizeResetGadgets()
-    resetLayerByPolyModel()
+    resetTopLayerByMemory()
 }
  
 function panelColorizeResetGadgets() { 
     //
-    resetCheckbox(checkboxConsider, false)
+    resetSlider(sliderColorizeHue, 0)
     resetSlider(sliderColorizeSat, 0.5)
     resetSlider(sliderColorizeLum, 0.5)
     resetSlider(sliderColorizeOpa, 1)
@@ -139,11 +122,10 @@ function updateColorizeButtons() {
 
 function colorizePanelChanging() {
     //
+    if (sliderColorizeHue.value != 0)   { return true }
     if (sliderColorizeSat.value != 0.5) { return true }
     if (sliderColorizeLum.value != 0.5) { return true }
     if (sliderColorizeOpa.value != 1)   { return true }
-    //
-    if (checkboxConsider.checked) { return true }
     //
     return false
 }

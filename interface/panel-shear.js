@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var panelShear   
 var panelShearCtx
@@ -87,16 +85,17 @@ function paintPanelShear() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function panelShearApply() { 
-    polyModel = null
+    //
     panelShearResetGadgets()
-    if (getTopLayer() != null) { memorizeTopLayer() }
+    if (toplayer != null) { memorizeTopLayer() }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function panelShearReset() { 
+    //
     panelShearResetGadgets()
-    resetLayerByPolyModel()
+    resetTopLayerByMemory()
 }
  
 function panelShearResetGadgets() { 

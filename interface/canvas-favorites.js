@@ -1,23 +1,19 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var favoritesCnv
 var favoritesCtx
 
-var frameBg
-var frameOff     // "off"
-var frameBlank
-var frameCanvas  // "CANVAS"
+var favoritesChessBg
 
 var favoritesCursor = ""
 
-var indexOfFavoriteOnMouseDown = -1
+var mouseDownOnFavoritesWasOK = false
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function initCanvasFavorites() {
+    //
     favoritesCnv = createCanvas(1300, 660)
     favoritesCtx = favoritesCnv.getContext("2d")
     //
@@ -32,10 +28,7 @@ function initCanvasFavorites() {
 
 function initCanvasFavorites2() {
     //
-    frameOff = makeFrameOff()
-    frameCanvas = makeFrameCanvas()
-    frameBg = createChessBox(100, 100, 25)
-    frameBlank = createColoredCanvas(100, 100, "rgb(240,110,0)") // blue -> rgb(63,50,174) 
+    favoritesChessBg = createChessBox(100, 100, 25, chessIconColorA, chessIconColorB)
     //
     favoritesCnv.onmouseup = favoritesOnMouseUp
     favoritesCnv.onmousedown = favoritesOnMouseDown
@@ -45,41 +38,17 @@ function initCanvasFavorites2() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function makeFrameOff() {
-    const cnv = createColoredCanvas(100, 100, "rgba(0,0,0,0.75)")
-    const ctx = cnv.getContext("2d")
-    //
-    const label = createCanvasLabel("Off", 20, "white") 
-    const l = Math.floor((100 - label.width) / 2)
-    const t = Math.floor((100 - label.height) / 2)
-    //
-    ctx.drawImage(label, l, t)
-    return cnv
-}
-
-function makeFrameCanvas() {
-    const cnv = createColoredCanvas(100, 100, "black")
-    const ctx = cnv.getContext("2d")
-    //
-    const label = createCanvasLabel("CANVAS", 20, "beige") 
-    const l = Math.floor((100 - label.width) / 2)
-    const t = Math.floor((100 - label.height) / 2)
-    //
-    ctx.drawImage(label, l, t)
-    return cnv
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 function showFavorites() {
-    if (getTopLayer() == null) { return }
     //
     MODE = "favorites"
     resetFocusedGadget()
     //
     startBlinkingIconOnTopBar("favorites")
-    paintFavorites()
+    //
     favoritesCursor = ""
+    mouseDownOnFavoritesWasOK = false
+    paintFavorites()
+    //
     favoritesCnv.style.visibility = "visible"
 }
 
@@ -91,6 +60,7 @@ function hideFavorites() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function setFavoritesCursorDefault() {
+    //
     if (favoritesCursor == "") { return }
     //
     favoritesCursor = ""
@@ -98,6 +68,7 @@ function setFavoritesCursorDefault() {
 }
 
 function setFavoritesCursorMove() {
+    //
     if (favoritesCursor == "move") { return }
     //
     favoritesCursor = "move"
@@ -115,34 +86,57 @@ function paintFavorites() {
     favoritesCtx.strokeStyle = "rgb(48,48,48)"
     favoritesCtx.strokeRect(2, 2, 1296, 656)
     //
-    standardWrite(favoritesCtx, "favorites / animation", 577, 10)
+    standardWrite(favoritesCtx, "favorites", 610, 10)
     //
-    const msg = "Clicking a favorite enables/disables it as animation frame." +
-                "        You can drag any favorite." +
-                "        Type any key to close this window."
+    if (favorites.length == 0) {
+        //
+        standardWrite(favoritesCtx, "No favorite to show", 590, 330)
+        standardWrite(favoritesCtx, "Type any key to close this panel", 545, 360)
+        //
+        return
+    }
     //
-    standardWrite(favoritesCtx, msg, 20, 630)
+    const msg =  "       Use mouse to drag any favorite       |" + 
+                 "       The first 12 favorites will be used in panel Animation        |" + 
+                 "       Type any key to close this panel"
     //
-    let index = 0
-    for (let y = 35; y < 600; y += 120) {
-        for (let x = 15; x < 1200; x += 130) {
-            //
-            const f = favorites[index]
-            const icon = makeFavoriteIconFor(f)
-            favoritesCtx.drawImage(icon, x, y)
-            //
-            if (! f.enabled  &&  (f.canvas != null  ||  f.isLinkToCanvas)) {
-               favoritesCtx.drawImage(frameOff, x, y) 
-            }
-            //
-            index += 1
-            if (index == 49) { break }
-        }
+    standardWrite(favoritesCtx, msg, 20, 625)
+    //
+    let n = 0
+    let x = 15
+    let y = 35
+    //
+    while (n < favorites.length) {
+        //
+        paintFavorite(n, x, y)
+        //
+        x += 130
+        if (x >= 1200) { x = 15; y += 120 }
+        //
+        n += 1
     }
     //
     favoritesCtx.drawImage(specialIcons["big-trashcan"], 1185, 515)
     //
     markFavorite(indexOfSelectedFavorite)
+}
+
+function paintFavorite(n, x, y) {
+    //
+    favoritesCtx.fillStyle = "black"
+    favoritesCtx.fillRect(x-1, y-1, 102, 102)   
+    //
+    if (backgroundColor == "blank") {
+        //
+        favoritesCtx.drawImage(favoritesChessBg, x, y)
+    }
+    else {
+        favoritesCtx.fillStyle = backgroundColor
+        favoritesCtx.fillRect(x, y, 100, 100)    
+    }    
+    //
+    const f = favorites[n]
+    favoritesCtx.drawImage(f.icon, x, y)
 }
 
 function markFavorite(n) {
@@ -158,46 +152,6 @@ function markFavorite(n) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-function makeFavoriteIconFor(f) {
-    //
-    if (f.isLinkToCanvas) { return frameCanvas }
-    if (f.canvas == null) { return frameBlank }
-    //
-    const src = f.canvas
-    const cnv = cloneImage(frameBg)
-    const ctx = cnv.getContext("2d")
-    //
-    let x = 0
-    let y = 0
-    let width = src.width
-    let height = src.height
-    //
-    if (width > height) {
-        y = - Math.floor((width - height) / 2)
-        height = width
-    }
-    else if (height > width) {
-        x = - Math.floor((height - width) / 2)
-        width = height
-    }
-    //    
-    ctx.drawImage(src, x,y,width,height, 0,0,100,100)
-    //    
-    return cnv
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function selectFavorite(n) {
-    //
-    if (n == indexOfSelectedFavorite) { return }
-    //
-    indexOfSelectedFavorite = n 
-    paintFavorites()
-}
-
-///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 function favoriteIndexByMouse(x, y) {
@@ -208,7 +162,11 @@ function favoriteIndexByMouse(x, y) {
     if (col == -1) { return -1 }
     //
     let index = (row * 10) + col
-    if (index > 49) { return -1 }
+    //
+    if (index == 49) { return 49 } // trashcan
+    //
+    if (index > favorites.length - 1) { return -1 }
+    //
     return index
 }
 
@@ -240,34 +198,43 @@ function favoriteCol(x) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function favoritesOnMouseUp(e) {
-    const x = e.offsetX
-    const y = e.offsetY
-    const index = favoriteIndexByMouse(x, y)
-    const previousIndex = indexOfFavoriteOnMouseDown
-    //
-    indexOfFavoriteOnMouseDown = -1
-    setFavoritesCursorDefault()
-    // 
-    if (index == -1) { return }
-    //
-    if (previousIndex == -1) { return }
-    //
-    if (index == previousIndex) { selectFavorite(index); toggleFavoriteEnabled(index); return }
-    //
-    if (index == 49) { deleteFavorite(previousIndex); return }
-    //
-    exchangeFavorites(previousIndex, index)
-}
-
 function favoritesOnMouseDown(e) { 
+    //
     const x = e.offsetX
     const y = e.offsetY
     let index = favoriteIndexByMouse(x, y)
     //
-    if (index == 49) { index = -1 } // trashcan
+    mouseDownOnFavoritesWasOK = false
     //
-    indexOfFavoriteOnMouseDown = index
+    if (index == -1) { return } // nothing
+    if (index == 49) { return } // trashcan
+    //
+    mouseDownOnFavoritesWasOK = true
+    //
+    indexOfSelectedFavorite = index
+    //
+    paintFavorites()
+}
+
+function favoritesOnMouseUp(e) {
+    //
+    setFavoritesCursorDefault()
+    //
+    if (! mouseDownOnFavoritesWasOK) { return }
+    //
+    mouseDownOnFavoritesWasOK = false
+    //
+    const x = e.offsetX
+    const y = e.offsetY
+    const index = favoriteIndexByMouse(x, y)
+    //
+    if (index == -1) { return } // nothing
+    //
+    if (index == 49) { deleteFavorite(); return } // trashcan
+    // 
+    if (index == indexOfSelectedFavorite) { return } // self click
+    //
+    exchangeFavorites(indexOfSelectedFavorite, index) // exchange
 }
 
 function favoritesOnMouseMove(e) { 
@@ -275,22 +242,19 @@ function favoritesOnMouseMove(e) {
     const y = e.offsetY
     const dragging = (e.buttons == 1)
     //
-    if (! dragging) { setFavoritesCursorDefault(); return }
-    //
-    if (y > 619) { setFavoritesCursorDefault(); return }
-    //
-    if (indexOfFavoriteOnMouseDown != -1) { 
+    if (dragging  &&  y < 620  &&  mouseDownOnFavoritesWasOK) { 
         //
-        selectFavorite(indexOfFavoriteOnMouseDown) // reselecting dynamically
         setFavoritesCursorMove()
-        return 
     }
-    //
-    setFavoritesCursorDefault()
+    else {
+        setFavoritesCursorDefault()
+    }
 }
 
 function favoritesOnMouseLeave() {
-    indexOfFavoriteOnMouseDown = -1
+    //
     setFavoritesCursorDefault()
+    //
+    mouseDownOnFavoritesWasOK = false
 }
 

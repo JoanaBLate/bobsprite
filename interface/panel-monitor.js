@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 /* NEVER FORGET:
     context["imageSmoothingQuality"] = "high" // medium, low
@@ -12,10 +10,8 @@ var panelMonitorCtx
 
 var monitorBox
 var monitorBoxCtx
-var monitorChessBg
 
 var checkboxFrozen
-var checkboxAnimation
 var checkboxMonitorPixelated
 
 var panelMonitorGadgets
@@ -38,14 +34,14 @@ function initPanelMonitor() {
 
 function initPanelMonitor2() {
     //
+    initFrozenPhoto()
+    //
     makeMonitorBox()
-    monitorChessBg = createChessBox(240, 240, 60)
     //
-    checkboxFrozen = createCheckbox("frozen", panelMonitorCtx,  52, 5, 12, toggleFrozen, false)
-    checkboxAnimation = createCheckbox("animation", panelMonitorCtx, 125, 5, 12, toggleAnimation, false)
-    checkboxMonitorPixelated = createCheckbox("monit-pixel", panelMonitorCtx, 195, 5, 12, togglePixelated, true)
+    checkboxFrozen = createCheckbox("frozen", panelMonitorCtx,  55, 5, 12, toggleFrozen, false)
+    checkboxMonitorPixelated = createCheckbox("monitor-pixel", panelMonitorCtx, 170, 5, 12, togglePixelated, true)
     //
-    panelMonitorGadgets = [ checkboxFrozen, checkboxAnimation, checkboxMonitorPixelated ]
+    panelMonitorGadgets = [ checkboxFrozen, checkboxMonitorPixelated ]
 }
 
 function makeMonitorBox() {
@@ -85,13 +81,10 @@ function paintPanelMonitor() {
     //
     greyTraceH(panelMonitorCtx, 5, 0, 230)
     //
-    write(panelMonitorCtx, "frozen", 2, 5)
+    write(panelMonitorCtx, "frozen", 5, 5)
     paintCheckbox(checkboxFrozen)
     //
-    write(panelMonitorCtx, "animat", 80, 5)
-    paintCheckbox(checkboxAnimation)
-    //
-    write(panelMonitorCtx, "pixel", 155, 5)
+    write(panelMonitorCtx, "pixelated", 98, 5)
     paintCheckbox(checkboxMonitorPixelated)
     //
     paintMonitorBoxZoom()
@@ -100,38 +93,21 @@ function paintPanelMonitor() {
 }
 
 function paintMonitorBoxZoom() {
-    panelMonitorCtx.fillRect(215,3,30,15)
-    write(panelMonitorCtx, photoZoom + "x", 220, 5)
+    panelMonitorCtx.fillRect(210,3,30,15)
+    write(panelMonitorCtx, photoZoom + "x", 215, 5)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-function paintChessBgOnMonitorBox() {
-    // shall be displaced 2 pixels to the left
-    monitorBoxCtx.drawImage(monitorChessBg, -2, 0)
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function toggleAnimation() {
-    shallRepaintPhoto = true
-    //
-    if (checkboxAnimation.checked) { animationClock = 0 } // animation starts ASAP
-    //
-    if (checkboxFrozen.checked) { resetCheckbox(checkboxFrozen, false) } // unfreezes
-}
 
 function togglePixelated() { 
-    shallRepaintPhoto = true
     //
-    if (checkboxFrozen.checked) { revertCheckbox(checkboxMonitorPixelated); return } // aborts
+    shallRepaint = true
 }
 
 function toggleFrozen() {
-    shallRepaintPhoto = true 
-    // 
-    if (! checkboxFrozen.checked) { return }
     //
-    if (checkboxAnimation.checked) { resetCheckbox(checkboxAnimation, false) } // cancels animation
+    shallRepaint = true
+    // 
+    if (checkboxFrozen.checked) { updateFrozenPhoto() }
 }
 

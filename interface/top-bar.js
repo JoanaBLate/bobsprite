@@ -1,22 +1,19 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var topBar 
 var topBarCtx  
 
 var topBarScheme = [ 
+    //
     "roll",
+    "",
+    "protection",
     "",
     "center",
     "",
-    "scissor",
-    "",
-    "",
     "minus",
     "plus",
-    "",
     "",
     "halves-h",
     "halves-v",
@@ -32,6 +29,7 @@ var topBarScheme = [
     "next",
     "favorites",
     "",
+    "animation",
     "",
     "load",
     "save",
@@ -62,7 +60,7 @@ function initTopBar2() {
 }
 
 function fillTopBarLefts() {
-    let left = 162
+    let left = 164
     //
     for (const id of topBarScheme) {
         topBarLefts.push(left)
@@ -125,6 +123,8 @@ function paintIconOnTopBar(id, left) {
 
 function topBarIconIsOn(id) {
     //
+    if (id == "protection") { return shallProtectBlank }
+    //
     const timer = topBarBlinkings[id]
     if (timer == undefined) { return false }
     return timer > LOOP
@@ -167,13 +167,14 @@ function topBarClicked(e) {
     if (id == "minus") { setTask(decreaseZoom); return }
     if (id == "save2") { setTask(showAlternativeSave); return }
     if (id == "center") { setTask(centerLayers); return }
-    if (id == "scissor") { setTask(adjustTopLayer); return }
     if (id == "tile-set") { setTask(showTileSet); return }
     if (id == "halves-h") { setTask(leftRightToCenter); return }
     if (id == "halves-v") { setTask(topBottomToCenter); return }
-    if (id == "register") { setTask(canvasToFavorites); return }
+    if (id == "register") { setTask(pictureToFavorites); return }
     if (id == "previous") { setTask(showPreviousFavorite); return }
     if (id == "favorites") { setTask(showFavorites); return }
+    if (id == "animation") { setTask(showAnimation); return }
+    if (id == "protection") { toggleProtection(); return }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,7 +1,5 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada #
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 var tileset = null
 var tilesetCtx = null
@@ -9,31 +7,36 @@ var tilesetCtx = null
 ///////////////////////////////////////////////////////////////////////////////
 
 function showTileSet() {
-    if (getTopLayer() == null) { return }
+    //
+    if (toplayer == null) { return }
+    //
+    startBlinkingIconOnTopBar("tile-set")
+    //
+    makeCheckedPicture(showTileSet2)
+}
+
+function showTileSet2(pic) {
     //
     MODE = "tile-set"
-    startBlinkingIconOnTopBar("tile-set")
-    showOverlay()
     //
     if (tileset == null) { initTileSet() }
-    updateTileSet()
     tileset.style.visibility = "visible"
+    //
+    updateTileSet(pic)
 }
 
 function hideTileSet() {
     MODE = "standard"
-    hideOverlay()
     tileset.style.visibility = "hidden"    
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function initTileSet() {
-    tileset = createCanvas(1300, 630)
+    tileset = createCanvas(1300, 660)
     tilesetCtx = tileset.getContext("2d")
     //
     tileset.style.position = "absolute"
-    tileset.style.top = "30px"
     tileset.style.zIndex = "31"
     tileset.style.visibility = "hidden"
     //
@@ -42,12 +45,10 @@ function initTileSet() {
     tileset.onclick = hideTileSet
 }
 
-function updateTileSet() {
+function updateTileSet(src) {
     //
     tilesetCtx.fillStyle = "rgb(192,192,192)"
-    tilesetCtx.fillRect(0, 0, 1300, 630)
-    //
-    const src = canvasToPicture()
+    tilesetCtx.fillRect(0, 0, 1300, 660)
     //
     let left = 0
     let top  = 0
@@ -55,7 +56,7 @@ function updateTileSet() {
         tilesetCtx.drawImage(src, left, top)
         left += src.width 
         if (left > 1300) { left = 0; top += src.height }
-        if (top  >  630) { break }
+        if (top  >  660) { break }
     }
 }
 

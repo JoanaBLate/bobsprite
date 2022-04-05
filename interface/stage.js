@@ -1,17 +1,24 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
+const stageWidth = 900
+const stageHeight = 600
 
-var stage     // 900 x 600
-var stageCtx  
+const stageCenterX = 450
+const stageCenterY = 300
+
+var stage     
+var stageCtx
+  
+var stageChessLight
+var stageChessDark
 
 var shallRepaint = true
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function initStage() {
-    stage = createCanvas(900, 600)
+    stage = createCanvas(stageWidth, stageHeight)
     stageCtx = stage.getContext("2d")
     //
     stage.style.position = "absolute"
@@ -19,6 +26,9 @@ function initStage() {
     stage.style.left = "160px"
     //
     bigdiv.appendChild(stage)
+    //
+    stageChessLight = createStageChessLight()
+    stageChessDark = createStageChessDark()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,18 +44,16 @@ function startListeningStage() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function paintStage() {
-    if (! shallRepaint) { return }
-    shallRepaint = false
-    //
-    shallRepaintPhoto = true
     //
     paintStageBg()
-    paintCanvasFrame()
     //
-    paintCanvas()
+    paintLayersBackgrounds()
+    //
     stageCtx["imageSmoothingEnabled"] = false
-    paintCanvasOnStage()
+    paintLayersForegrounds()
     stageCtx["imageSmoothingEnabled"] = true // because of draw picture bug on chrome
+    //
+    paintTopLayerFrame()
     //
     drawPictureCursor() 
 }
@@ -53,32 +61,94 @@ function paintStage() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function paintStageBg() {
-    stageCtx.fillStyle = stageColor()
-    stageCtx.fillRect(0, 0, 900, 600)
+    //
+    const img = isDarkInterface ? stageChessDark : stageChessLight 
+    //
+    stageCtx.drawImage(img, 0, 0) 
 }
 
-function paintCanvasFrame() {
+///////////////////////////////////////////////////////////////////////////////
+
+function paintLayersBackgrounds() {
+    //
+    if (backgroundColor == "blank") { return }
+    //
+    stageCtx.fillStyle = backgroundColor
+    //
+    const last = layers.length - 1
+    //
+    for (let n = last; n > -1; n--) { paintLayerBackground(layers[n]) }
+}
+
+function paintLayerBackground(layer) {
+    //
+    if (! layer.enabled) { return }
+    //
+    const left = zoomedLeft(layer)
+    const top = zoomedTop(layer)
+    //
+    const width = layer.canvas.width * ZOOM
+    const height = layer.canvas.height * ZOOM
+    //
+    stageCtx.fillRect(left, top, width, height)    
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function paintLayersForegrounds() {
+    //
+    const last = layers.length - 1
+    //
+    for (let n = last; n > -1; n--) { paintLayerForeground(layers[n]) }
+    //
+    paintMaskOnStage()
+}
+
+function paintLayerForeground(layer) {
+    //
+    if (! layer.enabled) { return }
+    //
+    const left = zoomedLeft(layer)
+    const top = zoomedTop(layer)
+    //
+    const width = layer.canvas.width
+    const height = layer.canvas.height
+    //
+    stageCtx.globalAlpha = layer.opacity
+    stageCtx.drawImage(layer.canvas, 0,0,width,height, left,top,width*ZOOM,height*ZOOM)    
+    stageCtx.globalAlpha = 1
+}
+
+function paintMaskOnStage() {
+    //
+    if (! maskOn) { return }
+    //
+    const left = zoomedLeft(toplayer)
+    const top  = zoomedTop(toplayer)
+    //
+    const width = mask.width
+    const height = mask.height
+    //
+    stageCtx.drawImage(mask, 0,0,width,height, left,top,width*ZOOM,height*ZOOM)   
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function paintTopLayerFrame() {
+    //
+    if (toplayer == null) { return }
     //
     stageCtx.fillStyle = canvasFrameColor()
     //
-    const left = canvasLeft - 1
-    const top  = canvasTop - 1
-    const width  = (ZOOM * canvas.width) + 2
-    const height = (ZOOM * canvas.height) + 2
+    const left = zoomedLeft(toplayer) - 1
+    const top = zoomedTop(toplayer) - 1
+    //
+    const width = toplayer.canvas.width * ZOOM + 2
+    const height = toplayer.canvas.height * ZOOM + 2
     //
     stageCtx.fillRect(left, top, width, 1) // top
     stageCtx.fillRect(left, top+height-1, width, 1) // bottom
     stageCtx.fillRect(left, top, 1, height) // left
     stageCtx.fillRect(left+width-1, top, 1, height) // right
-}
-
-function paintCanvasOnStage() {
-    //
-    const destLeft = canvasLeft 
-    const destTop  = canvasTop
-    const destWidth  = ZOOM * canvas.width
-    const destHeight = ZOOM * canvas.height
-    //
-    stageCtx.drawImage(canvas, 0,0,canvas.width,canvas.height, destLeft,destTop,destWidth,destHeight)
 }
 
