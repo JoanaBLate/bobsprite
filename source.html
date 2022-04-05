@@ -12,6 +12,7 @@
             display: block;
             margin:  0px;  
             padding: 0px;
+            overflow: hidden;
             background-color: rgb(78,80,84);
         } 
         #bigdiv {
@@ -70,7 +71,8 @@
     <script src="component/GADGETS.js"></script>
     <script src="component/button.js"></script>
     <script src="component/checkbox.js"></script>
-    <script src="component/pieces.js"></script>
+    <script src="component/chess-bg.js"></script>
+    <script src="component/components.js"></script>
     <script src="component/fonts.js"></script>
     <script src="component/hsl-gradient.js"></script>
     <script src="component/icons.js"></script>
@@ -82,6 +84,7 @@
 
     <script src="interface/alternative-save.js"></script>
     <script src="interface/bottom-bar.js"></script>
+    <script src="interface/canvas-animation.js"></script>
     <script src="interface/canvas-favorites.js"></script>
     <script src="interface/canvas-help.js"></script>
     <script src="interface/interface.js"></script>
@@ -102,6 +105,7 @@
     <script src="interface/photo.js"></script>
     <script src="interface/poly-panel.js"></script>
     <script src="interface/stage.js"></script>
+    <script src="interface/stage-cursor.js"></script>
     <script src="interface/subpanel-effect-a.js"></script>
     <script src="interface/subpanel-effect-b.js"></script>
     <script src="interface/subpanel-effect-c.js"></script>
@@ -138,32 +142,30 @@
     <script src="library/round-alpha.js"></script>
     <script src="library/sepia-tone.js"></script>
     <script src="library/swap-rgb.js"></script>   
-    <script src="library/weaken-black.js"></script>        
-    
-    <script src="mask/ellipse.js"></script>    
-    <script src="mask/line.js"></script>    
-    <script src="mask/lasso.js"></script>    
-    <script src="mask/mask.js"></script>    
-    <script src="mask/rectangle.js"></script>    
-    <script src="mask/select.js"></script>      
+    <script src="library/weaken-black.js"></script> 
     
     <script src="tools/blur-pixel.js"></script>    
     <script src="tools/brush.js"></script>    
     <script src="tools/darken-tool.js"></script>    
+    <script src="tools/ellipse.js"></script>    
     <script src="tools/feather.js"></script>    
+    <script src="tools/lasso.js"></script>    
     <script src="tools/lighten-tool.js"></script> 
+    <script src="tools/line.js"></script>    
+    <script src="tools/mask.js"></script>    
     <script src="tools/mirror-pen.js"></script>    
     <script src="tools/paint.js"></script>       
     <script src="tools/paint-control.js"></script>    
     <script src="tools/pen.js"></script>       
     <script src="tools/perfect-any.js"></script>    
     <script src="tools/rubber.js"></script>    
+    <script src="tools/rectangle.js"></script>    
     <script src="tools/scale.js"></script>
+    <script src="tools/select.js"></script>      
     <script src="tools/spray.js"></script>    
     <script src="tools/thin-pen.js"></script>    
     
-    <script src="engine/animation.js"></script>
-    <script src="engine/canvas.js"></script>
+    <script src="engine/animation.js"></script> 
     <script src="engine/color.js"></script> 
     <script src="engine/display-info.js"></script>
     <script src="engine/favorites.js"></script>
@@ -176,13 +178,13 @@
     <script src="engine/layers.js"></script>       
     <script src="engine/manager.js"></script>      
     <script src="engine/memory.js"></script>   
-    <script src="engine/mouse.js"></script>   
+    <script src="engine/mouse.js"></script>    
     <script src="engine/mouse-color.js"></script>
-    <script src="engine/move-canvas.js"></script>    
-    <script src="engine/move-layers.js"></script>    
+    <script src="engine/mouse-rectangle.js"></script> 
+    <script src="engine/move-layer.js"></script>    
     <script src="engine/palette.js"></script> 
-    <script src="engine/picture-cursor.js"></script>    
-    <script src="engine/poly-model.js"></script>        
+    <script src="engine/picture.js"></script>   
+    <script src="engine/rotate-shear-colorize.js"></script>        
     <script src="engine/roll.js"></script>        
     <script src="engine/size.js"></script>  
     <script src="engine/zoom.js"></script>
