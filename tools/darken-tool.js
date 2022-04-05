@@ -1,49 +1,51 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
-
-var darkenLastX = null
-var darkenLastY = null
-var shallMemorizeDarken = false
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function startDarken() {
-    shallMemorizeDarken = false
-    darkenLastX = null
-    darkenLastY = null
-    resetPaintControlCtx()
+    //
     continueDarken()
 }
 
 function continueDarken() { 
     //
-    adjustTopLayer()
+    if (toplayer == null) { return }
     //
-    const x = getTopLayerX()
-    const y = getTopLayerY()
-    if (x == null  ||  y == null) { darkenLastX = null; darkenLastY = null; return }
+    const ctx = toplayer.canvas.getContext("2d")
     //
-    if (paintControlCtx == null) { resetPaintControlCtx() }
+    if (paintControlCtx == null) { resetPaintControlCtx(false) }
     //
-    const arr = makeBresenham(darkenLastX, darkenLastY, x, y) // accepts lastXY == null
+    const arr = makeBresenham(paintLastX, paintLastY, stageX, stageY) // accepts lastXY == null
     //
     while (arr.length > 0) {
+        //
         const p = arr.shift()
-        paintDarken(p.x, p.y) 
-        darkenLastX = p.x
-        darkenLastY = p.y   
+        //
+        paintLastX = p.x
+        paintLastY = p.y   
+        paintDarken(ctx, p.x, p.y) 
     }
 }
 
-function paintDarken(x, y) {
-    const layer = getTopLayerAdjusted()
-    const ctx = layer.canvas.getContext("2d")
-    const width = layer.canvas.width
-    const height = layer.canvas.height
+function finishDarken() {
     //
-    const rect = makePaintCoordinates(x, y, width, height, toolSizeFor[tool])
+    paintLastX = null
+    paintLastY = null
+    //
+    paintControlCtx = null
+    //
+    if (shallMemorizePaint) { memorizeTopLayer() }
+    shallMemorizePaint = false
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function paintDarken(ctx, x, y) {
+    //
+    const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
     const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height) 
@@ -66,7 +68,7 @@ function paintDarken(x, y) {
     if (! anyChange) { return }
     //
     ctx.putImageData(imgdata, rect.left, rect.top)
-    shallMemorizeDarken = true
+    shallMemorizePaint = true
 }
 
 function darkenPixel(data, refdata, index) {
@@ -80,7 +82,7 @@ function darkenPixel(data, refdata, index) {
     const a = data[index + 3]
     //
     if (a == 0) { return false } // blank
-    if (a == 255  &&  r + g + b == 0) { return false } // black
+    if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return false } 
     //
     const color = lightenDarkenColor([r, g, b], -intensityFor[tool])
     let r2 = color[0]
@@ -96,13 +98,5 @@ function darkenPixel(data, refdata, index) {
     data[index + 2] = b2
     //
     return true
-}
-
-function finishDarken() {
-    darkenLastX = null
-    darkenLastY = null
-    paintControlCtx = null
-    if (shallMemorizeDarken) { memorizeTopLayer() }
-    shallMemorizeDarken = false
 }
 

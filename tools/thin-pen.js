@@ -1,18 +1,19 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function thinPen() { 
     //
-    adjustTopLayer()
+    if (toplayer == null) { resetPerfectAny(); return }
     //
-    const x1 = getTopLayerX()
-    const y1 = getTopLayerY()
+    const ctx = toplayer.canvas.getContext("2d")
     //
-    if (x1 == null  ||  y1 == null) { resetPerfectAny(); return }
+    const x1 = stageX - toplayer.left
+    if (x1 < 0  ||  x1 >= toplayer.canvas.width) { resetPerfectAny(); return }
+    //
+    const y1 = stageY - toplayer.top
+    if (y1 < 0  ||  y1 >= toplayer.canvas.height) { resetPerfectAny(); return }
     //
     let x0 = null
     let y0 = null
@@ -27,17 +28,12 @@ function thinPen() {
     const arr = makeBresenham(x0, y0, x1, y1)  // accepts xy0 == null
     //
     while (arr.length > 0) {
+        //
         const p = arr.shift()
-        paintThinPen(p.x, p.y)    
+        //
+        const changed = paintPerfectPixel(ctx, p.x, p.y, executeds)
+        //
+        if (changed) { memorizeTopLayer() }
     }
-}
-
-function paintThinPen(x, y) { 
-    const layer = getTopLayerAdjusted()
-    const ctx = layer.canvas.getContext("2d")
-    //
-    const changed = paintPerfectPixel(ctx, x, y, executeds)
-    //
-    if (changed) { memorizeLayer(layer) }
 }
 

@@ -1,31 +1,18 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
-
-// the interface allows no interference
-
-// validation control is based on scaleOriginal
-
-
-var scaleLastX = null
-var scaleLastY = null
-var scaleOriginal = null
+// validation by (originalPaint != null)
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function startScale() {
-    scaleLastX = null
-    scaleLastY = null
-    scaleOriginal = null
     //
-    const layer = getTopLayer() // not adjusted!
-    if (layer == null) { return }
+    if (toplayer == null) { return }
     //
-    scaleOriginal = cloneImage(layer.canvas)
+    originalPaint = cloneImage(toplayer.canvas)
     //
-    scaleLastX = canvasX
-    scaleLastY = canvasY
+    paintLastX = stageX
+    paintLastY = stageY
 }
 
 function continueScale() {
@@ -33,52 +20,40 @@ function continueScale() {
 }
 
 function continueScaleCore() {
-    if (scaleOriginal == null) { 
-        scaleLastX = null
-        scaleLastY = null
-        return 
-    }
     //
-    const x = canvasX
-    const y = canvasY
+    if (originalPaint == null) { return }
     //
-    if (x == null  ||  y == null) { return }
+    const ctx = toplayer.canvas.getContext("2d")
     //
-    const deltaWidth  = x - scaleLastX
-    const deltaHeight = y - scaleLastY
+    const deltaWidth  = stageX - paintLastX
+    const deltaHeight = stageY - paintLastY
     //
-    scaleLastX = x
-    scaleLastY = y
+    paintLastX = stageX
+    paintLastY = stageY
     //
-    // happens when mousedrag returns to layer
-    if (deltaWidth == 0  &&  deltaHeight == 0) { return } 
+    const newWidth = Math.max(1, toplayer.canvas.width  + deltaWidth)
+    const newHeight = Math.max(1, toplayer.canvas.height + deltaHeight)
     //
-    const layer = getTopLayer() // not adjusted!
-    if (layer == null) { return } // for safety
-    const cnv = layer.canvas
+    toplayer.canvas.width = newWidth
+    toplayer.canvas.height = newHeight
     //
-    cnv.width  = Math.max(1, cnv.width  + deltaWidth)
-    cnv.height = Math.max(1, cnv.height + deltaHeight)
-    //
-    const ctx = layer.canvas.getContext("2d")
     ctx["imageSmoothingEnabled"] = false
-    ctx.drawImage(scaleOriginal, 0,0,scaleOriginal.width,scaleOriginal.height,  0,0,cnv.width,cnv.height)
+    ctx.drawImage(originalPaint, 0,0,originalPaint.width,originalPaint.height,  0,0,newWidth,newHeight)
     ctx["imageSmoothingEnabled"] = true
 }
 
 function finishScale() {
-    if (scaleOriginal == null) { return } // filtering bad call (precocious or redundant)
     //
-    const layer = getTopLayer() // not adjusted!
+    paintLastX = null
+    paintLastY = null
+    //
+    if (originalPaint == null) { return } 
     //
     let different = false
-    if (layer.width  != scaleOriginal.width)  { different = true }
-    if (layer.height != scaleOriginal.height) { different = true }
+    if (toplayer.width  != originalPaint.width)  { different = true }
+    if (toplayer.height != originalPaint.height) { different = true }
     //
     if (different) { memorizeTopLayer() }
-    //
-    scaleLastX = null
-    scaleLastY = null
-    scaleOriginal = null 
+    originalPaint = null 
 }
 

@@ -1,16 +1,10 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
 
 // helper module for spray, hard brush and soft brush //
 
 // setting data is *much* faster than use fillRect or drawImage //
-// getImageData used to be 12x more expansive than putImageData //
-
-// (tested:) sprites are too small for control minimum interval of brush (center) points //
-
-// (tested:) darken/lighten can't be used because the effect (recursive) is excessively strong //
+// getImageData used to be 12x more expensive than putImageData //
 
 
 var toolSizeFor = {
@@ -91,36 +85,8 @@ function changeIntensity(delta) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function makePaintCoordinates(x, y, layerWidth, layerHeight, size) {
-    // x,y are center coordinates
-    const delta = Math.floor(size / 2)
-    // will not try to paint outside of layer
-    const maxRight  = layerWidth  - 1
-    const maxBottom = layerHeight - 1
+function paintHardPixel(data, index, erasing) {
     //
-    let left = x - delta
-    if (left < 0) { left = 0 }
-    //
-    let right = x + delta
-    if (right > maxRight) { right = maxRight }
-    //
-    let topo = y - delta
-    if (topo < 0) { topo = 0 }
-    //
-    let bottom = y + delta
-    if (bottom > maxBottom) { bottom = maxBottom }
-    //
-    const width  = right  - left + 1
-    const height = bottom - topo + 1
-    if (width  == 0) { return null } // necessary when brush size==1 and mouse comes from outside right
-    if (height == 0) { return null } // necessary when brush size==1 and mouse comes from outside south
-    //
-    return new Rectangle(left, topo, width, height)
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function paintHardPixel(data, index, erasing, protecting) {
     let R = RED
     let G = GREEN
     let B = BLUE
@@ -140,10 +106,8 @@ function paintHardPixel(data, index, erasing, protecting) {
     //
     if (r == R  &&  g == G  &&  b == B  &&  a == A) { return false }
     //
-    if (protecting) {
-        if (r + g + b + a == 0) { return false } // blank
-        if (r + g + b == 0  &&  a == 255) { return false } // black
-    }
+    if (shallProtectBlank  &&  a == 0) { return false } 
+    if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return false } 
     //
     data[index]     = R
     data[index + 1] = G
@@ -155,36 +119,41 @@ function paintHardPixel(data, index, erasing, protecting) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintAnyHardPixel(data, erasing, protecting) { // for spray not fail by chance
+function paintAnyHardPixel(data, erasing) { // for spray not fail by chance
+    //
     const indexes = [ ]
     let index = 0 // index of first channel of rgba color 
+    //
     while (index < data.length) {
         indexes.push(index)
         index += 4
     }
     //
     while (indexes.length > 0) {
+        //
         const position = Math.floor(Math.random() * indexes.length) // position inside list indexes
+        //
         index = indexes[position]
         indexes.splice(position, 1) // removing used index
         //
-        const changed = paintHardPixel(data, index, erasing, protecting)        
+        const changed = paintHardPixel(data, index, erasing)        
         if (changed) { return true }
     }
+    //
     return false
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function paintSoftPixel(data, index, rate) {
+    //
     const r = data[index]
     const g = data[index + 1]
     const b = data[index + 2]
     const a = data[index + 3]
     //
     if (a == 0) { return false } // blank
-    //
-    if (a == 255  &&  r + g + b == 0) { return false } // solid black
+    if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return false }
     //
     let R, G, B
     //

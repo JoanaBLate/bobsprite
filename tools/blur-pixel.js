@@ -1,57 +1,54 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
-
-// paintControlCtx (refdata) keeps clone of the original layer
-
-
-var blurLastX = null
-var blurLastY = null
-var shallMemorizeBlur = false
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function startBlur() {
-    shallMemorizeBlur = false
-    blurLastX = null
-    blurLastY = null
-    paintControlCtx = null
+function startBlur() { 
     //
-    continueBlur()
+    continueBlur() 
 }
 
 function continueBlur() { 
     //
+    if (toplayer == null) { return }
+    //
+    const ctx = toplayer.canvas.getContext("2d")
+    //
     if (paintControlCtx == null) { resetPaintControlCtx(true) }
-    if (paintControlCtx == null) { blurLastX = null; blurLastY = null; return }
     //
-    adjustTopLayer()
-    //
-    const x = getTopLayerX()
-    const y = getTopLayerY()
-    if (x == null  ||  y == null) { blurLastX = null; blurLastY = null; return }
-    //
-    const arr = makeBresenham(blurLastX, blurLastY, x, y) // accepts lastXY == null
+    const arr = makeBresenham(paintLastX, paintLastY, stageX, stageY) // accepts lastXY == null
     //
     while (arr.length > 0) {
+        //
         const p = arr.shift()
-        paintBlur(p.x, p.y) 
-        blurLastX = p.x
-        blurLastY = p.y   
+        //
+        paintLastX = p.x
+        paintLastY = p.y   
+        paintBlur(ctx, p.x, p.y) 
     }
 }
 
-function paintBlur(x, y) {
-    const layer = getTopLayerAdjusted()
-    const ctx = layer.canvas.getContext("2d")
-    const width = layer.canvas.width
-    const height = layer.canvas.height
+function finishBlur() {
     //
-    const rect = makePaintCoordinates(x, y, width, height, toolSizeFor[tool])
+    paintLastX = null
+    paintLastY = null
+    paintControlCtx = null
+    //
+    if (shallMemorizePaint) { memorizeTopLayer() }
+    shallMemorizePaint = false
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function paintBlur(ctx, x, y) {
+    //
+    const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
     // paint rectangle is expanded to include outside neighbors!!!
+    // any pixel outside layer comes as [0,0,0,0]
     //
     paintBlur2(ctx, rect.left-1, rect.top-1, rect.width+2, rect.height+2)
 }
@@ -66,6 +63,8 @@ function paintBlur2(ctx, left, top, width, height) {
     let anyChange = false
     //
     // paint rectangle was expanded to include outside neighbors!!!
+    // any pixel outside layer comes as [0,0,0,0]
+    // iterating on INNER rectangle now!!!
     //
     for (let x = 1; x < width-1; x++) {
         for (let y = 1; y < height-1; y++) {
@@ -77,12 +76,13 @@ function paintBlur2(ctx, left, top, width, height) {
     if (! anyChange) { return }
     //
     ctx.putImageData(imgdata, left, top)
-    shallMemorizeBlur = true
+    shallMemorizePaint = true
 }
 
 function paintBlurAt(data, refdata, width, x, y) { 
-    // bounds are ok because rectangle was expanded
-    // bounds need not to be checked
+    //
+    // bounds are ok because rectangle was previously expanded
+    // any pixel outside layer comes as [0,0,0,0]
     //
     const index = 4 * (y * width + x)
     // original values
@@ -92,7 +92,7 @@ function paintBlurAt(data, refdata, width, x, y) {
     const A = refdata[index + 3]
     //
     if (A == 0) { return false } // blank
-    if (A == 255  &&  R + G + B == 0) { return false } // black
+    if (shallProtectBlack  &&  A == 255  &&  R + G + B == 0) { return false }
     //
     // current values
     const r = data[index]
@@ -151,6 +151,9 @@ function paintBlurAt2(data, refdata, width, x, y, R, G, B, A) {
 
 function getBlurInfo(refdata, width, x, y) { // fractionary values
     //
+    // bounds are ok because rectangle was previously expanded
+    // any pixel outside layer comes as [0,0,0,0]
+    //
     let count = 0
     const arr = [0, 0, 0] // [R, G, B]
     //
@@ -182,7 +185,7 @@ function getBlurInfo(refdata, width, x, y) { // fractionary values
         const a = refdata[index + 3]
         //
         if (a == 0) { return } // blank
-        if (a == 255  &&  r + g + b == 0) { return } // black
+        if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return } 
         //
         const factor = diagonal ? 1 : 2 // straight weighs double than diagonal
         arr[0] += r * factor
@@ -191,13 +194,5 @@ function getBlurInfo(refdata, width, x, y) { // fractionary values
         //
         count += factor
     }
-}     
-
-function finishBlur() {
-    blurLastX = null
-    blurLastY = null
-    paintControlCtx = null
-    if (shallMemorizeBlur) { memorizeTopLayer() }
-    shallMemorizeBlur = false
-}
+} 
 

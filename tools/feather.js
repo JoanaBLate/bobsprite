@@ -1,49 +1,49 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
-
-var featherLastX = null
-var featherLastY = null
-var shallMemorizeFeather = false
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function startFeather() {
-    shallMemorizeFeather = false
-    featherLastX = null
-    featherLastY = null
-    resetPaintControlCtx()
     continueFeather()
 }
 
 function continueFeather() { 
     //
-    adjustTopLayer()
+    if (toplayer == null) { return }
     //
-    const x = getTopLayerX()
-    const y = getTopLayerY()
-    if (x == null  ||  y == null) { featherLastX = null; featherLastY = null; return }
+    const ctx = toplayer.canvas.getContext("2d")
     //
-    if (paintControlCtx == null) { resetPaintControlCtx() }
+    if (paintControlCtx == null) { resetPaintControlCtx(false) }
     //
-    const arr = makeBresenham(featherLastX, featherLastY, x, y) // accepts lastXY == null
+    const arr = makeBresenham(paintLastX, paintLastY, stageX, stageY) // accepts lastXY == null
     //
     while (arr.length > 0) {
+        //
         const p = arr.shift()
-        paintFeather(p.x, p.y) 
-        featherLastX = p.x
-        featherLastY = p.y   
+        //
+        paintLastX = p.x
+        paintLastY = p.y   
+        paintFeather(ctx, p.x, p.y) 
     }
 }
 
-function paintFeather(x, y) {
-    const layer = getTopLayer()
-    const ctx = layer.canvas.getContext("2d")
-    const width = layer.canvas.width
-    const height = layer.canvas.height
+function finishFeather() {
     //
-    const rect = makePaintCoordinates(x, y, width, height, toolSizeFor[tool])
+    paintLastX = null
+    paintLastY = null
+    paintControlCtx = null
+    //
+    if (shallMemorizePaint) { memorizeTopLayer() }
+    shallMemorizePaint = false
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function paintFeather(ctx, x, y) {
+    //
+    const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
     const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height) 
@@ -66,7 +66,7 @@ function paintFeather(x, y) {
     if (! anyChange) { return }
     //
     ctx.putImageData(imgdata, rect.left, rect.top)
-    shallMemorizeFeather = true
+    shallMemorizePaint = true
 }
 
 function featherPixel(data, refdata, index) {
@@ -75,13 +75,5 @@ function featherPixel(data, refdata, index) {
     refdata[index + 3] = 255 // marking as done
     //
     return paintSoftPixel(data, index, intensityFor[tool])
-}
-
-function finishFeather() {
-    featherLastX = null
-    featherLastY = null
-    paintControlCtx = null
-    if (shallMemorizeFeather) { memorizeTopLayer() }
-    shallMemorizeFeather = false
 }
 

@@ -1,46 +1,47 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
-
-
-var sprayLastX = null
-var sprayLastY = null
-var shallMemorizeSpray = false
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function startSpray() {
-    shallMemorizeSpray = false
-    sprayLastX = null
-    sprayLastY = null
+    //
     continueSpray()
 }
 
-function continueSpray() { 
+function continueSpray() {
     //
-    adjustTopLayer()
+    if (toplayer == null) { return }
     //
-    const x = getTopLayerX()
-    const y = getTopLayerY()
-    if (x == null  ||  y == null) { sprayLastX = null; sprayLastY = null; return }
+    const ctx = toplayer.canvas.getContext("2d")
     //
-    const arr = makeBresenham(sprayLastX, sprayLastY, x, y) // accepts lastXY == null
+    const arr = makeBresenham(paintLastX, paintLastY, stageX, stageY) // accepts lastXY == null
     //
     while (arr.length > 0) {
+        //
         const p = arr.shift()
-        paintSpray(p.x, p.y) 
-        sprayLastX = p.x
-        sprayLastY = p.y   
+        //
+        paintLastX = p.x
+        paintLastY = p.y   
+        paintSpray(ctx, p.x, p.y) 
     }
 }
 
-function paintSpray(x, y) {
-    const layer = getTopLayerAdjusted()
-    const ctx = layer.canvas.getContext("2d")
-    const width = layer.canvas.width
-    const height = layer.canvas.height
+function finishSpray() {
     //
-    const rect = makePaintCoordinates(x, y, width, height, toolSizeFor[tool])
+    paintLastX = null
+    paintLastY = null
+    //
+    if (shallMemorizePaint) { memorizeTopLayer() }
+    shallMemorizePaint = false
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function paintSpray(ctx, x, y) {
+    //
+    const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
     const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height) 
@@ -51,24 +52,17 @@ function paintSpray(x, y) {
     let index = 0
     while (index < data.length) { 
         if (Math.random() < 0.02) { 
-            const changed = paintHardPixel(data, index, shiftPressed, true) // protection = true  
+            const changed = paintHardPixel(data, index, shiftPressed)
             if (changed) { anyChange = true }
         }
         index += 4
     }
     //    
-    if (! anyChange) { anyChange = paintAnyHardPixel(data, shiftPressed, true) } // protection = true
+    if (! anyChange) { anyChange = paintAnyHardPixel(data, shiftPressed) }
     //
     if (! anyChange) { return }
     //
     ctx.putImageData(imgdata, rect.left, rect.top)
-    shallMemorizeSpray = true
-}
-
-function finishSpray() {
-    sprayLastX = null
-    sprayLastY = null
-    if (shallMemorizeSpray) { memorizeTopLayer() }
-    shallMemorizeSpray = false
+    shallMemorizePaint = true
 }
 

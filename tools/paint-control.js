@@ -1,26 +1,41 @@
-// # Copyright (c) 2014-2021 Feudal Code Limitada # 
-
+// # Copyright (c) 2014-2022 Feudal Code Limitada #
 "use strict"
 
+var shallProtectBlank = false
+var shallProtectBlack = false
 
-// for feather, lighten-tool, darken-tool and blur-pixel
+var paintStartX = null
+var paintStartY = null
 
+var paintLastX = null
+var paintLastY = null
+
+var originalPaint = null // canvas
 
 var paintControlCtx = null
 
+var shallMemorizePaint = false
+
 ///////////////////////////////////////////////////////////////////////////////
 
-function resetPaintControlCtx(shallFill) { 
+function resetPaintControlCtx(shallFill) {
     //
-    const layer = getTopLayerAdjusted()
-    if (layer == null) { paintControlCtx = null; return }
-    //
-    const width = layer.canvas.width
-    const height = layer.canvas.height
+    const width = toplayer.canvas.width
+    const height = toplayer.canvas.height
     //
     const cnv = createCanvas(width, height)
     paintControlCtx = cnv.getContext("2d")
     //
-    if (shallFill) { paintControlCtx.drawImage(layer.canvas, 0, 0) }
+    if (shallFill) { paintControlCtx.drawImage(toplayer.canvas, 0, 0) }
+}
+
+function toggleProtection() {
+    //
+    shallProtectBlank = ! shallProtectBlank
+    shallProtectBlack = ! shallProtectBlack
+    //
+    paintTopBar()
+    //
+    if (shallProtectBlank) { hintAlert("now some tools will not affect blank or black pixels") }
 }
 
