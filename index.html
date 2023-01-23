@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<!-- # Copyright (c) 2014-2019 Feudal Code Limitada # -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>BobSprite - Sprite Editor</title>
+    <meta name="description" content="BobSprite is a free online drawing tool especially designed for Pixel Art.">
+    <meta name="viewport"    content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/favicon.png" type="image/png">
+    <style>
+
+        /* latin */
+        @font-face {
+            font-family: "Luckiest Guy";
+            font-style: normal;
+            font-weight: 400;
+            src: url(https://fonts.gstatic.com/s/luckiestguy/v11/_gP_1RrxsjcxVyin9l9n_j2hTd52.woff2) format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        /* latin */
+        @font-face {
+            font-family: "Pangolin";
+            font-style: normal;
+            font-weight: 400;
+            src: url(https://fonts.gstatic.com/s/pangolin/v6/cY9GfjGcW0FPpi-tWMfN79w.woff2) format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        /* latin */
+        @font-face {
+            font-family: "Baloo";
+            font-style: normal;
+            font-weight: 400;
+            src: local("Baloo Regular"), local("Baloo-Regular"), url(https://fonts.gstatic.com/s/baloo/v6/6xKhdSpJJ92I9MWPCm4.woff2) format("woff2");
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Baloo", "Arial", "Helvetica", "Times", "sans serif";
+            background: teal;
+            background: tomato;
+            font-size: 19px;
+        }
+        div {
+            display: block;
+        }
+        img {
+            display: inline-block;
+            max-width: 95%;
+            height: auto;
+            vertical-align: bottom; /* avoiding blank space below image */
+            border: solid 2px black;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        h3 {
+            margin: 0 7% 40px 7%;
+            font-size: 25px;
+            color: teal;
+            color: slateblue;
+            text-shadow: 1px -1px 1px lightgrey;
+            font-family: "Luckiest Guy", cursive;
+        }
+        p {
+            margin:  0 11% 0 11%;
+            padding-bottom: 20px;
+            font-size: 19px;
+            color: rgb(30,30,30);
+        }
+        a,
+        nav div {
+            display: inline-block;
+            font-family: "Pangolin", cursive;
+            font-size: 19px;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        a:hover,
+        nav div:hover  {
+            color: indigo;
+        }
+        b {
+            font-size: 24px;
+            color: crimson;
+        }
+        strong {
+            font-size: 24px;
+            color: slateblue;
+        }
+        i {
+            font-size: 20px;
+            font-weight: bold;
+            color: slateblue;
+        }
+        .clickable {
+            cursor: pointer;
+        }
+        .unclickable {
+            pointer-events: none;
+        }
+        .bg1 {
+            background: rgb(255,255,220);
+        }
+        .bg2 {
+            background: rgb(230,237,184);
+        }
+        .center {
+            display: block;
+            text-align: center;
+        }
+        header {
+            text-align: center;
+            font-weight: normal;
+            font-family: "Luckiest Guy", cursive;
+            color: darkorange;
+            text-shadow: 2px -1px 1px indigo;
+            background: rgb(230,237,184);
+        }
+        header h1 {
+            padding: 0 10px;
+            font-size: 55px;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            vertical-align: middle;
+        }
+        header h2 {
+            padding: 0 20px;
+            font-size: 30px;
+            letter-spacing: 1px;
+            font-weight: bold;
+            color: cadetblue;
+        }
+        #logo {
+            height: 80px;
+            width: 80px;
+            margin: 15px 15px 15px 0;
+            vertical-align: -50%;
+            border: none;
+            cursor: auto;
+        }
+        nav {
+            padding: 15px 30px 30px 30px;
+            line-height: 10px;
+            background: teal;
+            background: mediumseagreen;
+            border-top: solid 2px dimgrey;
+        }
+        nav a,
+        nav div {
+            padding: 5px 10px;
+            margin: 20px 0 0 5%;
+        }
+        nav br {
+            display: none;
+        }
+        #launch {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 30px;
+            font-family: sans-serif;
+            font-weight:bold;
+            border-radius: 4px;
+            color: beige;
+            background:rgb(240,0,0);
+        }
+        #launch:hover {
+            color: lime;
+            background: black;
+        }
+        article {
+            padding: 35px 0 20px 0;
+        }
+        .icon {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            vertical-align: middle;
+            border-radius: 5px;
+            border: 1px solid dimgrey;
+            background-color: lightgrey;
+            background-image: url("images/TOOLBOX.png");
+            background-repeat: no-repeat;
+            background-attachment: local;
+        }
+        .icon img {
+            border: none;
+        }
+        .small {
+            font-size: 14px;
+        }
+        footer {
+            color: rgb(0,10,40);
+            background: tomato;
+            font-size: 15px;
+            text-align: center;
+            padding: 15px;
+            border-top: solid 2px grey;
+        }
+        @media (max-width: 900px) {
+            header h1 { font-size: 45px; }
+            nav { padding-left: 15px; }
+            img { max-width: 90%; }
+        }
+        @media (max-width: 700px) {
+            nav br { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>
+            <span>
+                <img id="logo" src="images/logo.png" alt="BobSprite logo">
+                BobSprite
+            </span>
+        </h1>
+        <h2>Free Online Sprite Editor</h2><br>
+    </header>
+    <div id="reference">
+        <nav>
+            <br>
+            <br>
+        </nav>
+        <article class="bg1">
+            <br>
+            <h3>What?</h3>
+            <p>
+                <b>BobSprite</b> is a browser based free online drawing tool designed for Pixel Art.<br><br>
+            </p><br>
+            <div class="center">
+                <a href="/editor" target="_blank">
+                    <img alt="BobSprite - Sprite Editor" src="images/newbob.png" title="Click to open the Sprite Editor">
+                </a>
+             </div>
+            <div class="center small"> The sprite above is the dragon from the game Tibia.</div><br>
+        </article>
+        <article class="bg2">
+            <h3>Getting Started</h3>
+            <p>
+                You must have a computer (<b>keyboard and mouse</b>).<br><br>
+                And you must use an up to date <b>*Chrome*</b> or <b>*Firefox*</b> browser.<br><br><br>
+                <a id="launch" target="_blank" href="/editor">Launch the Editor</a><br><br>
+                Click the red button above to open <b>BobSprite Editor</b>.<br><br>
+            </p>
+        </article>        
+        <article class="bg1">
+            <h3>Connection</h3>
+            <p>
+                No data is sent to server.<br><br>
+                After load the page, you may work offline.
+            </p>
+        </article>
+        <article class="bg2">
+            <h3>Failure?</h3>
+            <p>
+                Often you will try to paint or apply some effect and nothing will happen.<br><br>
+                This is not a bug:<br><br>
+                Maybe you are using <b>Feather</b> on blank pixels.<br><br>
+                Or there is no layer on.<br><br>
+                Or the top layer is too much displaced; try center it - <b>C</b> .<br><br>
+            </p>
+        </article>
+    </div>
+    <footer>
+        <a href="https://www.feudalcode.com" target="_blank">Feudal Code Limitada</a>
+        <br>
+        <div style="margin-top:10px;">copyright &copy; 2014-2022</div>
+    </footer>
+</body>
+</html>
+
