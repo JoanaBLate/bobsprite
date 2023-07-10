@@ -1,9 +1,8 @@
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
+// # Copyright (c) 2014-2023 Feudal Code Limitada #
 
-
+"use strict"
 
 // file: main/file.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var fileSelector
@@ -144,7 +143,6 @@ function saveImageFileWithThisName(filename, cnv) {
 }
 
 // file: main/helper.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -279,7 +277,6 @@ function testChromeGetImageDataBugOnTranslucentPixels() {
 ///////////////////////////////////////////////////////////////////////////////
 
 // file: main/local-storage.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -392,7 +389,6 @@ function recoverCustomPalette(key) {
 ///////////////////////////////////////////////////////////////////////////////
 
 // file: main/main.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 //  800 x 600 is 0.3% of all screens
@@ -495,7 +491,6 @@ function isFramed() {
 }
 
 // file: main/schedule.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var schedule = [ ]
@@ -534,7 +529,6 @@ function updateSchedule() {
 }
 
 // file: html/custom-alert.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // var customAlertCount = 0
@@ -663,7 +657,6 @@ function customAlertCore(title, message, callback) {
 }
 
 // file: html/custom-confirm.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -795,7 +788,6 @@ function customConfirm(message, callback, callback2) {
 }
 
 // file: html/custom-prompt.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -941,7 +933,6 @@ function customPrompt(message, callback, value) {
 }
 
 // file: html/html.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -961,7 +952,6 @@ function createCanvas(width, height) {
 }
 
 // file: component/GADGETS.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // a layout (container) is a gadget
@@ -1124,7 +1114,6 @@ function focusedNumbox() {
 }
 
 // file: component/button.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1283,7 +1272,6 @@ function makeButtonImageDisabled(width, height, txt, left, top, forlayer) {
 }
 
 // file: component/checkbox.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // accepts null action
@@ -1384,7 +1372,6 @@ function createCheckedBox(dim) {
 }
 
 // file: component/chess-bg.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 const chessLightColorA = "rgb(180,180,180)"
@@ -1443,7 +1430,6 @@ function paintChessBoxRow(ctx, width, top, side, startJumping) {
 }
 
 // file: component/components.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1676,7 +1662,6 @@ function paintColorOnThisPalette(ctx, raw, left, top, side, bg1, bg2) {
 }
 
 // file: component/fonts.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var standardFont = { }
@@ -1803,7 +1788,6 @@ function lengthOfText(txt) {
 }
 
 // file: component/hsl-gradient.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1892,7 +1876,6 @@ function createBlackGradient() {
 }
 
 // file: component/icons.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var icons50 = { }
@@ -2123,7 +2106,6 @@ function makeTextIcons() {
 }
 
 // file: component/overlay.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var overlay
@@ -2155,7 +2137,6 @@ function hideOverlay() {
 }
 
 // file: component/numbox.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // numbox action is triggered by input
@@ -2433,7 +2414,6 @@ function insertNumboxDigit(numbox, pos, digit) {
 }
 
 // file: component/slider.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // height of slider is 20
@@ -2551,7 +2531,6 @@ function inputOnSlider(slider, x) {
 }
 
 // file: component/slider-parts.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2663,7 +2642,6 @@ function colorFromHint(hint, dark) {
 }
 
 // file: component/surface.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2707,7 +2685,6 @@ function paintSurface(surface) {
 }
 
 // file: interface/alternative-save.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var imageForAlternativeSave
@@ -2765,7 +2742,6 @@ function hideAlternativeSave() {
 }
 
 // file: interface/bottom-bar.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var bottomBar 
@@ -2907,7 +2883,6 @@ function colorAndMouseColor() {
 }
 
 // file: interface/canvas-animation.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var animationCnv
@@ -3231,7 +3206,6 @@ function drawAnimationFrame() { // 402 x 402 px virtual canvas
 }
 
 // file: interface/canvas-favorites.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var favoritesCnv
@@ -3492,7 +3466,6 @@ function favoritesOnMouseLeave() {
 }
 
 // file: interface/canvas-help.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var canvasHelp
@@ -3542,7 +3515,6 @@ function hideCanvasHelp() {
 }
 
 // file: interface/interface.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 const wingColorDark = "rgb(102,104,108)" 
@@ -3653,7 +3625,6 @@ function canvasFrameColor() {
 }
 
 // file: interface/mini-bar.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var miniBar   
@@ -3772,7 +3743,6 @@ function clickedIconOnMiniBar(x, y) {
 }
 
 // file: interface/panel-color.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // NOT REALLY A PANEL!
@@ -3834,7 +3804,6 @@ function maybeRepaintColorPanel() {
 }
 
 // file: interface/panel-color-hsl-1.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelHsl   
@@ -4046,7 +4015,6 @@ function changeToRgba() {
 }
 
 // file: interface/panel-color-hsl-2.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var surfaceHslCtx
@@ -4270,7 +4238,6 @@ function colorAtHslMark() { // for passive color update
 }
 
 // file: interface/panel-color-rgba.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelRgba   
@@ -4445,7 +4412,6 @@ function changeToHsl() {
 }
 
 // file: interface/panel-colorize.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelColorize   
@@ -4578,7 +4544,6 @@ function colorizePanelChanging() {
 }
 
 // file: interface/panel-config.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelConfig   
@@ -4725,7 +4690,6 @@ function toggleDarkness() {
 }
 
 // file: interface/panel-effect.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelEffect   
@@ -4860,7 +4824,6 @@ function referencedCheckbox(subpanel) {
 }
 
 // file: interface/panel-layers.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelLayers
@@ -5116,7 +5079,6 @@ function updateOtherButtons(disabled) {
 }
 
 // file: interface/panel-monitor.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 /* NEVER FORGET:
@@ -5157,7 +5119,7 @@ function initPanelMonitor2() {
     makeMonitorBox()
     //
     checkboxFrozen = createCheckbox("frozen", panelMonitorCtx,  55, 5, 12, toggleFrozen, false)
-    checkboxMonitorPixelated = createCheckbox("monitor-pixel", panelMonitorCtx, 170, 5, 12, togglePixelated, true)
+    checkboxMonitorPixelated = createCheckbox("monitor-pixel", panelMonitorCtx, 170, 5, 12, togglePixelated, false)
     //
     panelMonitorGadgets = [ checkboxFrozen, checkboxMonitorPixelated ]
 }
@@ -5230,7 +5192,6 @@ function toggleFrozen() {
 }
 
 // file: interface/panel-opacity.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelOpacity
@@ -5353,7 +5314,6 @@ function changeOpacity(slider) {
 }
 
 // file: interface/panel-palette.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelPalette   
@@ -5632,7 +5592,6 @@ function updateSurfacePalette() {
 }
 
 // file: interface/panel-shear.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelShear   
@@ -5775,7 +5734,6 @@ function shearPanelChanging() {
 }
 
 // file: interface/panel-size.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelSize   
@@ -5895,7 +5853,6 @@ function fixNewDimension(numbox, defaul) {
 }
 
 // file: interface/photo.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var photoZoom = 1
@@ -6084,7 +6041,6 @@ function paintLayerOnFrozenPhoto(ctx, layer) {
 }
 
 // file: interface/poly-panel.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6191,7 +6147,6 @@ function paintAndShowPolyPanel() {
 }
 
 // file: interface/stage.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 const stageWidth = 900
@@ -6346,7 +6301,6 @@ function paintTopLayerFrame() {
 }
 
 // file: interface/stage-cursor.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 const cursors = { } // "side:color" : cnv
@@ -6361,7 +6315,7 @@ function drawPictureCursor() {
     //
     // ignoring zoom level
     //
-    const deltaTool = (toolSizeFor[tool] - 1) / 2 // assumimg tool size is odd and greater than 1
+    const deltaTool = (toolSizeFor[tool] - 1) / 2 // assuming tool size is odd and greater than 1
     //
     const cornerX = stageX - deltaTool
     const cornerY = stageY - deltaTool
@@ -6483,25 +6437,12 @@ function okToDrawCursor() {
     //
     if (stageRawX == null) { return false }
     //
-    if (ZOOM == 0.5) { return false }
+    if (ZOOM == 0.5) { return toolSizeFor[tool] > 14 }
     //
-    if (toolSizeFor[tool] == 1) { return false }
-    //
-    if (tool == "pen")     { return true }
-    if (tool == "rubber")  { return true }
-    if (tool == "brush")   { return true }
-    if (tool == "feather") { return true }
-    if (tool == "lighten") { return true }
-    if (tool == "darken")  { return true }
-    if (tool == "line")    { return true }
-    if (tool == "spray")   { return true }
-    if (tool == "blur-pixel") { return true }
-    //
-    return false
+    return toolSizeFor[tool] > 1
 }
 
 // file: interface/subpanel-effect-a.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelEffectA
@@ -6591,7 +6532,6 @@ function paintPanelEffectA() {
 }
 
 // file: interface/subpanel-effect-b.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelEffectB
@@ -6681,7 +6621,6 @@ function paintPanelEffectB() {
 }
 
 // file: interface/subpanel-effect-c.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelEffectC
@@ -6763,7 +6702,6 @@ function paintPanelEffectC() {
 }
 
 // file: interface/subpanel-effect-d.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelEffectD
@@ -6853,7 +6791,6 @@ function paintPanelEffectD() {
 }
 
 // file: interface/subpanel-effect-e.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var panelEffectE
@@ -6943,7 +6880,6 @@ function paintPanelEffectE() {
 }
 
 // file: interface/superhand.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var superHand
@@ -6994,7 +6930,6 @@ function hideSuperHand() {
 }
 
 // file: interface/tile-set.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var tileset = null
@@ -7057,7 +6992,6 @@ function updateTileSet(src) {
 }
 
 // file: interface/toolbox.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var tool = "thin-pen"
@@ -7234,7 +7168,6 @@ function clickedRowColOnToolbox(row, col) {
 }
 
 // file: interface/top-bar.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var topBar 
@@ -7441,7 +7374,6 @@ function startBlinkingIconOnTopBar(id) {
 }
 
 // file: library/antialiasing-extern.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // standard: 100, 50, 25
@@ -7559,7 +7491,6 @@ function antialiasingCore(cnv, A, B, C) {
 }
 
 // file: library/autocrop.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 function autocrop(src) {
@@ -7628,7 +7559,6 @@ function autocropWidth(src) {
 }
 
 // file: library/blur-border.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // does not work on blank areas //
@@ -7756,7 +7686,6 @@ function blurBorderCore(data, width, height, refdata, r, g, b) {
 }
 
 // file: library/bresenham.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -7792,7 +7721,6 @@ function makeBresenhamCore(x0, y0, x1, y1) {
 }
 
 // file: library/colorize.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // not checking if image changed!
@@ -7867,7 +7795,6 @@ function colorize(cnv, intensityOfNewHue, SAT, LUM) {
 }
 
 // file: library/eat-border.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -7924,7 +7851,6 @@ function eatBorder(cnv) {
 }
 
 // file: library/erase.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -8000,7 +7926,6 @@ function selectiveErase(cnv, black, colored, transluc) {
 }
 
 // file: library/erase-matches.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -8059,7 +7984,6 @@ function eraseMatchingPixels(cnv, rgbColors) {
 }
 
 // file: library/filters.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // avoids make false outline 
@@ -8191,7 +8115,6 @@ function applyFilter(cnv, filter) {
 }
 
 // file: library/get-area.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // area is copy of part of source //
@@ -8279,7 +8202,6 @@ function __getArea(cnv, x, y) {
 }
 
 // file: library/get-area-data.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // area is copy of part of source //
@@ -8369,7 +8291,6 @@ function getAreaData(srcdata, width, height, x, y) {
 }
 
 // file: library/grey-scale.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -8445,7 +8366,6 @@ function __getGrey2(r, g, b) {
 }
 
 // file: library/hsl.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // Hue is a degree on the color wheel (from 0 to 359) - 0 (or 360) is red, 120 is green, 240 is blue. 
@@ -8657,7 +8577,6 @@ function luminosityToRgb(rgb, luminosity) {
 */
 
 // file: library/inliner.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -8721,7 +8640,6 @@ function inlinerCore(cnv, R, G, B, A) {
 }
 
 // file: library/negative.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // may affect translucent pixels //
@@ -8774,7 +8692,6 @@ function negative(cnv) {
 }
 
 // file: library/noise.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // avoids solid black always //
@@ -8833,7 +8750,6 @@ function addNoise(cnv) {
 }
 
 // file: library/outliner.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -8893,7 +8809,6 @@ function outlinerCore(cnv, red, green, blue, alpha) {
 }
 
 // file: library/paint-area.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // does not paint area when mouseColor == color,
@@ -8971,7 +8886,6 @@ function paintArea(cnv, x, y, r, g, b, a) {
 }
 
 // file: library/paint-border.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // does not paint area when mouseColor == color,
@@ -9044,7 +8958,6 @@ function paintBorder(cnv, x, y, r, g, b, a) {
 }
 
 // file: library/paint-every.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // *erases* area when argument [r,g,b,a] == [0,0,0,0]
@@ -9097,7 +9010,6 @@ function paintEvery(cnv, x, y, r, g, b, a) {
 }
 
 // file: library/pixelate.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9151,7 +9063,6 @@ function pixelate(cnv, factor) {
 }
 
 // file: library/reduce.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // calling the same function again produces different result 
@@ -9266,7 +9177,6 @@ function reduce(cnv, hArr, sArr, lArr) {
 }
 
 // file: library/rotate90.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9454,7 +9364,6 @@ function mixedReverse(dst) { // works in place
 }
 
 // file: library/round-alpha.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9502,7 +9411,6 @@ function roundAlpha(cnv) {
 }
 
 // file: library/sepia-tone.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9553,7 +9461,6 @@ function sepiaTone(cnv) {
 }
 
 // file: library/swap-rgb.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 const swaps = [ "rgbToGbr", "rgbToGbr", "rgbToRbg", "rgbToGbr", "rgbToGbr", "rgbToRbg" ]
@@ -9609,7 +9516,6 @@ function swapRgb(cnv) {
 }
 
 // file: library/weaken-black.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9652,7 +9558,6 @@ function weakenBlack(cnv) {
 }
 
 // file: tools/blur-pixel.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9851,7 +9756,6 @@ function getBlurInfo(refdata, width, x, y) { // fractionary values
 }
 
 // file: tools/brush.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9916,7 +9820,6 @@ function paintBrush(ctx, x, y) {
 }
 
 // file: tools/darken-tool.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -10019,7 +9922,6 @@ function darkenPixel(data, refdata, index) {
 }
 
 // file: tools/ellipse.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // validation by (mask != null)
@@ -10172,7 +10074,6 @@ function fillEllipseHalfColumn(data, x, y, delta, startY, endY, width, height) {
 }
 
 // file: tools/feather.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -10252,7 +10153,6 @@ function featherPixel(data, refdata, index) {
 }
 
 // file: tools/lasso.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // coordinates for the lasso inner rectangle
@@ -10506,7 +10406,6 @@ function passLassoData(layerdata, lassodata, width, height) {
 }
 
 // file: tools/lighten-tool.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -10609,7 +10508,6 @@ function lightenPixel(data, refdata, index) {
 }
 
 // file: tools/line.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // validation by (mask != null)
@@ -10707,7 +10605,6 @@ function paintLineSegment(centerX, centerY, maskdata, width, height) {
 }
 
 // file: tools/mask.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // used to draw line, ellipse, rectangle, lasso and select
@@ -10800,7 +10697,6 @@ function applyMaskPixel(data, maskdata, index) {
 }
 
 // file: tools/mirror-pen.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -10849,7 +10745,6 @@ function paintMirrorPen(ctx, x, y, width) {
 }
 
 // file: tools/paint.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // helper module for spray, hard brush and soft brush //
@@ -11025,7 +10920,6 @@ function paintSoftPixel(data, index, rate) {
 }
 
 // file: tools/paint-control.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var shallProtectBlank = false
@@ -11067,7 +10961,6 @@ function toggleProtection() {
 }
 
 // file: tools/pen.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -11132,7 +11025,6 @@ function paintPen(ctx, x, y) {
 }
 
 // file: tools/perfect-any.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // helps thin-pen and mirror-pen //
@@ -11183,6 +11075,9 @@ function paintPerfectPixel(ctx, x, y, controlList) {
     if (controlList.length > 3) { controlList.shift() }
     //
     if (r==R && g==G && b==B && a==A) { return false }
+    //
+    if (shallProtectBlank  &&  a == 0) { return false } 
+    if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return false }
     //
     data[0] = R
     data[1] = G
@@ -11236,7 +11131,6 @@ function isDiagonal(a, b) {
 }
 
 // file: tools/rubber.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -11301,7 +11195,6 @@ function paintRubber(ctx, x, y) {
 }
 
 // file: tools/rectangle.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // validation by (mask != null)
@@ -11373,7 +11266,6 @@ function finishRectangle() {
 }
 
 // file: tools/scale.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // validation by (originalPaint != null)
@@ -11433,7 +11325,6 @@ function finishScale() {
 }
 
 // file: tools/select.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // validation by (mask != null)
@@ -11571,7 +11462,6 @@ function tryEraseRectangleInTopLayer(ctx, left, top, width, height) {
 }
 
 // file: tools/spray.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -11640,7 +11530,6 @@ function paintSpray(ctx, x, y) {
 }
 
 // file: tools/thin-pen.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -11680,7 +11569,6 @@ function thinPen() {
 }
 
 // file: engine/animation.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var animationObjs = [ ]
@@ -11807,7 +11695,6 @@ function indexOfNextAnimationObj() {
 }
 
 // file: engine/color.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var RED   = 230
@@ -11832,7 +11719,6 @@ function updateCurrentColor(color) {
 }
 
 // file: engine/display-info.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // not all info goes here 
@@ -11952,7 +11838,6 @@ function displayLayerOpacity() {
 }
 
 // file: engine/favorites.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 const favorites = [ ] 
@@ -12053,9 +11938,9 @@ function pictureToFavorites() {
     makeCheckedPicture(toFavoritesCore)
 }
 
-function toFavoritesCore(cnv) {
+function toFavoritesCore(cnv, callback) {
     //
-    if (favorites.length == 49) { customAlert("no room for another favorite"); return }
+    if (favorites.length == 49) { customAlert("no room for another favorite", callback); return }
     //
     startBlinkingIconOnTopBar("register")
     //
@@ -12064,10 +11949,11 @@ function toFavoritesCore(cnv) {
     favorites.push(f)
     //
     indexOfSelectedFavorite = favorites.length - 1
+    //
+    if (callback) { callback() }
 }
 
 // file: engine/help.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var currentHelp = 0
@@ -12123,7 +12009,6 @@ function drawIconOnCanvasHelp(id, x, y) {
 }
 
 // file: engine/help-1.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -12155,7 +12040,7 @@ function helpBobSprite(x, y) {
     y += writeOnCanvasHelp("  > BobSprite is a free online drawing tool especially", x, y)
     y += writeOnCanvasHelp("     designed for *Pixel Art*", x, y)
     y += writeOnCanvasHelp("  > you can learn more at the home page:", x, y)
-    y += writeOnCanvasHelp("     bobsprite.com", x, y)
+    y += writeOnCanvasHelp("     www.bobsprite.com", x, y)
     return y
 }
 
@@ -12305,7 +12190,6 @@ function helpProtection(x, y) {
 }
 
 // file: engine/help-2.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 function paintCanvasHelp2() {
@@ -12476,7 +12360,6 @@ function helpScaleTool(x, y) {
 }
 
 // file: engine/help-3.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 function paintCanvasHelp3() {
@@ -12622,7 +12505,6 @@ function helpAlternativeSave(x, y) {
 }
 
 // file: engine/help-4.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 function paintCanvasHelp4() {
@@ -12731,6 +12613,7 @@ function paintCanvasHelp4Right() {
     let y = 30
     let x = 895
     y = 20 + helpPanelLayers(x, y)
+    y = 20 + helpPanelLayersMergeDown(x, y)
     y = 20 + helpPanelOpacity(x, y)
     y = 20 + helpVersion(x, y)
 }
@@ -12747,6 +12630,14 @@ function helpPanelLayers(x, y) {
     return y
 }
 
+function helpPanelLayersMergeDown(x, y) {
+    y += 30
+    y += writeOnCanvasHelp("Panel Layers - Other Hotkeys", x, y)
+    y += writeOnCanvasHelp("  > CTRL V: merge down unprotected", x, y)
+    y += writeOnCanvasHelp("  > CTRL SHIFT V: merge down protected", x, y)
+    return y
+}
+
 function helpPanelOpacity(x, y) {
     y += 25
     y += writeOnCanvasHelp("Panel Opacity", x, y)
@@ -12760,12 +12651,11 @@ function helpPanelOpacity(x, y) {
 function helpVersion(x, y) {
     y += 30
     y += writeOnCanvasHelp("Version", x, y)
-    y += writeOnCanvasHelp("  > April 2022", x, y)
+    y += writeOnCanvasHelp("  > July 2023", x, y)
     return y
 }
 
 // file: engine/keyboard.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var ctrlPressed  = false
@@ -12889,6 +12779,7 @@ function keyDownHandlerStandardMode(low) {
     if (low == "enter") { setTask(pictureToFavorites); return }
     //
     if (low == "tab") { managerCapture(); return }
+    if (low == "capslock") { managerCapture(); return }
     //
     if (low == "backspace") {
         if (shiftPressed) { setTask(redo) } else { setTask(undo) }; return
@@ -12903,6 +12794,10 @@ function keyDownHandlerStandardMode(low) {
     //
     if (low == "l"  &&  ctrlPressed)  { loadImage(); return }
     if (low == "s"  &&  ctrlPressed)  { saveImage("png"); return }
+    if (low == "v"  &&  ctrlPressed)  { 
+        if (shiftPressed) { mergeDownProtected() } else { mergeDownUnprotected() }
+        return         
+    }
     if (low == "y"  &&  ctrlPressed)  { setTask(redo); return }
     if (low == "z"  &&  ctrlPressed)  { setTask(undo); return }
     //
@@ -12920,7 +12815,6 @@ function keyDownHandlerStandardMode(low) {
 }
 
 // file: engine/layers.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var layers = [ ] // superlayer is the layer for selection
@@ -13237,7 +13131,6 @@ function mergeDownCore(protect) {
 }
 
 // file: engine/manager.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // when painting with mouse, global mouseBusy blocks input by keyboard!
@@ -13298,9 +13191,9 @@ function saveImage(style) {
 
 function saveImage2(pic) {
     //
-    saveImageFile(pic)
+    toFavoritesCore(pic, callback)
     //
-    toFavoritesCore(pic)
+    function callback() { saveImageFile(pic) }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -13500,7 +13393,6 @@ function topBottomToCenter() {
 }
 
 // file: engine/memory.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 // all checks if (top) layer is good are made by who calls the memorize functions
@@ -13664,7 +13556,6 @@ function relieveLayerMemory(layer) {
 }
 
 // file: engine/mouse.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var mouseBusy = false // flag to abort concurrent keyboard command
@@ -13851,7 +13742,6 @@ function mouseMoveHandler(e) {
 }
 
 // file: engine/mouse-color.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var mouseRed   =  -1 // -1 means mouse not on any color pixel
@@ -13937,10 +13827,16 @@ function updateMouseColorByStage() {
 }
 
 // file: engine/mouse-rectangle.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 function getMouseRectangle(layer, x, y, toolSize) { // stage coordinates
+    //
+    if (ZOOM < 1) { return getMouseRectangleZoomedIn(layer, x, y, toolSize) }
+    //    
+    return getMouseRectangleStandard(layer, x, y, toolSize)
+}
+
+function getMouseRectangleStandard(layer, x, y, toolSize) { // stage coordinates
     //
     const delta = Math.floor(toolSize / 2)
     //
@@ -13951,6 +13847,30 @@ function getMouseRectangle(layer, x, y, toolSize) { // stage coordinates
     //
     const stageRight  = Math.min(stageWidth  - 1, x + delta)
     const stageBottom = Math.min(stageHeight - 1, y + delta)
+    //
+    return getMouseRectangleCore(layer, stageLeft, stageTop, stageRight, stageBottom)
+}
+
+function getMouseRectangleZoomedIn(layer, x, y, toolSize) { // stage coordinates
+    //
+    const delta = Math.floor(toolSize / 2)
+    //
+    // must accept negative value for x and y,
+    // this happens when ZOOM is 0.5
+    //
+    const stageLeft = x - delta
+    const stageTop  = y - delta
+    //
+    // not checking if right and bottom goes 
+    // beyond the stage (not WYSIWIG)
+    //
+    const stageRight  = x + delta
+    const stageBottom = y + delta 
+    //
+    return getMouseRectangleCore(layer, stageLeft, stageTop, stageRight, stageBottom)
+}   
+    
+function getMouseRectangleCore(layer, stageLeft, stageTop, stageRight, stageBottom) {
     //
     // projecting the stage rectangle on layer
     //
@@ -13984,7 +13904,6 @@ function getMouseRectangle(layer, x, y, toolSize) { // stage coordinates
 }
 
 // file: engine/move-layer.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var remainingMoveX = 0 // necessary when zoom is greater than one
@@ -14136,7 +14055,6 @@ function moveTopLayerByKeyboard() { // no more than once per loop!
 }
 
 // file: engine/palette.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var paletteName = "bob"
@@ -14284,7 +14202,6 @@ function rgbColorsFromPalette() {
 }
 
 // file: engine/picture.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -14506,7 +14423,6 @@ function layerContainsAllOthers(index) {
 }
 
 // file: engine/rotate-shear-colorize.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -14665,7 +14581,6 @@ function softLumValueHigh(value) {
 }
 
 // file: engine/roll.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -14694,7 +14609,6 @@ function useRoll() {
 }
 
 // file: engine/size.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 /* NEVER FORGET:
@@ -14779,7 +14693,6 @@ function autocropLayer() {
 }
 
 // file: engine/zoom.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 var ZOOM = 5
@@ -14843,7 +14756,6 @@ function zoomedTop(layer) {
 }
 
 // file: boot/boot.js //
-// # Copyright (c) 2014-2022 Feudal Code Limitada #
 // "use strict"
 
 main()
