@@ -17,4 +17,4 @@ You may NOT copy or distribute the application or most part of it.
 
 
 
-Copyright (c) 2014-2022 Feudal Code Limitada
+Copyright (c) 2014-2023 Feudal Code Limitada
