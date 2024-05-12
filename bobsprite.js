@@ -1,4 +1,4 @@
-// # Copyright (c) 2014-2023 Feudal Code Limitada #
+// # Copyright (c) 2014-2024 Feudal Code Limitada #
 
 "use strict"
 
@@ -27,7 +27,7 @@ function initLoadAndSave() {
     div.appendChild(downloadLink)
     div.appendChild(fileSelector)
     //
-    document.body.appendChild(div) 
+    document.body.appendChild(div)
 }
 
 function createFileSelector() {
@@ -51,8 +51,8 @@ function loadImageFile() {
     resetKeyboard() // or else, for example, ctrlPressed keeps true
     fileSelector.value = "" // or else same file will not trigger onchange event again
     clickHtmlElement(fileSelector)
-} 
- 
+}
+
 function fileSelectorChanged() {
     const file = fileSelector.files[0]
     //
@@ -77,9 +77,9 @@ function readerEndedLoading(__filename, data) {
 
 function imageOrPaletteLoaded(img) {
     //
-    const cnv = cloneImage(img) 
+    const cnv = cloneImage(img)
     //
-    if (isPaletteFile) { 
+    if (isPaletteFile) {
         paletteLoaded(cnv)
     }
     else {
@@ -103,12 +103,12 @@ function getFileNameExtension(name) {
     if (end == ".jpeg") { return "jpeg" }
     if (end == ".webp") { return "webp" }
     //
-    return null    
-}  
+    return null
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-  
+
 function saveImageFile(cnv) {
     customPrompt("name of " + saveStyle + " file to be saved", callback, spriteName)
     //
@@ -126,13 +126,13 @@ function saveImageFileWithThisName(filename, cnv) {
     //
     let data
     if (saveStyle == "jpg-40%") {
-        data = cnv.toDataURL("image/jpeg", 0.4)    
+        data = cnv.toDataURL("image/jpeg", 0.4)
     }
     else if (saveStyle == "jpg-60%") {
         data = cnv.toDataURL("image/jpeg", 0.6)
     }
     else if (saveStyle == "jpg-80%") {
-        data = cnv.toDataURL("image/jpeg", 0.8) 
+        data = cnv.toDataURL("image/jpeg", 0.8)
     }
     else {
         data = cnv.toDataURL("image/png")
@@ -160,7 +160,7 @@ function cloneImage(img) {
     ctx.drawImage(img, 0, 0)
     return cnv
 }
-    
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function Point(x, y) {
@@ -223,7 +223,7 @@ function bestMatchingPixel(cnv, target) {
     const height = cnv.height
     const data = ctx.getImageData(0, 0, width, height).data
     //
-    let bestDelta = 3 * 255 
+    let bestDelta = 3 * 255
     let bestX = 0
     let bestY = 0
     //
@@ -265,7 +265,7 @@ function testChromeGetImageDataBugOnTranslucentPixels() {
     console.log(ctx.getImageData(0,0,1,1).data) // prints [67,97,137,136] // CHANGES BLUE 98 TO BLUE 97
     console.log(ctx.getImageData(0,0,1,1).data) // prints [67,98,137,136] // correct reading
 }
- 
+
 /*
     it is the same for loaded images:
     the first getImageData on a pixel brings  [67,97,137,136] // CHANGES BLUE 98 TO BLUE 97
@@ -393,11 +393,13 @@ function recoverCustomPalette(key) {
 
 //  800 x 600 is 0.3% of all screens
 // 1024 x 768 is 4%   of all screens
-// 1280 x something is next 
+// 1280 x something is next
 
 var MODE = "standard" // help, favorites, animation, tile-set, alternative-save
 
 var LOOP = 0
+
+var previousTimeStamp = 0
 
 const LOOP_DURATION_IN_MS = 1000 / 30
 
@@ -430,27 +432,38 @@ function afterIconsAndFonts() {
     //
     initLayers()
     initAnimation()
-    initInterface() 
-    //    
+    initInterface()
+    //
     window.onresize = resetBigDivPosition // cannot come before initInterface!
     //
-    window.onbeforeunload = function () { setDataInLocalStorage(); return "leaving?" } 
+    window.onbeforeunload = function () { setDataInLocalStorage(); return "leaving?" }
     //
     initKeyboard()
-    mainLoop()
-    showOrHideHelp() 
+    runMainLoop()
+    showOrHideHelp()
 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function mainLoop() { 
+function runMainLoop(timeStamp) {
+    //
+    const elapsed = timeStamp - previousTimeStamp
+    //
+    if (elapsed < 30) { requestAnimationFrame(runMainLoop); return }
+    //
+    previousTimeStamp = timeStamp
+    //
+    runCoreLoop()
+}
+
+function runCoreLoop() {
     //
     LOOP += 1
     //
     manageMemorySpooling() // must be the first
     updateSchedule()
-    runTask()   
+    runTask()
     //
     if (mouseBusy  ||  superHandOn) { } else { moveTopLayerByKeyboard() }
     //
@@ -461,24 +474,24 @@ function mainLoop() {
     //
     manageNumboxesBlinking()
     //
-    if (shallRepaint) { 
+    if (shallRepaint) {
         paintStage()
         paintPhoto()
-        shallRepaint = false 
+        shallRepaint = false
     }
     //
-    if (MODE == "animation") { drawAnimation() } 
-    //    
+    if (MODE == "animation") { drawAnimation() }
+    //
     if (TASK == null  &&  memorySpool == null) { // also for MODE "animation"
         requestAnimationFrame(refresh)
     }
     else {
-        requestAnimationFrame(mainLoop)
+        requestAnimationFrame(runMainLoop)
     }
 }
 
 function refresh() {
-    requestAnimationFrame(mainLoop)
+    requestAnimationFrame(runMainLoop)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -551,7 +564,7 @@ function customAlertCore(title, message, callback) {
     const onkeyup    = document.onkeyup
     const onkeydown  = document.onkeydown
     const onkeypress = document.onkeypress
-    //    
+    //
     const overlay = document.createElement("div")
     overlay.style.backgroundColor = "black"
     overlay.style.opacity  = "0.8"
@@ -569,7 +582,7 @@ function customAlertCore(title, message, callback) {
     box.style.position = "fixed" // absolute
     box.style.width = "550px"
     box.style.borderRadius = "7px"
-    box.style.outline = "none" 
+    box.style.outline = "none"
     //
     let left = Math.floor((window.innerWidth - 550) / 2)
     if (left < 100) { left = 100 }
@@ -608,9 +621,9 @@ function customAlertCore(title, message, callback) {
     label.style.color = "silver"
     label.style.fontFamily = "Arial, Helvetica, Symbol"
     label.style.fontSize = "18px"
-    label.innerHTML = htmlFromText(message)    
+    label.innerHTML = htmlFromText(message)
     body.appendChild(label)
-    //    
+    //
     const buttonOk = document.createElement("button")
  // buttonOk.style.backgroundColor = "whitesmoke"
     buttonOk.style.margin = "10px 0px 10px 20px"
@@ -622,34 +635,34 @@ function customAlertCore(title, message, callback) {
     //
     document.onkeyup   = null
     document.onkeyress = null
-    document.onkeydown = function (e) {    
+    document.onkeydown = function (e) {
         e.preventDefault()  // necessary to avoid CTRL S saves the webpage
-        e.stopPropagation() // necessary to avoid send keystrokes to keyboard module           
+        e.stopPropagation() // necessary to avoid send keystrokes to keyboard module
         if (e.keyCode == 13) { close(true) }
         if (e.keyCode == 27) { close(false) }
     }
     //
-    function htmlFromText(text) { 
+    function htmlFromText(text) {
         let html = ""
         while (text != "") {
             const c = text[0]
             text = text.substr(1)
             if (c == "&")  { html += "&amp;";  continue }
-            if (c == "<")  { html += "&lt;";   continue }      
+            if (c == "<")  { html += "&lt;";   continue }
             if (c == ">")  { html += "&gt;";   continue }
-            if (c == " ")  { html += "&nbsp;"; continue }     
+            if (c == " ")  { html += "&nbsp;"; continue }
             if (c == "\n") { html += "<br>";   continue }
             html += c
         }
         return html
     }
     //
-    function close(value) {  
+    function close(value) {
         document.onkeyup    = onkeyup
         document.onkeydown  = onkeydown
         document.onkeypress = onkeypress
         //
-        document.body.removeChild(box)    
+        document.body.removeChild(box)
         document.body.removeChild(overlay)
     // customAlertCount -= 1
         if (callback != undefined) { callback(value) }
@@ -667,7 +680,7 @@ function customConfirm(message, callback, callback2) {
     const onkeyup    = document.onkeyup
     const onkeydown  = document.onkeydown
     const onkeypress = document.onkeypress
-    //    
+    //
     const overlay = document.createElement("div")
     overlay.style.backgroundColor = "black"
     overlay.style.opacity  = "0.8"
@@ -686,7 +699,7 @@ function customConfirm(message, callback, callback2) {
     box.style.width = "550px"
     box.style.borderRadius = "7px"
     box.style.outline = "none"
-    // 
+    //
     let left = Math.floor((window.innerWidth - 550) / 2)
     if (left < 100) { left = 100 }
     box.style.left = left + "px"
@@ -724,9 +737,9 @@ function customConfirm(message, callback, callback2) {
     label.style.color = "silver"
     label.style.fontFamily = "Arial, Helvetica, Symbol"
     label.style.fontSize = "18px"
-    label.innerHTML = htmlFromText(message)    
+    label.innerHTML = htmlFromText(message)
     body.appendChild(label)
-    //    
+    //
     const buttonCancel = document.createElement("button")
  // buttonCancel.style.backgroundColor = "whitesmoke"
     buttonCancel.style.margin = "10px 0px 10px 20px"
@@ -735,7 +748,7 @@ function customConfirm(message, callback, callback2) {
     buttonCancel.innerHTML = "no"
     buttonCancel.onclick   = function () { close(false) }
     foot.appendChild(buttonCancel)
-    //    
+    //
     const buttonOk = document.createElement("button")
  // buttonOk.style.backgroundColor = "whitesmoke"
     buttonOk.style.margin = "10px 0px 10px 20px"
@@ -747,22 +760,22 @@ function customConfirm(message, callback, callback2) {
     //
     document.onkeyup   = null
     document.onkeyress = null
-    document.onkeydown = function (e) {    
+    document.onkeydown = function (e) {
         e.preventDefault()  // necessary to avoid CTRL S saves the webpage
-        e.stopPropagation() // necessary to avoid send keystrokes to keyboard module           
+        e.stopPropagation() // necessary to avoid send keystrokes to keyboard module
         if (e.keyCode == 13) { close(true) }
         if (e.keyCode == 27) { close(false) }
     }
     //
-    function htmlFromText(text) { 
+    function htmlFromText(text) {
         let html = ""
         while (text != "") {
             const c = text[0]
             text = text.substr(1)
             if (c == "&")  { html += "&amp;";  continue }
-            if (c == "<")  { html += "&lt;";   continue }      
+            if (c == "<")  { html += "&lt;";   continue }
             if (c == ">")  { html += "&gt;";   continue }
-            if (c == " ")  { html += "&nbsp;"; continue }     
+            if (c == " ")  { html += "&nbsp;"; continue }
             if (c == "\n") { html += "<br>";   continue }
             html += c
 
@@ -770,19 +783,19 @@ function customConfirm(message, callback, callback2) {
         return html
     }
     //
-    function close(value) {  
+    function close(value) {
         document.onkeyup    = onkeyup
         document.onkeydown  = onkeydown
         document.onkeypress = onkeypress
         //
-        document.body.removeChild(box)    
+        document.body.removeChild(box)
         document.body.removeChild(overlay)
         //
-        if (value) { 
+        if (value) {
             if (callback)  { callback() }
         }
         else {
-            if (callback2) { callback2() }        
+            if (callback2) { callback2() }
         }
     }
 }
@@ -822,7 +835,7 @@ function customPrompt(message, callback, value) {
     box.style.position = "absolute"
     box.style.width = "550px"
     box.style.borderRadius = "7px"
-    box.style.outline = "none" 
+    box.style.outline = "none"
     //
     let left = Math.floor((window.innerWidth - 550) / 2)
     if (left < 100) { left = 100 }
@@ -859,25 +872,25 @@ function customPrompt(message, callback, value) {
     label.style.fontSize = "22px"
     label.innerHTML = htmlFromText(message)
     head.appendChild(label)
-    //    
+    //
     const input = document.createElement("input")
     input.style.width = "465px"
     input.style.margin = "0px 0px 0px 20px"
     input.style.fontSize = "21px"
-    input.value = value   
-    input.oninput = function () { 
+    input.value = value
+    input.oninput = function () {
         // oninput only fires when text changes (does not receive ENTER nor ESCAPE)
         if (textIsBad(input.value)) { input.value = value } else { value = input.value }
-    }     
-    input.onkeydown = function (e) {  
-        e.stopPropagation() // necessary to avoid send keystrokes to keyboard module         
+    }
+    input.onkeydown = function (e) {
+        e.stopPropagation() // necessary to avoid send keystrokes to keyboard module
         if (e.ctrlKey) { return false } // necessary to abort CTRL S
         if (e.keyCode == 13) { close(value) }
         if (e.keyCode == 27) { close("") }
-    }    
+    }
     body.appendChild(input)
     input.focus()
-    //   
+    //
     const buttonCancel = document.createElement("button")
  // buttonCancel.style.backgroundColor = "whitesmoke"
     buttonCancel.style.margin = "10px 0px 10px 20px"
@@ -886,7 +899,7 @@ function customPrompt(message, callback, value) {
     buttonCancel.innerHTML = "cancel"
     buttonCancel.onclick   = function () { close("") }
     foot.appendChild(buttonCancel)
-    //    
+    //
     const buttonOk = document.createElement("button")
  // buttonOk.style.backgroundColor = "whitesmoke"
     buttonOk.style.margin = "10px 0px 10px 20px"
@@ -896,23 +909,23 @@ function customPrompt(message, callback, value) {
     buttonOk.onclick   = function () { close(value) }
     foot.appendChild(buttonOk)
     //
-    function htmlFromText(text) { 
+    function htmlFromText(text) {
         let html = ""
         while (text != "") {
             const c = text[0]
             text = text.substr(1)
             if (c == "&")  { html += "&amp;";  continue }
-            if (c == "<")  { html += "&lt;";   continue }      
+            if (c == "<")  { html += "&lt;";   continue }
             if (c == ">")  { html += "&gt;";   continue }
-            if (c == " ")  { html += "&nbsp;"; continue }     
+            if (c == " ")  { html += "&nbsp;"; continue }
             if (c == "\n") { html += "<br>";   continue }
             html += c
 
         }
         return html
-    }    
+    }
     //
-    function textIsBad(text) { 
+    function textIsBad(text) {
         const reference = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$01234567890-_"
         for (let n = 0; n < text.length; n += 1) {
             const c = text[n]
@@ -921,13 +934,13 @@ function customPrompt(message, callback, value) {
         return false
     }
     //
-    function close(text) { 
+    function close(text) {
         document.onkeyup    = onkeyup
         document.onkeydown  = onkeydown
         document.onkeypress = onkeypress
         //
-        document.body.removeChild(box)    
-        document.body.removeChild(overlay) 
+        document.body.removeChild(box)
+        document.body.removeChild(overlay)
         if (callback != undefined) { callback(text) }
     }
 }
@@ -937,11 +950,11 @@ function customPrompt(message, callback, value) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function clickHtmlElement(element) { 
+function clickHtmlElement(element) {
     // Firefox (and Edge) does not click link that is not body's child
     const e = document.createEvent("MouseEvents")
     e.initEvent("click", true, true) // event type, can bubble?,  cancelable?
-    element.dispatchEvent(e) 
+    element.dispatchEvent(e)
 }
 
 function createCanvas(width, height) {
@@ -995,7 +1008,7 @@ function panelOnWheel(e) {
     const y = e.offsetY
     const sign = Math.sign(e.deltaY)
     //
-    const gadget = getGadgetUnderMouse(x, y) 
+    const gadget = getGadgetUnderMouse(x, y)
     //
     if (gadget == null) { return }
     //
@@ -1007,9 +1020,9 @@ function panelOnWheel(e) {
 function panelOnMouseDown(e) {
     //
     const x = e.offsetX
-    const y = e.offsetY 
+    const y = e.offsetY
     //
-    const gadget = getGadgetUnderMouse(x, y) 
+    const gadget = getGadgetUnderMouse(x, y)
     //
     focusedGadget = gadget
     //
@@ -1025,9 +1038,9 @@ function panelOnMouseDown(e) {
 function panelOnMouseUp(e) {
     //
     const x = e.offsetX
-    const y = e.offsetY 
+    const y = e.offsetY
     //
-    const gadget = getGadgetUnderMouse(x, y) 
+    const gadget = getGadgetUnderMouse(x, y)
     //
     if (panelDragControl) { panelDragControl("up", x, y, gadget, false) }
     //
@@ -1045,8 +1058,8 @@ function panelOnMouseUp(e) {
 function panelOnMouseMove(e) {
     //
     const x = e.offsetX
-    const y = e.offsetY 
-    const dragging = (e.buttons == 1)  
+    const y = e.offsetY
+    const dragging = (e.buttons == 1)
     //
     const gadget = getGadgetUnderMouse(x, y)
     //
@@ -1069,7 +1082,7 @@ function tryMouseLeftFocusedGadget(gadget, dragging) {
     //
     if (dragging) { focusedGadget = null }
 }
-    
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function getGadgetUnderMouse(x, y)  {
@@ -1082,7 +1095,7 @@ function getGadgetUnderMouseCore(x, y)  {
     //
     for (const gadget of currentGadgets) {
         //
-        if (isGadgetUnderMouse(x, y, gadget)) { return gadget } 
+        if (isGadgetUnderMouse(x, y, gadget)) { return gadget }
     }
     //
     return null
@@ -1149,6 +1162,18 @@ function createButton(id, ctx, left, top, width, height, txt, action, disabled) 
     //
     const button = new Button(id, ctx, left, top, width, height, txt, action, disabled)
     //
+    updateButtonImages(button)
+    //
+    Object.seal(button)
+    return button
+}
+
+function updateButtonImages(button) { // also called by function 'exchangeLayers'
+    //
+    const width = button.width
+    const height = button.height
+    const txt = button.text
+    //
     const restH = width - lengthOfText(txt)
     const txtLeft = Math.floor(restH / 2)
     //
@@ -1161,9 +1186,6 @@ function createButton(id, ctx, left, top, width, height, txt, action, disabled) 
     button.imageLight = makeButtonImageLight(width, height, txt, txtLeft, txtTop)
     button.imagePressed = makeButtonImagePressed(width, height)
     button.imageDisabled = makeButtonImageDisabled(width, height, txt, txtLeft, txtTop, forLayer) // special case
-    //
-    Object.seal(button)
-    return button
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1191,13 +1213,13 @@ function buttonClicked(button) {
     //
     if (button.id.startsWith("effect-")) { applyEffect(button.action); return } // special case
     //
-    button.action(button)    
+    button.action(button)
 }
 
 function startBlinkingButton(button) {
     button.blinkTimer = LOOP + 7
     paintButton(button) // must come after setting blinkTimer
-    scheduleByLoop(function () { paintButton(button) }, 7) 
+    scheduleByLoop(function () { paintButton(button) }, 7)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1208,10 +1230,10 @@ function makeButtonImageDark(width, height, txt, left, top) {
     const cnv = createCanvas(width, height)
     const ctx = cnv.getContext("2d")
     //
-    ctx.fillStyle = "rgb(160,160,160)" 
+    ctx.fillStyle = "rgb(160,160,160)"
     ctx.fillRect(0, 0, width, height)
     //
-    ctx.fillStyle = "rgb(240,240,240)" 
+    ctx.fillStyle = "rgb(240,240,240)"
     ctx.fillRect(1, 1, width - 2, height - 2)
     //
     writeCore(ctx, standardFont, txt, left, top)
@@ -1224,13 +1246,13 @@ function makeButtonImageLight(width, height, txt, left, top) {
     const cnv = createCanvas(width, height)
     const ctx = cnv.getContext("2d")
     //
-    ctx.fillStyle = "rgb(150,150,150)" 
+    ctx.fillStyle = "rgb(150,150,150)"
     ctx.fillRect(0, 0, width, height)
     //
-    ctx.fillStyle = "rgb(180,180,180)" 
+    ctx.fillStyle = "rgb(180,180,180)"
     ctx.fillRect(1, 1, width - 2, height - 2)
     //
-    ctx.fillStyle = "rgb(240,240,240)" 
+    ctx.fillStyle = "rgb(240,240,240)"
     ctx.fillRect(2, 2, width - 4, height - 4)
     //
     writeCore(ctx, standardFont, txt, left, top)
@@ -1246,7 +1268,7 @@ function makeButtonImagePressed(width, height) {
     ctx.fillStyle = "grey"
     ctx.fillRect(0, 0, width, height)
     //
-    ctx.fillStyle = "white" 
+    ctx.fillStyle = "white"
     ctx.fillRect(1, 1, width - 2, height - 2)
     //
     return cnv
@@ -1260,7 +1282,7 @@ function makeButtonImageDisabled(width, height, txt, left, top, forlayer) {
     ctx.fillStyle = "rgb(160,160,160)"
     ctx.fillRect(0, 0, width, height)
     //
-    ctx.fillStyle = "rgb(240,240,240)" 
+    ctx.fillStyle = "rgb(240,240,240)"
     ctx.fillRect(1, 1, width - 2, height - 2)
     //
     writeCore(ctx, standardFont, txt, left, top)
@@ -1332,7 +1354,7 @@ function resetCheckbox(cb, checked) {
 function __revertCheckbox(cb) {
     //
     cb.checked = ! cb.checked
-    paintCheckbox(cb)   
+    paintCheckbox(cb)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1404,16 +1426,16 @@ function createChessBox(width, height, side, light, dark) {
     //
     ctx.fillStyle = dark
     ctx.fillRect(0, 0, width, height)
-    //    
+    //
     ctx.fillStyle = light
-    //    
+    //
     let top = 0
     let startJumping = false
     //
     while (true) {
         paintChessBoxRow(ctx, width, top, side, startJumping)
         startJumping = ! startJumping
-        top += side        
+        top += side
         if (top > height - 1) { break }
     }
     //
@@ -1503,7 +1525,7 @@ function makeFrameCanvasIcon() {
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, 80, 80)
     //
-    const label = createCanvasLabel("CANVAS", 16, "beige") 
+    const label = createCanvasLabel("CANVAS", 16, "beige")
     const l = Math.floor((80 - label.width) / 2)
     const t = Math.floor((80 - label.height) / 2)
     //
@@ -1520,7 +1542,7 @@ function makeFrameOffIcon() {
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, 80, 80)
     //
-    const label = createCanvasLabel("off", 22, "beige") 
+    const label = createCanvasLabel("off", 22, "beige")
     const l = Math.floor((80 - label.width) / 2)
     const t = Math.floor((80 - label.height) / 2)
     //
@@ -1562,9 +1584,9 @@ function makeFavoriteIcon(src) {
         x = - Math.floor((height - width) / 2)
         width = height
     }
-    //    
+    //
     ctx.drawImage(src, x,y,width,height, 0,0,100,100)
-    //    
+    //
     return cnv
 }
 
@@ -1588,8 +1610,8 @@ function createMarker(side) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function createStandardHueCanvas(width, height) { 
-    const cnv = createCanvas(360, height) 
+function createStandardHueCanvas(width, height) {
+    const cnv = createCanvas(360, height)
     const ctx = cnv.getContext("2d")
     //
     for (let left = 0; left < 360; left++) {
@@ -1603,8 +1625,8 @@ function createStandardHueCanvas(width, height) {
 }
 
 /*
-function createStandardHueCanvas(width, height) { 
-    const cnv = createCanvas(width, height) 
+function createStandardHueCanvas(width, height) {
+    const cnv = createCanvas(width, height)
     const ctx = cnv.getContext("2d")
     //
     const grd = ctx.createLinearGradient(0, 0, width-1, 0)
@@ -1619,18 +1641,18 @@ function createStandardHueCanvas(width, height) {
     ctx.fillStyle = grd
     ctx.fillRect(0, 0, width, height)
     //
-    return cnv 
+    return cnv
 }
 */
 
 ///////////////////////////////////////////////////////////////////////////////
-  
+
 function paintThisPalette(ctx, width, list, side, rowStart, top, even) {
     //
     const bg1 = even ? "rgb(180,180,180)" : "rgb(235,235,235)"
-    const bg2 = even ? "rgb(235,235,235)" : "rgb(180,180,180)" 
+    const bg2 = even ? "rgb(235,235,235)" : "rgb(180,180,180)"
     //
-    let left = rowStart   
+    let left = rowStart
     //
     for (const raw of list) {
         //
@@ -1643,19 +1665,19 @@ function paintThisPalette(ctx, width, list, side, rowStart, top, even) {
 
 function paintColorOnThisPalette(ctx, raw, left, top, side, bg1, bg2) {
     //
-    if (raw != "blank") { 
+    if (raw != "blank") {
         ctx.fillStyle = "rgb(" + raw + ")"
         ctx.fillRect(left, top, side, side)
         return
     }
     //
     ctx.fillStyle = bg1
-    ctx.fillRect(left, top, side, side)  
+    ctx.fillRect(left, top, side, side)
     //
     const half = Math.floor(side / 2)
     const exact = (side == 2 * half)
     const delta = exact ? 0 : 1
-    //          
+    //
     ctx.fillStyle = bg2
     ctx.fillRect(left, top, half, half+delta)
     ctx.fillRect(left+half, top+half+delta, half+delta, half)
@@ -1722,7 +1744,7 @@ function fillFontOnce(font, top, reference, guide) {
     const symbols = reference.split("")
     let n = -1
     for (const symbol of symbols) {
-        n += 1 
+        n += 1
         const begin = guide[n]
         n += 1
         const width = guide[n]
@@ -1784,7 +1806,7 @@ function lengthOfText(txt) {
         length += (standardFont[c]).width
     }
     //
-    return length    
+    return length
 }
 
 // file: component/hsl-gradient.js //
@@ -1792,7 +1814,7 @@ function lengthOfText(txt) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function createGreyTranslucentGradient() { 
+function createGreyTranslucentGradient() {
     const canvas = createGradient256()
     // vertical reduction
     const canvasV = createCanvas(256, 125)
@@ -1816,9 +1838,9 @@ function createGreyTranslucentGradient() {
 //////////////////////////////////////////////////////////////////////////////
 
 function createGradient256() {
-    const cnv = createCanvas(256, 256) 
+    const cnv = createCanvas(256, 256)
     const ctx = cnv.getContext("2d")
-    // 
+    //
     ctx.drawImage(createWhiteGradient(), 0, 0)
     ctx.drawImage(createBlackGradient(), 0, 0)
     //
@@ -1827,8 +1849,8 @@ function createGradient256() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function createWhiteGradient() { 
-    const cnv = createCanvas(256, 256) 
+function createWhiteGradient() {
+    const cnv = createCanvas(256, 256)
     const ctx = cnv.getContext("2d")
     const imgdata = ctx.getImageData(0, 0, 256, 256)
     const data = imgdata.data
@@ -1846,14 +1868,14 @@ function createWhiteGradient() {
             data[index+1] = 255
             data[index+2] = 255
             data[index+3] = alpha
-        }    
+        }
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
- 
-function createBlackGradient() { 
-    const cnv = createCanvas(256, 256) 
+
+function createBlackGradient() {
+    const cnv = createCanvas(256, 256)
     const ctx = cnv.getContext("2d")
     const imgdata = ctx.getImageData(0, 0, 256, 256)
     const data = imgdata.data
@@ -1871,7 +1893,7 @@ function createBlackGradient() {
             data[index+1] = 0
             data[index+2] = 0
             data[index+3] = alpha
-        }    
+        }
     }
 }
 
@@ -1900,7 +1922,7 @@ var iconGuide = {
     "effect": [3, 1],
     "rectangle": [3, 2],
     "save2": [3, 3],
-    "scale": [3, 4], 
+    "scale": [3, 4],
     "save": [4, 1],
     "ellipse": [4, 2],
     "capture": [4, 3],
@@ -2121,7 +2143,7 @@ function initOverlay() {
     overlay.style.zIndex = "30"
     overlay.style.visibility = "hidden"
     //
-    bigdiv.appendChild(overlay) 
+    bigdiv.appendChild(overlay)
 }
 
 function showOverlay(white) {
@@ -2160,7 +2182,7 @@ function Numbox(id, ctx, left, top, width, height, txt, maxval, action) {
     this.text = txt
     this.maxValue = maxval
     this.maxLength = ("" + maxval).length
-    this.textTop = topForNumboxText(height) 
+    this.textTop = topForNumboxText(height)
     this.textLeft = leftForNumboxText(width, this.maxLength) // must come after maxLength
     this.action = action
     //
@@ -2197,16 +2219,16 @@ function leftForNumboxText(width, maxLength) {
     //
     const digits = 8 * maxLength // 8 is the width of the characters
     const spaces = maxLength - 1 // space between digits
-    const txtWidth = digits + spaces 
+    const txtWidth = digits + spaces
     //
-    const innerWidth = width - 2 
-    const rest = innerWidth - txtWidth 
+    const innerWidth = width - 2
+    const rest = innerWidth - txtWidth
     return Math.floor(rest / 2) + 1 // +1 for the left border (outside innerWidth)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function resetNumbox(numbox, txt) { 
+function resetNumbox(numbox, txt) {
     numbox.text = txt
     numbox.cursorPosition = numbox.maxLength
     paintNumbox(numbox)
@@ -2230,14 +2252,14 @@ function manageNumboxBlinking(numbox) {
     numbox.cursorPosition = numbox.maxLength
     paintNumbox(numbox)
 }
-    
+
 function manageNumboxBlinkingFocused(numbox) {
     //
     const duration = numbox.cursorOn ? 22 : 9
     //
     if (LOOP < numbox.blinkingClock + duration) { return }
     //
-    numbox.blinkingClock = LOOP    
+    numbox.blinkingClock = LOOP
     numbox.cursorOn = ! numbox.cursorOn
     paintNumbox(numbox)
 }
@@ -2247,12 +2269,12 @@ function manageNumboxBlinkingFocused(numbox) {
 function makeNumboxImageDark(width, height) {
     //
     const cnv = createCanvas(width, height)
-    const ctx = cnv.getContext("2d")      
+    const ctx = cnv.getContext("2d")
     //
-    ctx.fillStyle = "rgb(65,65,65)" 
+    ctx.fillStyle = "rgb(65,65,65)"
     ctx.fillRect(0, 0, width, height)
     //
-    ctx.fillStyle = "rgb(255,255,255)" 
+    ctx.fillStyle = "rgb(255,255,255)"
     ctx.fillRect(1, 1, width - 2, height - 2)
     //
     return cnv
@@ -2263,10 +2285,10 @@ function makeNumboxImageLight(width, height) {
     const cnv = createCanvas(width, height)
     const ctx = cnv.getContext("2d")
     //
-    ctx.fillStyle = "rgb(150,150,150)" 
+    ctx.fillStyle = "rgb(150,150,150)"
     ctx.fillRect(0, 0, width, height)
     //
-    ctx.fillStyle = "rgb(255,255,255)" 
+    ctx.fillStyle = "rgb(255,255,255)"
     ctx.fillRect(1, 1, width - 2, height - 2)
     //
     return cnv
@@ -2295,7 +2317,7 @@ function drawTextOnNumbox(numbox, ctx) {
     //
     let left = numbox.textLeft
     //
-    for (const c of txt) { 
+    for (const c of txt) {
         //
         const spr = specialIcons[c]
         ctx.drawImage(spr, left, numbox.textTop)
@@ -2309,7 +2331,7 @@ function drawCursorOnNumbox(numbox, ctx) {
     if (! numbox.cursorOn) { return }
     //
     ctx.fillStyle = "red"
-    const left = numbox.textLeft - 1 + (numbox.cursorPosition * 9) // 9 = 8 + 1 // digit width + spacer 
+    const left = numbox.textLeft - 1 + (numbox.cursorPosition * 9) // 9 = 8 + 1 // digit width + spacer
     //
     ctx.fillRect(left, 5, 2, numbox.height - 10)
 }
@@ -2338,7 +2360,7 @@ function numboxOnKeyDown(numbox, low) {
 }
 
 function fixNumboxCursorPosition(numbox) { // to be called after numbox text is fixed
-    // or else deleting '1' of '1000' 
+    // or else deleting '1' of '1000'
     // would leave the cursor far to the left
     if (numbox.text == 0) { numbox.cursorPosition = numbox.maxLength; return }
     //
@@ -2356,29 +2378,29 @@ function processKeyDownOnNumbox(numbox, low) {
     //
     if (low == "arrowleft") {
         if (numbox.cursorPosition > minpos) { numbox.cursorPosition -= 1 }
-        return     
+        return
     }
     //
     if (low == "arrowright") {
-        if (numbox.cursorPosition < maxpos) { numbox.cursorPosition += 1 }        
-        return     
+        if (numbox.cursorPosition < maxpos) { numbox.cursorPosition += 1 }
+        return
     }
     //
     if (low == "home") { numbox.cursorPosition = minpos; return }
     //
     if (low == "end")  { numbox.cursorPosition = maxpos; return }
     //
-    if (low == "delete") { 
+    if (low == "delete") {
         if (numbox.cursorPosition == maxpos) { return } // no digit ahead
         removeNumboxDigit(numbox, numbox.cursorPosition)
-        numbox.cursorPosition += 1 
-        return 
+        numbox.cursorPosition += 1
+        return
     }
     //
-    if (low == "backspace") { 
+    if (low == "backspace") {
         if (numbox.cursorPosition == minpos) { return } // no digit behind
-        removeNumboxDigit(numbox, numbox.cursorPosition - 1) 
-        return 
+        removeNumboxDigit(numbox, numbox.cursorPosition - 1)
+        return
     }
     //
     if (low < "0") { return }
@@ -2421,7 +2443,7 @@ function insertNumboxDigit(numbox, pos, digit) {
 const sliders = { } // just the images
 
 ///////////////////////////////////////////////////////////////////////////////
-    
+
 function Slider(id, ctx, left, top, width, value, action) {
     //
     this.kind = "slider"
@@ -2435,7 +2457,7 @@ function Slider(id, ctx, left, top, width, value, action) {
     this.height = 30 // constant; for mouse coordinates only
     //
     this.onClick = function (x) { inputOnSlider(this, x) }
-    this.onMouseMove = function (x, __y, dragging) { 
+    this.onMouseMove = function (x, __y, dragging) {
         if (dragging) { inputOnSlider(this, x) }
     }
     //
@@ -2460,7 +2482,7 @@ function resetSlider(slider, value, forced) {
     if (slider.value == value  &&  ! forced) { return }
     //
     slider.value = value
-    //    
+    //
     paintSlider(slider)
 }
 
@@ -2479,7 +2501,7 @@ function paintSlider(slider) {
 
 function sliderBar(width, dark) {
     //
-    const id = width + "-" + (dark ? "dark" : "light") 
+    const id = width + "-" + (dark ? "dark" : "light")
     //
     let slider = sliders[id]
     //
@@ -2492,10 +2514,10 @@ function sliderBar(width, dark) {
 
 function sliderCursor(dark) {
     //
-    const id = "cursor-" + (dark ? "dark" : "light") 
+    const id = "cursor-" + (dark ? "dark" : "light")
     //
     let cursor = sliders[id]
-    //    
+    //
     if (cursor == undefined) { cursor = createSliderCursor(dark); sliders[id] = cursor }
     //
     return cursor
@@ -2506,18 +2528,18 @@ function sliderCursor(dark) {
 function sliderCursorLeft(slider) {
     //
     const logicalWidth = slider.width - 20
-    //    
+    //
     const logicalLeft = Math.round(slider.value * logicalWidth)
     //
     return slider.left + 10 + logicalLeft - 10 // +10: visible bar displacement; -10: half cursor width
 }
-  
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function inputOnSlider(slider, x) {
     //
     const adjustedX = x - 10 // -10: visible bar displacement
-    //    
+    //
     const logicalWidth = slider.width - 20
     //
     slider.value = adjustedX / logicalWidth
@@ -2526,7 +2548,7 @@ function inputOnSlider(slider, x) {
     if (slider.value > 1) { slider.value = 1 }
     //
     paintSlider(slider)
-    //    
+    //
     slider.action(slider)
 }
 
@@ -2583,7 +2605,7 @@ function createSliderBarCore(width, dark) {
     //
     ctx.drawImage(sliderLeftBeacon(dark), 0, 7)
     ctx.drawImage(sliderRightBeacon(dark), width-3, 7)
-    // 
+    //
     if (dark) { ctx.fillRect(2, 9, width-4, 2) }
     //
     return cnv
@@ -2616,7 +2638,7 @@ function sliderBeacon(hints, dark) {
     // top part
     for (let y = 0; y < 3; y ++) {
         for (let x = 0; x < 3; x ++) {
-            const index = (y * 3) + x 
+            const index = (y * 3) + x
             const color = colors[index]
             ctx.fillStyle = color
             ctx.fillRect(x, y, 1, 1)
@@ -2625,7 +2647,7 @@ function sliderBeacon(hints, dark) {
     // bottom part
     for (let y = 0; y < 3; y ++) {
         for (let x = 0; x < 3; x ++) {
-            const index = (y * 3) + x 
+            const index = (y * 3) + x
             const color = colors[index]
             ctx.fillStyle = color
             ctx.fillRect(x, (5-y), 1, 1)
@@ -2658,11 +2680,11 @@ function Surface(id, ctx, left, top, width, height) {
     this.width = width
     this.height = height
     //
-    this.onClick = null 
+    this.onClick = null
     this.onWheel = null
-    this.onMouseDown = null 
-    this.onMouseMove = null 
-    this.onMouseLeave = null  
+    this.onMouseDown = null
+    this.onMouseMove = null
+    this.onMouseLeave = null
     //
     this.canvas = createCanvas(width, height)
 }
@@ -2692,16 +2714,16 @@ var frameForAlternativeSave
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function showAlternativeSave() { 
+function showAlternativeSave() {
     //
     if (toplayer == null) { return }
     //
-    startBlinkingIconOnTopBar("save2") 
+    startBlinkingIconOnTopBar("save2")
     //
     makeCheckedPicture(showAlternativeSave2)
 }
-    
-function showAlternativeSave2(pic) {    
+
+function showAlternativeSave2(pic) {
     //
     imageForAlternativeSave = pic
     //
@@ -2744,7 +2766,7 @@ function hideAlternativeSave() {
 // file: interface/bottom-bar.js //
 // "use strict"
 
-var bottomBar 
+var bottomBar
 var bottomBarCtx
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2775,14 +2797,14 @@ function paintBottomBar() {
     bottomBarCtx.fillStyle = "black"
     bottomBarCtx.fillRect(64, 1, 40, 28)
     paintMouseColorOnBottomBar()
-    //  
-    paintZoomOnBottomBar()   
-    //  
-    paintLayerSizeOnBottomBar()   
-    //  
-    paintLayerPositionOnBottomBar()   
-    //  
-    paintLayerOpacityOnBottomBar() 
+    //
+    paintZoomOnBottomBar()
+    //
+    paintLayerSizeOnBottomBar()
+    //
+    paintLayerPositionOnBottomBar()
+    //
+    paintLayerOpacityOnBottomBar()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2798,7 +2820,7 @@ function paintMousePositionOnBottomBar() {
     //
     bottomBarCtx.fillStyle = bottomBarColor()
     bottomBarCtx.fillRect(5, 0, 55, 30)
-    //  
+    //
     if (infoLayerX == null  ||  infoLayerY == null) { return }
     //
     write(bottomBarCtx, "x  " + (infoLayerX + 1), 10, 1)
@@ -2866,7 +2888,7 @@ function paintMouseColorOnBottomBar() {
     bottomBarCtx.fillStyle = bottomBarColor()
     bottomBarCtx.fillRect(109, 7, 180, 20)
     //
-    if (mouseRed == -1) { return }    
+    if (mouseRed == -1) { return }
     //
     const alpha = (mouseAlpha == 255 ? "opaque" : mouseAlpha)
     //
@@ -2918,7 +2940,7 @@ function initCanvasAnimation() {
     animationCnv.style.zIndex = "11"
     animationCnv.style.visibility = "hidden"
     //
-    bigdiv.appendChild(animationCnv) 
+    bigdiv.appendChild(animationCnv)
     //
     initCanvasAnimation2()
 }
@@ -2951,7 +2973,7 @@ function showAnimation() {
     //
     makeCheckedPicture(showAnimation2)
 }
-    
+
 function showAnimation2(pic) {
     //
     MODE = "animation"
@@ -2986,9 +3008,9 @@ function paintPanelAnimation() {  // mainLoop will call drawAnimation
     //
     standardWrite(animationCtx, "animation", 610, 10)
     //
-    const msg =  "   Uses the first 12 favorites and the current canvas      |" + 
-                 "     Clicking any frame toggles it on/off    |" + 
-                 "     Left and right arrows move the frame CANVAS    |" + 
+    const msg =  "   Uses the first 12 favorites and the current canvas      |" +
+                 "     Clicking any frame toggles it on/off    |" +
+                 "     Left and right arrows move the frame CANVAS    |" +
                  "     Any other key closes this panel"
     //
     standardWrite(animationCtx, msg, 20, 630)
@@ -3025,7 +3047,7 @@ function paintAnimationIcons() {
     let x = 15 - 99
     const y = 530
     //
-    for (const obj of animationObjs) { 
+    for (const obj of animationObjs) {
         //
         x += 99
         //
@@ -3043,15 +3065,15 @@ function paintAnimationIcons() {
         }
         else {
             animationCtx.fillStyle = backgroundColor
-            animationCtx.fillRect(x, y, 80, 80) 
+            animationCtx.fillRect(x, y, 80, 80)
         }
         //
         const fav = favorites[obj.favIndex]
         //
-        animationCtx.drawImage(fav.icon, 0,0,100,100, x,y,80,80)    
+        animationCtx.drawImage(fav.icon, 0,0,100,100, x,y,80,80)
     }
 }
-    
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3177,7 +3199,7 @@ function drawAnimation() { // called by mainLoop if MODE=="animation"
     }
     else {
         animationCtx.fillStyle = backgroundColor
-        animationCtx.fillRect(449, 69, 402, 402) 
+        animationCtx.fillRect(449, 69, 402, 402)
     }
     //
     drawAnimationFrame()
@@ -3197,8 +3219,8 @@ function drawAnimationFrame() { // 402 x 402 px virtual canvas
     const cnv = createCanvas(side, side)
     const ctx = cnv.getContext("2d")
     //
-    const left = Math.floor((side - src.width) / 2) 
-    const top  = Math.floor((side - src.height) / 2) 
+    const left = Math.floor((side - src.width) / 2)
+    const top  = Math.floor((side - src.height) / 2)
     //
     ctx.drawImage(src, left, top)
     //
@@ -3228,7 +3250,7 @@ function initCanvasFavorites() {
     favoritesCnv.style.zIndex = "11"
     favoritesCnv.style.visibility = "hidden"
     //
-    bigdiv.appendChild(favoritesCnv) 
+    bigdiv.appendChild(favoritesCnv)
     //
     initCanvasFavorites2()
 }
@@ -3281,7 +3303,7 @@ function setFavoritesCursorMove() {
     favoritesCursor = "move"
     favoritesCnv.style.cursor = "move"
 }
-    
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function paintFavorites() {
@@ -3303,8 +3325,8 @@ function paintFavorites() {
         return
     }
     //
-    const msg =  "       Use mouse to drag any favorite       |" + 
-                 "       The first 12 favorites will be used in panel Animation        |" + 
+    const msg =  "       Use mouse to drag any favorite       |" +
+                 "       The first 12 favorites will be used in panel Animation        |" +
                  "       Type any key to close this panel"
     //
     standardWrite(favoritesCtx, msg, 20, 625)
@@ -3331,7 +3353,7 @@ function paintFavorites() {
 function paintFavorite(n, x, y) {
     //
     favoritesCtx.fillStyle = "black"
-    favoritesCtx.fillRect(x-1, y-1, 102, 102)   
+    favoritesCtx.fillRect(x-1, y-1, 102, 102)
     //
     if (backgroundColor == "blank") {
         //
@@ -3339,8 +3361,8 @@ function paintFavorite(n, x, y) {
     }
     else {
         favoritesCtx.fillStyle = backgroundColor
-        favoritesCtx.fillRect(x, y, 100, 100)    
-    }    
+        favoritesCtx.fillRect(x, y, 100, 100)
+    }
     //
     const f = favorites[n]
     favoritesCtx.drawImage(f.icon, x, y)
@@ -3405,7 +3427,7 @@ function favoriteCol(x) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function favoritesOnMouseDown(e) { 
+function favoritesOnMouseDown(e) {
     //
     const x = e.offsetX
     const y = e.offsetY
@@ -3438,18 +3460,18 @@ function favoritesOnMouseUp(e) {
     if (index == -1) { return } // nothing
     //
     if (index == 49) { deleteFavorite(); return } // trashcan
-    // 
+    //
     if (index == indexOfSelectedFavorite) { return } // self click
     //
     exchangeFavorites(indexOfSelectedFavorite, index) // exchange
 }
 
-function favoritesOnMouseMove(e) { 
+function favoritesOnMouseMove(e) {
     //
     const y = e.offsetY
     const dragging = (e.buttons == 1)
     //
-    if (dragging  &&  y < 620  &&  mouseDownOnFavoritesWasOK) { 
+    if (dragging  &&  y < 620  &&  mouseDownOnFavoritesWasOK) {
         //
         setFavoritesCursorMove()
     }
@@ -3482,7 +3504,7 @@ function initCanvasHelp() {
     canvasHelp.style.zIndex = "31"
     canvasHelp.style.visibility = "hidden"
     //
-    bigdiv.appendChild(canvasHelp) 
+    bigdiv.appendChild(canvasHelp)
     //
     initCanvasHelp2()
 }
@@ -3517,24 +3539,24 @@ function hideCanvasHelp() {
 // file: interface/interface.js //
 // "use strict"
 
-const wingColorDark = "rgb(102,104,108)" 
+const wingColorDark = "rgb(102,104,108)"
 const wingColorLight = "rgb(192,192,192)"
 
 var bigdiv
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function initInterface() { 
+function initInterface() {
     //
     bigdiv = document.getElementById("bigdiv")
     resetBigDivPosition()
     //
-    initOverlay() 
-    initCanvasFavorites() 
+    initOverlay()
+    initCanvasFavorites()
     initCanvasAnimation()
     initCanvasHelp()
     //
-    initTopBar()  
+    initTopBar()
     initStage()
     initBottomBar()
     //
@@ -3557,7 +3579,7 @@ function resetBigDivPosition() {
     if (excedent <= 0) { excedent = 0 }
     //
     const left = Math.floor(excedent / 2)
-    bigdiv.style.left = left + "px"    
+    bigdiv.style.left = left + "px"
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3627,7 +3649,7 @@ function canvasFrameColor() {
 // file: interface/mini-bar.js //
 // "use strict"
 
-var miniBar   
+var miniBar
 var miniBarCtx
 
 const miniBarScheme = [
@@ -3658,7 +3680,7 @@ function initMiniBar() {
     //
     bigdiv.appendChild(miniBar)
     //
-    initMiniBar2()    
+    initMiniBar2()
 }
 
 function initMiniBar2() {
@@ -3685,14 +3707,14 @@ function startListeningMiniBar() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function paintMiniBar() {
-    paintMiniBarBg() 
+    paintMiniBarBg()
     //
     miniBarCtx.fillStyle = wingColor()
     miniBarCtx.fillRect(0, 0, 240, 30)
     //
     greyTraceH(miniBarCtx, 5, 29, 230)
     //
-    const off = miniBarScheme.length 
+    const off = miniBarScheme.length
     for (let n = 0; n < off; n++) {
         const id = miniBarScheme[n]
         const left = miniBarLefts[n]
@@ -3729,7 +3751,7 @@ function clickedIconOnMiniBar(x, y) {
     if (y < 3)  { return "" }
     if (y > 28) { return "" }
     //
-    const off = miniBarLefts.length 
+    const off = miniBarLefts.length
     for (let n = 0; n < off; n++) {
         const left = miniBarLefts[n]
         const a = left - 1 // start including 1 pixel
@@ -3763,7 +3785,7 @@ function tradeColors() {
     referenceRed   = RED
     referenceGreen = GREEN
     referenceBlue  = BLUE
-    referenceAlpha = ALPHA 
+    referenceAlpha = ALPHA
     //
     updateCurrentColor(color)
 }
@@ -3772,24 +3794,24 @@ function tradeColors() {
 
 function paintAndShowPanelColor() {
     //
-    if (hslOrRgba == "hsl") { 
+    if (hslOrRgba == "hsl") {
         //
-        paintPanelHsl() 
-        panelHsl.style.visibility = "visible"         
-    } 
-    else { 
+        paintPanelHsl()
+        panelHsl.style.visibility = "visible"
+    }
+    else {
         //
-        paintPanelRgba() 
+        paintPanelRgba()
         panelRgba.style.visibility = "visible"
     }
 }
 
 function hidePanelColor() {
     //
-    if (hslOrRgba == "hsl") { 
-        panelHsl.style.visibility = "hidden"         
-    } 
-    else { 
+    if (hslOrRgba == "hsl") {
+        panelHsl.style.visibility = "hidden"
+    }
+    else {
         panelRgba.style.visibility = "hidden"
     }
 }
@@ -3806,7 +3828,7 @@ function maybeRepaintColorPanel() {
 // file: interface/panel-color-hsl-1.js //
 // "use strict"
 
-var panelHsl   
+var panelHsl
 var panelHslCtx
 
 var surfaceHslReference
@@ -3859,7 +3881,7 @@ function initPanelHsl2() {
     buttonToRgba = createButton("to-rgba", panelHslCtx,  13, 267, 97, 30, "to  R G B A", changeToRgba, false)
     buttonHslCopy = createButton("hsl-copy", panelHslCtx, 130, 267, 97, 30, "copy to ref", hslCopyToReference, false)
     //
-    panelHslGadgets = [ surfaceHslReference, surfaceHslCurrent, surfaceHue, surfaceHsl, surfaceDetail, 
+    panelHslGadgets = [ surfaceHslReference, surfaceHslCurrent, surfaceHue, surfaceHsl, surfaceDetail,
                         buttonToRgba, buttonHslCopy ]
     //
     adjustHslGadgetsToCurrentColor()
@@ -3882,7 +3904,7 @@ function paintPanelHsl() {
     panelHslCtx.fillStyle = wingColor()
     panelHslCtx.fillRect(0, 0, 240, 305)
     //
-    greyEmptyRect(panelHslCtx, surfaceHslReference.left-1, surfaceHslReference.top-1, 
+    greyEmptyRect(panelHslCtx, surfaceHslReference.left-1, surfaceHslReference.top-1,
                                surfaceHslReference.width*2+2, surfaceHslReference.height+2)
     //
     paintSurfaceHslReference()
@@ -3890,8 +3912,8 @@ function paintPanelHsl() {
     //
     write(panelHslCtx, "ref", 10, 17)
     write(panelHslCtx, "cur", 205, 17)
-    // 
-    greyEmptyRect(panelHslCtx, surfaceHsl.left+5-1, surfaceHsl.top+5-1, 
+    //
+    greyEmptyRect(panelHslCtx, surfaceHsl.left+5-1, surfaceHsl.top+5-1,
                                surfaceHsl.width-10+2, surfaceHsl.height-10+2)
     //
     greyOuterEdgeByGadget(surfaceDetail)
@@ -3949,16 +3971,16 @@ function configSurfaceHslCurrent() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function adjustHslGadgetsToCurrentColor() { 
+function adjustHslGadgetsToCurrentColor() {
     //
     const color = [RED, GREEN, BLUE]
     //
     const hsl = rgbToHsl(color)
     const hue = hsl[0]
-    // 
-    paintSurfaceDetail(hue) 
     //
-    drawHslGradient(hue) 
+    paintSurfaceDetail(hue)
+    //
+    drawHslGradient(hue)
     //
     const point = bestMatchingPixel(hslGradient, color) // must send canvas without marker!
     surfaceHslX = point.x
@@ -3973,7 +3995,7 @@ function updateByHue() {
     const hsl = rgbToHsl([mouseRed, mouseGreen, mouseBlue])
     const hue = hsl[0]
     //
-    paintSurfaceDetail(hue) 
+    paintSurfaceDetail(hue)
     paintSurfaceHsl(hue)
     updateCurrentColorByHsl()
 }
@@ -4000,7 +4022,7 @@ function hslCopyToReference() {
     referenceRed   = RED
     referenceGreen = GREEN
     referenceBlue  = BLUE
-    referenceAlpha = ALPHA 
+    referenceAlpha = ALPHA
     //
     paintSurfaceHslReference()
 }
@@ -4021,8 +4043,8 @@ var surfaceHslCtx
 var surfaceHueCtx
 var surfaceDetailCtx
 
-var surfaceHslX 
-var surfaceHslY 
+var surfaceHslX
+var surfaceHslY
 
 var hslGradient    // 228 x 125
 var hslGradientCtx
@@ -4053,7 +4075,7 @@ function drawHslGradient(hue) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function configSurfaceHue() { 
+function configSurfaceHue() {
     //
     const width = surfaceHue.width
     const height = surfaceHue.height
@@ -4080,7 +4102,7 @@ function colorAtHue(x, y) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function configSurfaceDetail() {
-    // 
+    //
     surfaceDetailCtx = surfaceDetail.canvas.getContext("2d")
     //
     surfaceDetail.onMouseDown = updateByDetail
@@ -4100,7 +4122,7 @@ function paintSurfaceDetail(hue) {
     paintSurface(surfaceDetail)
 }
 
-function drawSurfaceDetail(hue) { 
+function drawSurfaceDetail(hue) {
     //
     hue = Math.round(hue)
     if (hue >= 360) { hue -= 360 }
@@ -4145,7 +4167,7 @@ function configSurfaceHsl() {
 function surfaceHslOnMouseDown(x, y) {
     //
     x = fixedXForSurfaceHsl(x)
-    y = fixedYForSurfaceHsl(y) 
+    y = fixedYForSurfaceHsl(y)
     //
     const color = colorAtHsl(x, y)
     updateCurrentColor(color) // alpha is 255
@@ -4170,7 +4192,7 @@ function justMovingOnSurfaceHsl(x, y) {
     if (y > 129) { eraseMouseColor(); return }
     //
     x = fixedXForSurfaceHsl(x)
-    y = fixedYForSurfaceHsl(y) 
+    y = fixedYForSurfaceHsl(y)
     //
     changeMouseColor(colorAtHsl(x, y))
 }
@@ -4178,13 +4200,13 @@ function justMovingOnSurfaceHsl(x, y) {
 function draggingOnSurfaceHsl(x, y) {
     //
     x = fixedXForSurfaceHsl(x)
-    y = fixedYForSurfaceHsl(y) 
+    y = fixedYForSurfaceHsl(y)
     //
     const color = colorAtHsl(x, y)
     changeMouseColor(color)
     updateCurrentColor(color) // alpha is 255
     //
-    inputOnSurfaceHsl(x, y) 
+    inputOnSurfaceHsl(x, y)
     paintSurfaceHslCurrent()
 }
 
@@ -4197,7 +4219,7 @@ function inputOnSurfaceHsl(x, y) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintSurfaceHsl(hue) { 
+function paintSurfaceHsl(hue) {
     //
     drawHslGradient(hue)
     repaintSurfaceHsl()
@@ -4230,17 +4252,17 @@ function fixedYForSurfaceHsl(y) {
 function colorAtHsl(x, y) {
     //
     return hslGradientCtx.getImageData(x, y, 1, 1).data // must be on hslGradientCtx because of the mark
-} 
+}
 
 function colorAtHslMark() { // for passive color update
     //
-    return hslGradientCtx.getImageData(surfaceHslX, surfaceHslY, 1, 1).data 
+    return hslGradientCtx.getImageData(surfaceHslX, surfaceHslY, 1, 1).data
 }
 
 // file: interface/panel-color-rgba.js //
 // "use strict"
 
-var panelRgba   
+var panelRgba
 var panelRgbaCtx
 
 var surfaceRgbaReference
@@ -4309,7 +4331,7 @@ function paintPanelRgba() {
     panelRgbaCtx.fillStyle = wingColor()
     panelRgbaCtx.fillRect(0, 0, 240, 305)
     //
-    greyEmptyRect(panelRgbaCtx, surfaceRgbaReference.left-1, surfaceRgbaReference.top-1, 
+    greyEmptyRect(panelRgbaCtx, surfaceRgbaReference.left-1, surfaceRgbaReference.top-1,
                                 surfaceRgbaReference.width*2+2, surfaceRgbaReference.height+2)
     //
     paintSurfaceRgbaReference()
@@ -4321,18 +4343,18 @@ function paintPanelRgba() {
     write(panelRgbaCtx, "RED",   60,  83)
     write(panelRgbaCtx, "GREEN", 60, 128)
     write(panelRgbaCtx, "BLUE",  60, 173)
-    write(panelRgbaCtx, "ALPHA", 60, 218)    
+    write(panelRgbaCtx, "ALPHA", 60, 218)
     //
     resetNumbox(numboxRgbaRed,   ""+RED)
     resetNumbox(numboxRgbaGreen, ""+GREEN)
     resetNumbox(numboxRgbaBlue,  ""+BLUE)
-    resetNumbox(numboxRgbaAlpha, ""+ALPHA)    
+    resetNumbox(numboxRgbaAlpha, ""+ALPHA)
     //
     paintNumbox(numboxRgbaRed)
     paintNumbox(numboxRgbaGreen)
     paintNumbox(numboxRgbaBlue)
     paintNumbox(numboxRgbaAlpha)
-    // 
+    //
     paintButton(buttonToHsl)
     paintButton(buttonRgbaCopy)
 }
@@ -4397,14 +4419,14 @@ function rgbaCopyToReference() {
     referenceRed   = RED
     referenceGreen = GREEN
     referenceBlue  = BLUE
-    referenceAlpha = ALPHA 
+    referenceAlpha = ALPHA
     //
     paintSurfaceRgbaReference()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function changeToHsl() { 
+function changeToHsl() {
     hidePolyPanel()
     hslOrRgba = "hsl"
     startBlinkingButton(buttonToRgba) // other panel button
@@ -4414,7 +4436,7 @@ function changeToHsl() {
 // file: interface/panel-colorize.js //
 // "use strict"
 
-var panelColorize   
+var panelColorize
 var panelColorizeCtx
 
 var sliderColorizeHue
@@ -4463,29 +4485,29 @@ function initPanelColorize2() {
 function startListeningPanelColorize() {
     panelColorize.onmouseup = panelOnMouseUp
     panelColorize.onmousedown = panelOnMouseDown
-    panelColorize.onmousemove = panelOnMouseMove    
+    panelColorize.onmousemove = panelOnMouseMove
     panelColorize.onmouseleave = panelOnMouseLeave
     panelColorize.onmouseenter = function () { panelOnMouseEnter(panelColorizeGadgets) }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelColorize() { 
+function paintPanelColorize() {
     // background
     panelColorizeCtx.fillStyle = wingColor()
     panelColorizeCtx.fillRect(0, 0, 240, 305)
-    //   
+    //
     const ctx = panelColorizeCtx
     //
     write(ctx, "intensity of new hue", 10, 35)
     paintSlider(sliderColorizeHue)
-    //    
+    //
     write(ctx, "saturation", 10, 85)
     paintSlider(sliderColorizeSat)
-    //    
+    //
     write(ctx, "luminosity", 10, 135)
     paintSlider(sliderColorizeLum)
-    //    
+    //
     write(ctx, "opacity", 10, 185)
     paintSlider(sliderColorizeOpa)
     //
@@ -4497,7 +4519,7 @@ function paintPanelColorize() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function panelColorizeApply() { 
+function panelColorizeApply() {
     //
     panelColorizeResetGadgets()
     if (toplayer != null) { memorizeTopLayer() }
@@ -4505,13 +4527,13 @@ function panelColorizeApply() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function panelColorizeReset() { 
+function panelColorizeReset() {
     //
     panelColorizeResetGadgets()
     resetTopLayerByMemory()
 }
- 
-function panelColorizeResetGadgets() { 
+
+function panelColorizeResetGadgets() {
     //
     resetSlider(sliderColorizeHue, 0)
     resetSlider(sliderColorizeSat, 0.5)
@@ -4546,7 +4568,7 @@ function colorizePanelChanging() {
 // file: interface/panel-config.js //
 // "use strict"
 
-var panelConfig   
+var panelConfig
 var panelConfigCtx
 
 var checkboxHint
@@ -4563,8 +4585,8 @@ var shallHintAlert = true // to be configured at initialization
 var backgroundColor = "white"
 
 const backgroundColors = [
-    
-    "255,255,255", "237,237,237", "190,190,190", "128,128,128", "54,54,56", "0,0,0", 
+
+    "255,255,255", "237,237,237", "190,190,190", "128,128,128", "54,54,56", "0,0,0",
     "240,240,160", "240,230,140", "189,183,127", "131,0,0", "15,25,75", "blank"
 ]
 
@@ -4611,7 +4633,7 @@ function startListeningPanelConfig() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelConfig() { 
+function paintPanelConfig() {
     // background
     panelConfigCtx.fillStyle = wingColor()
     panelConfigCtx.fillRect(0, 0, 240, 305)
@@ -4625,7 +4647,7 @@ function paintPanelConfig() {
     write(panelConfigCtx, "red & yellow cursor", 20, 115)
     paintCheckbox(checkboxRedYellowCursor)
     //
-    greyOuterEdgeByGadget(surfaceBgTable) 
+    greyOuterEdgeByGadget(surfaceBgTable)
     paintSurface(surfaceBgTable)
     //
     write(panelConfigCtx, "layer background", 20, 255)
@@ -4656,7 +4678,7 @@ function surfaceBgTableOnMouseMove(x, y) {
     res[0] = parseInt(parts[0])
     res[1] = parseInt(parts[1])
     res[2] = parseInt(parts[2])
-    //        
+    //
     changeMouseColor(res)
 }
 
@@ -4672,7 +4694,7 @@ function bgTableColorAt(x, y) {
 function toggleBackground() {
     shallRepaint = true
     //
-    if (mouseAlpha == -1) { 
+    if (mouseAlpha == -1) {
         backgroundColor = "blank"
     }
     else {
@@ -4692,7 +4714,7 @@ function toggleDarkness() {
 // file: interface/panel-effect.js //
 // "use strict"
 
-var panelEffect   
+var panelEffect
 var panelEffectCtx
 
 var selectedSubpanelEffect
@@ -4723,11 +4745,11 @@ function initPanelEffect() {
 
 function initPanelEffect2() {
     //
-    checkboxEffectA = createCheckbox("effect-a", panelEffectCtx,  20, 283, 16, changeSubpanelEffect, true)
-    checkboxEffectB = createCheckbox("effect-b", panelEffectCtx,  66, 283, 16, changeSubpanelEffect, false)
-    checkboxEffectC = createCheckbox("effect-c", panelEffectCtx, 112, 283, 16, changeSubpanelEffect, false)
-    checkboxEffectD = createCheckbox("effect-d", panelEffectCtx, 158, 283, 16, changeSubpanelEffect, false)
-    checkboxEffectE = createCheckbox("effect-e", panelEffectCtx, 204, 283, 16, changeSubpanelEffect, false)
+    checkboxEffectA = createCheckbox("effect-a", panelEffectCtx,  20, 14, 16, changeSubpanelEffect, true)
+    checkboxEffectB = createCheckbox("effect-b", panelEffectCtx,  66, 14, 16, changeSubpanelEffect, false)
+    checkboxEffectC = createCheckbox("effect-c", panelEffectCtx, 112, 14, 16, changeSubpanelEffect, false)
+    checkboxEffectD = createCheckbox("effect-d", panelEffectCtx, 158, 14, 16, changeSubpanelEffect, false)
+    checkboxEffectE = createCheckbox("effect-e", panelEffectCtx, 204, 14, 16, changeSubpanelEffect, false)
     //
     panelEffectGadgets = [ checkboxEffectA, checkboxEffectB, checkboxEffectC, checkboxEffectD, checkboxEffectE ]
 }
@@ -4739,7 +4761,7 @@ function hidePanelEffect() {
     hideSelectedSubpanelEffect()
 }
 
-function paintAndShowPanelEffect() {   
+function paintAndShowPanelEffect() {
     paintPanelEffect()
     panelEffect.style.visibility = "visible"
     //
@@ -4778,7 +4800,7 @@ function startListeningPanelEffect() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelEffect() { 
+function paintPanelEffect() {
     // background
     panelEffectCtx.fillStyle = wingColor()
     panelEffectCtx.fillRect(0, 0, 240, 305)
@@ -4798,7 +4820,7 @@ function changeSubpanelEffect(cb) {
     //
     const newSubPanel = referencedSubPanelEffect(cb)
     if (newSubPanel == selectedSubpanelEffect) { resetCheckbox(cb, true); return }
-    //    
+    //
     const old = referencedCheckbox(selectedSubpanelEffect)
     resetCheckbox(old, false)
     hideSelectedSubpanelEffect()
@@ -4850,6 +4872,8 @@ var panelLayersGadgets
 
 var panelLayersDragCandidate = null
 
+const layerDragMessage = 'dragging a layer button changes its order\n(the layer button "selection" is static)'
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function initPanelLayers() {
@@ -4884,8 +4908,8 @@ function initPanelLayers2() {
     buttonReverseOrder = createButton("rev-order", ctx, 13, 342, 134, 30, "reverse order", reverseOrder, true)
     buttonDisplayOpacity = createButton("opacity", ctx, 13, 378, 134, 30, "display opacity", showPanelOpacity, false)
     //
-    panelLayersGadgets = [ buttonLayer0, buttonLayer1, buttonLayer2, buttonLayer3, buttonLayer4, buttonLayer5, 
-                           buttonMergeUp, buttonMergeDown, buttonReverseOrder, buttonDisplayOpacity, 
+    panelLayersGadgets = [ buttonLayer0, buttonLayer1, buttonLayer2, buttonLayer3, buttonLayer4, buttonLayer5,
+                           buttonMergeUp, buttonMergeDown, buttonReverseOrder, buttonDisplayOpacity,
                            iconLayerUp, iconLayerDown // first 6 positions are reserved for the layer buttons!!!
                          ]
 }
@@ -4895,7 +4919,7 @@ function configIconLayerDown() {
     const ctx = iconLayerDown.canvas.getContext("2d")
     ctx.drawImage(specialIcons["down"], 0, 0)
     //
-    iconLayerDown.onMouseDown = function () { customAlert("dragging a layer button changes its order") }
+    iconLayerDown.onMouseDown = function () { customAlert(layerDragMessage) }
 }
 
 function configIconLayerUp() {
@@ -4903,7 +4927,7 @@ function configIconLayerUp() {
     const ctx = iconLayerUp.canvas.getContext("2d")
     ctx.drawImage(specialIcons["up"], 0, 0)
     //
-    iconLayerUp.onMouseDown = function () { customAlert("dragging a layer button changes its order") }
+    iconLayerUp.onMouseDown = function () { customAlert(layerDragMessage) }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4964,22 +4988,30 @@ function panelLayersDragControl(kind, x, y, gadget, dragging) {
     if (x < 40  ||  x > 120) { cancelPanelLayersDrag(); return }
     if (y < 25  ||  y > 255) { cancelPanelLayersDrag(); return }
     //
-    if (kind == "down") { 
-        //  
-        if (gadget == null) { cancelPanelLayersDrag() } else { panelLayersDragCandidate = gadget }
-        return 
+    if (kind == "down") {
+        //
+        if (gadget == null) { cancelPanelLayersDrag() }
+        //
+        if (gadget.id == "layer-0") { cancelPanelLayersDrag(); return }
+        //
+        panelLayersDragCandidate = gadget
+        //
+        return
     }
     //
     if (kind == "move") {
         //
-        if (! dragging  ||  panelLayersDragCandidate == null) { cancelPanelLayersDrag(); return } 
+        if (! dragging  ||  panelLayersDragCandidate == null) { cancelPanelLayersDrag(); return }
         //
-        setPanelLayersCursorMove() 
-        return 
+        setPanelLayersCursorMove()
+        //
+        return
     }
     // kind == "up"
     //
     if (gadget == null) { cancelPanelLayersDrag(); return }
+    //
+    if (gadget.id == "layer-0") { cancelPanelLayersDrag(); return }
     //
     if (panelLayersDragCandidate == null) { cancelPanelLayersDrag(); return }
     //
@@ -4993,12 +5025,12 @@ function panelLayersDragControl(kind, x, y, gadget, dragging) {
 function cancelPanelLayersDrag() {
     //
     panelLayersDragCandidate = null
-    setPanelLayersCursorDefault()    
+    setPanelLayersCursorDefault()
 }
 
 function finishPanelLayersDrag(buttonA, buttonB) {
     //
-    setPanelLayersCursorDefault()  
+    setPanelLayersCursorDefault()
     //
     const indexA = parseInt(buttonA.id.replace("layer-", ""))
     const indexB = parseInt(buttonB.id.replace("layer-", ""))
@@ -5030,7 +5062,7 @@ function showPanelOpacity() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateLayerButtons() {  // helper 
+function updateLayerButtons() {  // helper
     //
     let count = 0
     //
@@ -5039,17 +5071,17 @@ function updateLayerButtons() {  // helper
         button.disabled = ! layers[n].enabled
         paintButton(button)
         if (! button.disabled) { count += 1 }
-    }    
+    }
     //
     buttonMergeUp.disabled = count < 2
-    paintButton(buttonMergeUp)    
-    //   
+    paintButton(buttonMergeUp)
+    //
     //
     buttonMergeDown.disabled = count < 2
-    paintButton(buttonMergeDown)    
+    paintButton(buttonMergeDown)
     //
     buttonReverseOrder.disabled = count < 2
-    paintButton(buttonReverseOrder)   
+    paintButton(buttonReverseOrder)
     //
     buttonDisplayOpacity.disabled = count == 0
     paintButton(buttonDisplayOpacity)
@@ -5065,14 +5097,14 @@ function updateOtherButtons(disabled) {
     //
     const buttons = [
         buttonResizeLayer, buttonScaleLayer, buttonAutocropLayer,
-        effectA1, effectA2, effectA3, effectA4, effectA5, effectA6, effectA7, 
-        effectB1, effectB2, effectB3, effectB4, effectB5, effectB6, effectB7, 
-        effectC1, effectC2, effectC3, effectC5,  
-        effectD1, effectD2, effectD3, effectD4, effectD5, effectD6, effectD7, 
+        effectA1, effectA2, effectA3, effectA4, effectA5, effectA6, effectA7,
+        effectB1, effectB2, effectB3, effectB4, effectB5, effectB6, effectB7,
+        effectC1, effectC2, effectC3, effectC5,
+        effectD1, effectD2, effectD3, effectD4, effectD5, effectD6, effectD7,
         effectE1, effectE2, effectE3, effectE4, effectE5, effectE6, effectE7
     ]
     //
-    for (const button of buttons) { 
+    for (const button of buttons) {
         button.disabled = disabled
         paintButton(button)
     }
@@ -5085,7 +5117,7 @@ function updateOtherButtons(disabled) {
     context["imageSmoothingQuality"] = "high" // medium, low
 */
 
-var panelMonitor  
+var panelMonitor
 var panelMonitorCtx
 
 var monitorBox
@@ -5119,7 +5151,7 @@ function initPanelMonitor2() {
     makeMonitorBox()
     //
     checkboxFrozen = createCheckbox("frozen", panelMonitorCtx,  55, 5, 12, toggleFrozen, false)
-    checkboxMonitorPixelated = createCheckbox("monitor-pixel", panelMonitorCtx, 170, 5, 12, togglePixelated, false)
+    checkboxMonitorPixelated = createCheckbox("monitor-pixel", panelMonitorCtx, 170, 5, 12, togglePixelated, true)
     //
     panelMonitorGadgets = [ checkboxFrozen, checkboxMonitorPixelated ]
 }
@@ -5136,7 +5168,7 @@ function makeMonitorBox() {
     //
     bigdiv.appendChild(monitorBox)
     //
-    monitorBoxCtx["imageSmoothingQuality"] = "high" 
+    monitorBoxCtx["imageSmoothingQuality"] = "high"
     //
     monitorBox.onwheel = changePhotoZoom
     monitorBox.onmousedown = resetFocusedGadget
@@ -5154,7 +5186,7 @@ function startListeningPanelMonitor() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelMonitor() { 
+function paintPanelMonitor() {
     // background
     panelMonitorCtx.fillStyle = wingColor()
     panelMonitorCtx.fillRect(0, 0, 240, 265)
@@ -5179,7 +5211,7 @@ function paintMonitorBoxZoom() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function togglePixelated() { 
+function togglePixelated() {
     //
     shallRepaint = true
 }
@@ -5187,7 +5219,7 @@ function togglePixelated() {
 function toggleFrozen() {
     //
     shallRepaint = true
-    // 
+    //
     if (checkboxFrozen.checked) { updateFrozenPhoto() }
 }
 
@@ -5285,7 +5317,7 @@ function paintPanelOpacity() {
         resetSlider(sliderOpacity5, layers[5].opacity, true)
     }
     //
-    paintButton(buttonOpacityReturn)    
+    paintButton(buttonOpacityReturn)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5305,9 +5337,9 @@ function changeOpacity(slider) {
     const n = parseInt(slider.id.replace("opacity-", ""))
     const layer = layers[n]
     if (! layer.enabled) {
-        slider.value = layer.opacity 
+        slider.value = layer.opacity
         paintPanelOpacity() // erases disabled sliders that were automaticcaly painted
-        return 
+        return
     }
     //
     layer.opacity = slider.value
@@ -5316,9 +5348,9 @@ function changeOpacity(slider) {
 // file: interface/panel-palette.js //
 // "use strict"
 
-var panelPalette   
+var panelPalette
 var panelPaletteCtx
-                                
+
 const paletteSide = 39
 
 var surfacePalette
@@ -5367,7 +5399,7 @@ function initPanelPalette2() {
     //
     buttonSavePalette = createButton("save-palette", ctx, 127, 265, 97, 27, "save palette", savePalette, false)
     //
-    panelPaletteGadgets = [ surfacePalette, buttonPreviousPalette, buttonNextPalette, buttonLoadPalette, 
+    panelPaletteGadgets = [ surfacePalette, buttonPreviousPalette, buttonNextPalette, buttonLoadPalette,
                             buttonSavePalette ]
 }
 
@@ -5403,7 +5435,7 @@ function startListeningPanelPalette() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelPalette() { 
+function paintPanelPalette() {
     // background
     panelPaletteCtx.fillStyle = wingColor()
     panelPaletteCtx.fillRect(0, 0, 240, 305)
@@ -5433,7 +5465,7 @@ function surfacePaletteOnWheel(x, y, sign) {
     //
     changePalette(sign) // changePalette does not call changeMouseColor
     //
-    updateMouseColorByPalette(x, y)   
+    updateMouseColorByPalette(x, y)
 }
 
 function surfacePaletteOnMouseDown(x, y) {
@@ -5442,12 +5474,12 @@ function surfacePaletteOnMouseDown(x, y) {
 }
 
 function surfacePaletteOnMouseMove(x, y, dragging) {
-    // 
-    if (dragging  &&  paletteIndexAtMouseDown != -1) { 
-        setPaletteCursorMove() 
-    } 
-    else { 
-        setPaletteCursorDefault() 
+    //
+    if (dragging  &&  paletteIndexAtMouseDown != -1) {
+        setPaletteCursorMove()
+    }
+    else {
+        setPaletteCursorDefault()
     }
     //
     updateMouseColorByPalette(x, y)
@@ -5462,7 +5494,7 @@ function surfacePaletteOnClick(x, y) {
     if (index != paletteIndexAtMouseDown) { moveColorInPalette(paletteIndexAtMouseDown, index); return }
     //
     if (shiftPressed) { addColorToPalette(index); return }
-    //    
+    //
     if (ctrlPressed) { deleteColorInPalette(index); return }
     //
     captureColorFromPalette()
@@ -5470,7 +5502,7 @@ function surfacePaletteOnClick(x, y) {
 
 function surfacePaletteOnMouseLeave() {
     //
-    paletteIndexAtMouseDown = -1 
+    paletteIndexAtMouseDown = -1
     eraseMouseColor()
     setPaletteCursorDefault()
 }
@@ -5487,7 +5519,7 @@ function updateMouseColorByPalette(x, y) {
 function captureColorFromPalette() {
     //
     const color = [ mouseRed, mouseGreen, mouseBlue, mouseAlpha ]
-    updateCurrentColor(color) 
+    updateCurrentColor(color)
 }
 
 function addColorToPalette(index) {
@@ -5530,13 +5562,13 @@ function moveColorInPalette(indexA, indexB) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function previousPalette() { 
+function previousPalette() {
     //
     changePalette(-1)
 }
 
 function nextPalette() {
-    // 
+    //
     changePalette(+1)
 }
 
@@ -5554,7 +5586,7 @@ function changePalette(delta) {
     buttonLoadPalette.disabled = (paletteName == "bob")
     //
     updateSurfacePalette()
-    paintPanelPalette() 
+    paintPanelPalette()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5571,7 +5603,7 @@ function paletteColorArrayByIndex(index) {
     const raw = palettes[paletteName][index]
     //
     if (raw == "blank") { return null }
-    //    
+    //
     const strarr = raw.split(",")
     const r = parseInt(strarr[0])
     const g = parseInt(strarr[1])
@@ -5594,7 +5626,7 @@ function updateSurfacePalette() {
 // file: interface/panel-shear.js //
 // "use strict"
 
-var panelShear   
+var panelShear
 var panelShearCtx
 
 var sliderRotate
@@ -5651,20 +5683,20 @@ function startListeningPanelShear() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function paintPanelShear() {
-    // background 
+    // background
     panelShearCtx.fillStyle = wingColor()
     panelShearCtx.fillRect(0, 0, 240, 305)
     //
     const ctx = panelShearCtx
     //
-    write(ctx, "rotation", 10, 28)  
+    write(ctx, "rotation", 10, 28)
     paintSlider(sliderRotate)
     //
     greyTraceH(ctx, 20, 85, 200)
-    //    
+    //
     write(ctx, "vertical shear", 10, 110)
     paintSlider(sliderShearV)
-    //    
+    //
     write(ctx, "horizontal shear", 10, 170)
     paintSlider(sliderShearH)
     //
@@ -5677,7 +5709,7 @@ function paintPanelShear() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function panelShearApply() { 
+function panelShearApply() {
     //
     panelShearResetGadgets()
     if (toplayer != null) { memorizeTopLayer() }
@@ -5685,13 +5717,13 @@ function panelShearApply() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function panelShearReset() { 
+function panelShearReset() {
     //
     panelShearResetGadgets()
     resetTopLayerByMemory()
 }
- 
-function panelShearResetGadgets() { 
+
+function panelShearResetGadgets() {
     //
     resetSliderShearH()
     resetSliderShearV()
@@ -5702,15 +5734,15 @@ function panelShearResetGadgets() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function resetSliderShearV() { 
+function resetSliderShearV() {
     resetSlider(sliderShearV, 0.5)
 }
 
-function resetSliderShearH() { 
+function resetSliderShearH() {
     resetSlider(sliderShearH, 0.5)
 }
 
-function resetSliderRotate() { 
+function resetSliderRotate() {
     resetSlider(sliderRotate, 0.5)
 }
 
@@ -5736,7 +5768,7 @@ function shearPanelChanging() {
 // file: interface/panel-size.js //
 // "use strict"
 
-var panelSize   
+var panelSize
 var panelSizeCtx
 
 var boxNewWidth
@@ -5763,7 +5795,7 @@ function initPanelSize() {
     //
     bigdiv.appendChild(panelSize)
     //
-    initPanelSize2() 
+    initPanelSize2()
 }
 
 function initPanelSize2() {
@@ -5774,7 +5806,7 @@ function initPanelSize2() {
     //
     boxNewWidth = createNumbox("new-width",  ctx,  40, 20, 60, 30, w,  2000, null)
     boxNewHeight = createNumbox("new-height", ctx, 140, 20, 60, 30, h, 2000, null)
-    //        
+    //
     //
     buttonResizeLayer = createButton("resize-layer", ctx, 40, 90, 160, 40, "resize layer", resizeLayer, false)
     //
@@ -5799,7 +5831,7 @@ function startListeningPanelSize() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelSize() { 
+function paintPanelSize() {
     // background
     panelSizeCtx.fillStyle = wingColor()
     panelSizeCtx.fillRect(0, 0, 240, 305)
@@ -5821,22 +5853,22 @@ function paintPanelSize() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function getNewWidth() {
-    fixNewWidth() 
+    fixNewWidth()
     return parseInt(boxNewWidth.text)
 }
 
 function getNewHeight() {
-    fixNewHeight() 
+    fixNewHeight()
     return parseInt(boxNewHeight.text)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function fixNewWidth() { 
+function fixNewWidth() {
     fixNewDimension(boxNewWidth, 120)
 }
 
-function fixNewHeight() { 
+function fixNewHeight() {
     fixNewDimension(boxNewHeight, 80)
 }
 
@@ -5961,7 +5993,7 @@ function paintLayerOnPhoto(layer) {
     monitorBoxCtx.drawImage(src, 0,0,src.width,src.height,  left,top,width,height)
 }
 
-function photoZoomedLeft(layer) { 
+function photoZoomedLeft(layer) {
     //
     // on stage:
     //
@@ -5978,7 +6010,7 @@ function photoZoomedLeft(layer) {
     return Math.floor(layerZoomedCenterX - halfZoomedWidth)
 }
 
-function photoZoomedTop(layer) { 
+function photoZoomedTop(layer) {
     //
     // on stage:
     //
@@ -6045,7 +6077,7 @@ function paintLayerOnFrozenPhoto(ctx, layer) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function initPolyPanel() { 
+function initPolyPanel() {
     //
     initPanelPalette()
     //
@@ -6089,7 +6121,7 @@ function startListeningPolyPanel() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function hidePolyPanel() { 
+function hidePolyPanel() {
     //
     if (selectedOnMiniBar == "palette") {
         panelPalette.style.visibility = "hidden"
@@ -6113,10 +6145,10 @@ function hidePolyPanel() {
         panelConfig.style.visibility = "hidden"
     }
 }
-    
-///////////////////////////////////////////////////////////////////////////////   
 
-function paintAndShowPolyPanel() { 
+///////////////////////////////////////////////////////////////////////////////
+
+function paintAndShowPolyPanel() {
     //
     if (selectedOnMiniBar == "palette") {
         paintPanelPalette()
@@ -6155,9 +6187,9 @@ const stageHeight = 600
 const stageCenterX = 450
 const stageCenterY = 300
 
-var stage     
+var stage
 var stageCtx
-  
+
 var stageChessLight
 var stageChessDark
 
@@ -6203,16 +6235,16 @@ function paintStage() {
     //
     paintTopLayerFrame()
     //
-    drawPictureCursor() 
+    drawPictureCursor()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function paintStageBg() {
     //
-    const img = isDarkInterface ? stageChessDark : stageChessLight 
+    const img = isDarkInterface ? stageChessDark : stageChessLight
     //
-    stageCtx.drawImage(img, 0, 0) 
+    stageCtx.drawImage(img, 0, 0)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6238,7 +6270,7 @@ function paintLayerBackground(layer) {
     const width = layer.canvas.width * ZOOM
     const height = layer.canvas.height * ZOOM
     //
-    stageCtx.fillRect(left, top, width, height)    
+    stageCtx.fillRect(left, top, width, height)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6263,7 +6295,7 @@ function paintLayerForeground(layer) {
     const height = layer.canvas.height
     //
     stageCtx.globalAlpha = layer.opacity
-    stageCtx.drawImage(layer.canvas, 0,0,width,height, left,top,width*ZOOM,height*ZOOM)    
+    stageCtx.drawImage(layer.canvas, 0,0,width,height, left,top,width*ZOOM,height*ZOOM)
     stageCtx.globalAlpha = 1
 }
 
@@ -6277,7 +6309,7 @@ function paintMaskOnStage() {
     const width = mask.width
     const height = mask.height
     //
-    stageCtx.drawImage(mask, 0,0,width,height, left,top,width*ZOOM,height*ZOOM)   
+    stageCtx.drawImage(mask, 0,0,width,height, left,top,width*ZOOM,height*ZOOM)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6332,16 +6364,16 @@ function drawPictureCursor() {
     //
     const side = toolSizeFor[tool] * ZOOM
     //
-    const isRedYellow = checkboxRedYellowCursor.checked 
+    const isRedYellow = checkboxRedYellowCursor.checked
     //
     const cursor = getCursor(side, isRedYellow)
-    //   
+    //
     const thick = side > 9 ? 3 : 2
     //
     const left = rawCornerX - thick
     const top  = rawCornerY - thick
     //
-    stageCtx.drawImage(cursor, left, top)    
+    stageCtx.drawImage(cursor, left, top)
 }
 
 function getCursor(side, isRedYellow) {
@@ -6350,7 +6382,7 @@ function getCursor(side, isRedYellow) {
     //
     let cursor = cursors[id]
     //
-    if (cursor == undefined) { 
+    if (cursor == undefined) {
         cursor = makeCursor(side, isRedYellow)
         cursors[id] = cursor
     }
@@ -6359,12 +6391,12 @@ function getCursor(side, isRedYellow) {
 }
 
 function makeCursor(innerSide, isRedYellow) {
-    if (innerSide > 9) { 
+    if (innerSide > 9) {
         return makeFatCursor(innerSide, isRedYellow)
     }
     return makeThinCursor(innerSide, isRedYellow)
 }
-    
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function makeFatCursor(innerSide, isRedYellow) {
@@ -6396,7 +6428,7 @@ function makeFatCursor(innerSide, isRedYellow) {
     ctx.fillRect(side-3, start, 3, len) // right
     //
     return cnv
-}  
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -6421,7 +6453,7 @@ function makeThinCursor(innerSide, isRedYellow) {
         rest += 1
     }
     //
-    const start = (rest / 2) 
+    const start = (rest / 2)
     //
     ctx.fillRect(start, 0, len, 2) // top
     ctx.fillRect(start, side-2, len, 2) // bottom
@@ -6433,7 +6465,7 @@ function makeThinCursor(innerSide, isRedYellow) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function okToDrawCursor() { 
+function okToDrawCursor() {
     //
     if (stageRawX == null) { return false }
     //
@@ -6465,7 +6497,7 @@ function initPanelEffectA() {
     panelEffectACtx = panelEffectA.getContext("2d")
     //
     panelEffectA.style.position = "absolute"
-    panelEffectA.style.top = "325px"
+    panelEffectA.style.top = "355px"
     panelEffectA.style.left = "1060px"
     panelEffectA.style.zIndex = "2"
     panelEffectA.style.visibility = "hidden"
@@ -6501,7 +6533,7 @@ function hidePanelEffectA() {
     panelEffectA.style.visibility = "hidden"
 }
 
-function paintAndShowPanelEffectA() {   
+function paintAndShowPanelEffectA() {
     paintPanelEffectA()
     panelEffectA.style.visibility = "visible"
 }
@@ -6517,7 +6549,7 @@ function startListeningPanelEffectA() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelEffectA() { 
+function paintPanelEffectA() {
     // background
     panelEffectACtx.fillStyle = wingColor()
     panelEffectACtx.fillRect(0, 0, 240, 277)
@@ -6554,7 +6586,7 @@ function initPanelEffectB() {
     panelEffectBCtx = panelEffectB.getContext("2d")
     //
     panelEffectB.style.position = "absolute"
-    panelEffectB.style.top = "325px"
+    panelEffectB.style.top = "355px"
     panelEffectB.style.left = "1060px"
     panelEffectB.style.zIndex = "2"
     panelEffectB.style.visibility = "hidden"
@@ -6590,7 +6622,7 @@ function hidePanelEffectB() {
     panelEffectB.style.visibility = "hidden"
 }
 
-function paintAndShowPanelEffectB() {   
+function paintAndShowPanelEffectB() {
     paintPanelEffectB()
     panelEffectB.style.visibility = "visible"
 }
@@ -6606,7 +6638,7 @@ function startListeningPanelEffectB() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelEffectB() { 
+function paintPanelEffectB() {
     // background
     panelEffectBCtx.fillStyle = wingColor()
     panelEffectBCtx.fillRect(0, 0, 240, 277)
@@ -6641,7 +6673,7 @@ function initPanelEffectC() {
     panelEffectCCtx = panelEffectC.getContext("2d")
     //
     panelEffectC.style.position = "absolute"
-    panelEffectC.style.top = "325px"
+    panelEffectC.style.top = "355px"
     panelEffectC.style.left = "1060px"
     panelEffectC.style.zIndex = "2"
     panelEffectC.style.visibility = "hidden"
@@ -6664,7 +6696,7 @@ function initPanelEffectC2() {
     //
     effectC5 = createButton("effect-c5", ctx, 40, 160, 160, 25, "antialiasing outside 2", antialiasingStrong, false)
     //
-    panelEffectCGadgets = [ effectC1, effectC2, effectC3, effectC4, effectC5 ]    
+    panelEffectCGadgets = [ effectC1, effectC2, effectC3, effectC4, effectC5 ]
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6673,7 +6705,7 @@ function hidePanelEffectC() {
     panelEffectC.style.visibility = "hidden"
 }
 
-function paintAndShowPanelEffectC() {   
+function paintAndShowPanelEffectC() {
     paintPanelEffectC()
     panelEffectC.style.visibility = "visible"
 }
@@ -6689,7 +6721,7 @@ function startListeningPanelEffectC() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelEffectC() { 
+function paintPanelEffectC() {
     // background
     panelEffectCCtx.fillStyle = wingColor()
     panelEffectCCtx.fillRect(0, 0, 240, 277)
@@ -6724,7 +6756,7 @@ function initPanelEffectD() {
     panelEffectDCtx = panelEffectD.getContext("2d")
     //
     panelEffectD.style.position = "absolute"
-    panelEffectD.style.top = "325px"
+    panelEffectD.style.top = "355px"
     panelEffectD.style.left = "1060px"
     panelEffectD.style.zIndex = "2"
     panelEffectD.style.visibility = "hidden"
@@ -6760,7 +6792,7 @@ function hidePanelEffectD() {
     panelEffectD.style.visibility = "hidden"
 }
 
-function paintAndShowPanelEffectD() {   
+function paintAndShowPanelEffectD() {
     paintPanelEffectD()
     panelEffectD.style.visibility = "visible"
 }
@@ -6776,8 +6808,8 @@ function startListeningPanelEffectD() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelEffectD() { 
-    // background 
+function paintPanelEffectD() {
+    // background
     panelEffectDCtx.fillStyle = wingColor()
     panelEffectDCtx.fillRect(0, 0, 240, 277)
     //
@@ -6813,7 +6845,7 @@ function initPanelEffectE() {
     panelEffectECtx = panelEffectE.getContext("2d")
     //
     panelEffectE.style.position = "absolute"
-    panelEffectE.style.top = "325px"
+    panelEffectE.style.top = "355px"
     panelEffectE.style.left = "1060px"
     panelEffectE.style.zIndex = "2"
     panelEffectE.style.visibility = "hidden"
@@ -6849,7 +6881,7 @@ function hidePanelEffectE() {
     panelEffectE.style.visibility = "hidden"
 }
 
-function paintAndShowPanelEffectE() {   
+function paintAndShowPanelEffectE() {
     paintPanelEffectE()
     panelEffectE.style.visibility = "visible"
 }
@@ -6865,7 +6897,7 @@ function startListeningPanelEffectE() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintPanelEffectE() { 
+function paintPanelEffectE() {
     // background
     panelEffectECtx.fillStyle = wingColor()
     panelEffectECtx.fillRect(0, 0, 240, 277)
@@ -6926,7 +6958,7 @@ function showSuperHand() {
 function hideSuperHand() {
     superHandOn = false
     resetMove()
-    superHand.style.visibility = "hidden" 
+    superHand.style.visibility = "hidden"
 }
 
 // file: interface/tile-set.js //
@@ -6958,7 +6990,7 @@ function showTileSet2(pic) {
 
 function hideTileSet() {
     MODE = "standard"
-    tileset.style.visibility = "hidden"    
+    tileset.style.visibility = "hidden"
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6971,7 +7003,7 @@ function initTileSet() {
     tileset.style.zIndex = "31"
     tileset.style.visibility = "hidden"
     //
-    bigdiv.appendChild(tileset) 
+    bigdiv.appendChild(tileset)
     //
     tileset.onclick = hideTileSet
 }
@@ -6985,7 +7017,7 @@ function updateTileSet(src) {
     let top  = 0
     while (true) {
         tilesetCtx.drawImage(src, left, top)
-        left += src.width 
+        left += src.width
         if (left > 1300) { left = 0; top += src.height }
         if (top  >  660) { break }
     }
@@ -7000,7 +7032,7 @@ var toolBeforeCapture = "thin-pen"
 var toolbox
 var toolboxCtx
 
-var toolboxScheme = [ 
+var toolboxScheme = [
     //
     "mirror-pen",
     "spray",
@@ -7022,12 +7054,12 @@ var toolboxScheme = [
     //
     "blur-pixel",
     "blur-border",
-    "scale",    
+    "scale",
     "hand",
     "", // for finding clicked icon
     //
     "select",
-    "lasso",   
+    "lasso",
     "", // for finding clicked icon
     "", // for finding clicked icon
     ""  // for finding clicked icon
@@ -7075,18 +7107,18 @@ function paintIconsOnToolbox() {
     for (const id of toolboxScheme) {
         paintIconOnToolbox(id, left, top)
         left += 32
-        if (left > 130) { left = 1; top += 32 }    
+        if (left > 130) { left = 1; top += 32 }
     }
 }
 
 function paintIconOnToolbox(id, left, top) {
     if (id == "") { return }
     //
-    if (id == tool) { 
+    if (id == tool) {
         paintBgOn30(toolboxCtx, left, top)
     }
     else {
-        paintBgOff30(toolboxCtx, left, top)    
+        paintBgOff30(toolboxCtx, left, top)
     }
     //
     const icon = getIcon30(id)
@@ -7125,7 +7157,7 @@ function toolboxClicked(e) {
     //
     if (wanted == "") { return }
     //
-    if (wanted == "capture") { toolBeforeCapture = tool }   
+    if (wanted == "capture") { toolBeforeCapture = tool }
     //
     tool = wanted
     paintIconsOnToolbox()
@@ -7139,7 +7171,7 @@ function recoverToolBeforeCapture() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function clickedIconOnToolbox(x, y) {
-    const tops = [ 6, 38, 70, 106, 138 ] 
+    const tops = [ 6, 38, 70, 106, 138 ]
     //
     const off = tops.length
     for (let n = 0; n < off; n++) {
@@ -7150,7 +7182,7 @@ function clickedIconOnToolbox(x, y) {
     //
     return ""
 }
-     
+
 function clickedRowOnToolbox(x, row) {
     const lefts = [ 1, 33, 65, 97, 129 ] // excludes 2 pixels from left
     //
@@ -7170,10 +7202,10 @@ function clickedRowColOnToolbox(row, col) {
 // file: interface/top-bar.js //
 // "use strict"
 
-var topBar 
-var topBarCtx  
+var topBar
+var topBarCtx
 
-var topBarScheme = [ 
+var topBarScheme = [
     //
     "roll",
     "",
@@ -7283,7 +7315,7 @@ function paintIconOnTopBar(id, left) {
         paintBgOn25(topBarCtx, left, 3)
     }
     else {
-        paintBgOff25(topBarCtx, left, 3)    
+        paintBgOff25(topBarCtx, left, 3)
     }
     //
     const icon = getIcon25(id)
@@ -7307,7 +7339,7 @@ function paintCurrentColorOnTopBar() {
     topBarCtx.fillStyle = "black"
     topBarCtx.fillRect(x + 64, 1, 40, 28)
     topBarCtx.fillStyle = "rgb(" + RED + "," + GREEN + "," + BLUE + ")"
-    topBarCtx.fillRect(x + 65, 2, 38, 26)    
+    topBarCtx.fillRect(x + 65, 2, 38, 26)
     //
     topBarCtx.fillStyle = wingColor()
     topBarCtx.fillRect(x + 108, 7, 130, 20)
@@ -7349,10 +7381,10 @@ function topBarClicked(e) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function clickedIconOnTopBar(x, y) {
-    if (y < 2)  { return "" } 
-    if (y > 28) { return "" } 
+    if (y < 2)  { return "" }
+    if (y > 28) { return "" }
     //
-    const off = topBarLefts.length 
+    const off = topBarLefts.length
     for (let n = 0; n < off; n++) {
         const left = topBarLefts[n]
         const a = left - 3
@@ -7399,9 +7431,9 @@ function antialiasingCore(cnv, A, B, C) {
     const data = imgdata.data
     // current system of marking points for review is a canvas;
     // the old system (growing list of points) used to break the program with big images!
-    const reviewTable = createCanvas(width, height) 
+    const reviewTable = createCanvas(width, height)
     const reviewData = reviewTable.getContext("2d").getImageData(0, 0, width, height).data
-    process() 
+    process()
     ctx.putImageData(imgdata, 0, 0)
     return
     //
@@ -7409,15 +7441,15 @@ function antialiasingCore(cnv, A, B, C) {
         //
         for (let y = 0; y < height; y += 1) {
             for(let x = 0; x < width; x += 1) { eraseTranslucent(x, y) }
-        } 
-        //  
+        }
+        //
         for (let y = 0; y < height; y += 1) {
             for(let x = 0; x < width; x += 1) { firstProcessAt(x, y) }
-        } 
+        }
         //
         for (let y = 0; y < height; y += 1) {
             for(let x = 0; x < width; x += 1) { secondProcessAt(x, y) }
-        } 
+        }
     }
     function eraseTranslucent(x, y) {
         const index = 4 * (width * y + x)
@@ -7432,11 +7464,11 @@ function antialiasingCore(cnv, A, B, C) {
         data[index + 3] = 0
     }
     function firstProcessAt(x, y) {
-        const index = 4 * (width * y + x) 
+        const index = 4 * (width * y + x)
         let alpha = data[index + 3]
         if (alpha != 0) { return } // not blank
         //
-        const north = isSolid(x, y - 1) 
+        const north = isSolid(x, y - 1)
         const south = isSolid(x, y + 1)
         const west  = isSolid(x - 1, y)
         const east  = isSolid(x + 1, y)
@@ -7454,40 +7486,40 @@ function antialiasingCore(cnv, A, B, C) {
             alpha = A
         }
         else if (north || south || east  || west) {  // side
-            alpha = C 
+            alpha = C
             reviewData[index + 3] = 255
         }
         //
-        data[index + 3] = alpha    
-    }   
+        data[index + 3] = alpha
+    }
     function secondProcessAt(x, y) {
         const index = 4 * (width * y + x)
         const a = reviewData[index + 3]
         if (a != 255) { return } // not marked to be reviewed
         //
-        const north = isAntialiasingA(x, y - 1) 
+        const north = isAntialiasingA(x, y - 1)
         const south = isAntialiasingA(x, y + 1)
         const west  = isAntialiasingA(x - 1, y)
         const east  = isAntialiasingA(x + 1, y)
         //
-        if (north  ||  south  ||  east  ||  west) { 
+        if (north  ||  south  ||  east  ||  west) {
             data[index + 3] = B
         }
-    }       
+    }
     function isSolid(x, y) {
         if (y < 0  ||  x < 0) { return false }
         if (y > height - 1  ||  x > width - 1) { return false }
         //
-        const index = 4 * (width * y + x) 
+        const index = 4 * (width * y + x)
         return data[index + 3] == 255
-    }      
+    }
     function isAntialiasingA(x, y) {
         if (y < 0  ||  x < 0) { return false }
         if (y > height - 1  ||  x > width - 1) { return false }
         //
-        const index = 4 * (width * y + x) 
+        const index = 4 * (width * y + x)
         return data[index + 3] == A
-    }   
+    }
 }
 
 // file: library/autocrop.js //
@@ -7566,13 +7598,13 @@ function autocropWidth(src) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function blurBorder(cnv, x, y) {
-    const width  = cnv.width 
-    const height = cnv.height  
+    const width  = cnv.width
+    const height = cnv.height
     const ctx = cnv.getContext("2d")
     const imgdata = ctx.getImageData(0, 0, width, height)
-    const data = imgdata.data 
+    const data = imgdata.data
     //
-    const index = 4 * (width * y + x)    
+    const index = 4 * (width * y + x)
     const r = data[index]
     const g = data[index + 1]
     const b = data[index + 2]
@@ -7589,8 +7621,8 @@ function blurBorder(cnv, x, y) {
     return true
 }
 
-function blurBorderCore(data, width, height, refdata, r, g, b) { 
-    let rsum 
+function blurBorderCore(data, width, height, refdata, r, g, b) {
+    let rsum
     let gsum
     let bsum
     let counter
@@ -7602,11 +7634,11 @@ function blurBorderCore(data, width, height, refdata, r, g, b) {
     function process() {
         for (let y = 0; y < height; y += 1) {
             for (let x = 0; x < width; x += 1) { processAt(x, y) }
-        } 
+        }
     }
     function processAt(x, y) {
         const index = 4 * (width * y + x)
-        if (refdata[index + 3] == 0) { return } // blank        
+        if (refdata[index + 3] == 0) { return } // blank
         //
         rsum = 0
         gsum = 0
@@ -7629,16 +7661,16 @@ function blurBorderCore(data, width, height, refdata, r, g, b) {
         const B = bsum / counter
         //
         /*
-            cant use: const rate = intensity * (counter / 8) 
+            cant use: const rate = intensity * (counter / 8)
             because counter often is 12 (straight counts double than diagonal);
-            anyway, at least with rectangles, it is more beautiful without this consideration        
+            anyway, at least with rectangles, it is more beautiful without this consideration
         */
         const rate  = intensityFor[tool]  // global variable
         const rate2 = 1 - rate
-        //    
+        //
         let r2 = Math.round(R * rate  +  r * rate2)
         let g2 = Math.round(G * rate  +  g * rate2)
-        let b2 = Math.round(B * rate  +  b * rate2)  
+        let b2 = Math.round(B * rate  +  b * rate2)
         //
         if (r2 > 255) { r2 = 255 }
         if (g2 > 255) { g2 = 255 }
@@ -7651,8 +7683,8 @@ function blurBorderCore(data, width, height, refdata, r, g, b) {
         data[index    ] = r2
         data[index + 1] = g2
         data[index + 2] = b2
-        changed = true 
-    }    
+        changed = true
+    }
     //
     function grabPixel(x, y, diagonal) {
         if (x < 0) { return }
@@ -7660,29 +7692,29 @@ function blurBorderCore(data, width, height, refdata, r, g, b) {
         if (x > width  - 1) { return }
         if (y > height - 1) { return }
         //
-        const index = 4 * (width * y + x) 
+        const index = 4 * (width * y + x)
         if (refdata[index + 3] != 0) { return } // neighbour inside target area
         //
-        const r = data[index] 
-        const g = data[index + 1] 
+        const r = data[index]
+        const g = data[index + 1]
         const b = data[index + 2]
         const a = data[index + 3]
         //
         if (a == 0) { return } // not counting blank
-        if (r + g + b == 0  &&  a == 255) { return } // not counting black (outline) 
+        if (r + g + b == 0  &&  a == 255) { return } // not counting black (outline)
         //
-        rsum += r 
-        gsum += g 
-        bsum += b        
+        rsum += r
+        gsum += g
+        bsum += b
         counter += 1
         //
         if (diagonal) { return }
         // straight neighbours have double influence:
-        rsum += r 
-        gsum += g 
-        bsum += b        
+        rsum += r
+        gsum += g
+        bsum += b
         counter += 1
-    } 
+    }
 }
 
 // file: library/bresenham.js //
@@ -7690,13 +7722,13 @@ function blurBorderCore(data, width, height, refdata, r, g, b) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function makeBresenham(x0, y0, x1, y1) { 
+function makeBresenham(x0, y0, x1, y1) {
     if (x0 == null) { return [createPoint(x1, y1)] } // just starting
     //
-    return makeBresenhamCore(x0, y0, x1, y1) 
+    return makeBresenhamCore(x0, y0, x1, y1)
 }
 
-function makeBresenhamCore(x0, y0, x1, y1) { 
+function makeBresenhamCore(x0, y0, x1, y1) {
     //
     const dx = Math.abs(x1 - x0)
     const dy = Math.abs(y1 - y0)
@@ -7716,7 +7748,7 @@ function makeBresenhamCore(x0, y0, x1, y1) {
         if (e2 <  dx) { err += dx; y0 += sy }
         //
         arr.push(createPoint(x0, y0)) // this line is at end to not include x0y0
-    }    
+    }
     return arr
 }
 
@@ -7744,7 +7776,7 @@ function colorize(cnv, intensityOfNewHue, SAT, LUM) {
     //
     process()
     ctx.putImageData(imgdata, 0, 0)
-    return 
+    return
     //
     function process() {
         for (let y = 0; y < height; y++) {
@@ -7759,7 +7791,7 @@ function colorize(cnv, intensityOfNewHue, SAT, LUM) {
         let g = data[index + 1]
         let b = data[index + 2]
         let a = data[index + 3]
-        //    
+        //
         if (a == 0) { return } // blank
         if (r + g + b == 0  &&  a == 255) { return } // solid black
         //
@@ -7803,13 +7835,13 @@ function eatBorder(cnv) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
-    const imgdata = ctx.getImageData(0, 0, width, height)    
+    const imgdata = ctx.getImageData(0, 0, width, height)
     const data = imgdata.data
     let changed = false
     //
     const ref = data.slice(0)
     //
-    process() 
+    process()
     if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
@@ -7830,7 +7862,7 @@ function eatBorder(cnv) {
         data[index + 2] = 0
         data[index + 3] = 0
         //
-        changed = true 
+        changed = true
     }
     function isBorder(x, y) {
         if (isBlankOrOff(x    , y - 1)) { return true }
@@ -7855,33 +7887,33 @@ function eatBorder(cnv) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function eraseBlack(cnv) {   
-    return selectiveErase(cnv, true, false, false) 
+function eraseBlack(cnv) {
+    return selectiveErase(cnv, true, false, false)
 }
-    
+
 function eraseColored(cnv) {
-    return selectiveErase(cnv, false, true, false) 
+    return selectiveErase(cnv, false, true, false)
 }
-    
+
 function eraseTranslucent(cnv) {
-    return selectiveErase(cnv, false, false, true) 
+    return selectiveErase(cnv, false, false, true)
 }
-    
+
 function eraseAllButBlack(cnv) {
-    return selectiveErase(cnv, false, true, true) 
+    return selectiveErase(cnv, false, true, true)
 }
-    
+
 function eraseAllButColored(cnv) {
-    return selectiveErase(cnv, true, false, true) 
+    return selectiveErase(cnv, true, false, true)
 }
-    
+
 function eraseAllButTranslucent(cnv) {
-    return selectiveErase(cnv, true, true, false) 
+    return selectiveErase(cnv, true, true, false)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function selectiveErase(cnv, black, colored, transluc) { 
+function selectiveErase(cnv, black, colored, transluc) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
@@ -7889,7 +7921,7 @@ function selectiveErase(cnv, black, colored, transluc) {
     const data = imgdata.data
     let changed = false
     //
-    process() 
+    process()
     if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
@@ -7898,7 +7930,7 @@ function selectiveErase(cnv, black, colored, transluc) {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 processAt(x, y)
-            }   
+            }
         }
     }
     function processAt(x, y) {
@@ -7909,7 +7941,7 @@ function selectiveErase(cnv, black, colored, transluc) {
         const b = data[index + 2]
         const a = data[index + 3]
         //
-        if (! shallErase(r, g, b, a)) { return } 
+        if (! shallErase(r, g, b, a)) { return }
         data[index]     = 0
         data[index + 1] = 0
         data[index + 2] = 0
@@ -7921,7 +7953,7 @@ function selectiveErase(cnv, black, colored, transluc) {
         if (a == 0)  { return false }
         if (a < 255) { return transluc }
         if (r + g + b == 0) { return black }
-        return colored 
+        return colored
     }
 }
 
@@ -7930,7 +7962,7 @@ function selectiveErase(cnv, black, colored, transluc) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function eraseMatchingPixels(cnv, rgbColors) { 
+function eraseMatchingPixels(cnv, rgbColors) {
     //
     const width  = cnv.width
     const height = cnv.height
@@ -7939,7 +7971,7 @@ function eraseMatchingPixels(cnv, rgbColors) {
     const data = imgdata.data
     let changed = false
     //
-    process() 
+    process()
     if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
@@ -7948,7 +7980,7 @@ function eraseMatchingPixels(cnv, rgbColors) {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 processAt(x, y)
-            }   
+            }
         }
     }
     function processAt(x, y) {
@@ -7957,9 +7989,9 @@ function eraseMatchingPixels(cnv, rgbColors) {
         const g = data[index + 1]
         const b = data[index + 2]
         const a = data[index + 3]
-        //             
+        //
         if (a == 0) { return } // blank
-        //             
+        //
         if (a != 255) { return } // translucent
         //
         if (! isInColors(r, g, b)) { return }
@@ -7969,7 +8001,7 @@ function eraseMatchingPixels(cnv, rgbColors) {
         data[index + 2] = 0
         data[index + 3] = 0
         //
-        changed = true        
+        changed = true
     }
     function isInColors(r, g, b) {
         //
@@ -7986,7 +8018,7 @@ function eraseMatchingPixels(cnv, rgbColors) {
 // file: library/filters.js //
 // "use strict"
 
-// avoids make false outline 
+// avoids make false outline
 // own pixel replaces value of some invalid neighbour
 // completely ignores blank and black pixels
 
@@ -8022,7 +8054,7 @@ function blur(cnv) {
 function smooth(cnv) {
     return applyFilter(cnv, [ 1/20,  1/20,  1/20,    1/20,  12/20,  1/20,    1/20,  1/20,  1/20 ])
 }
-  
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function applyFilter(cnv, filter) {
@@ -8034,10 +8066,10 @@ function applyFilter(cnv, filter) {
     let changed = false
     //
     const srcdata = data.slice(0)
-    let channels, R, G, B, A  
+    let channels, R, G, B, A
     //
-    process() 
-    if (! changed) { return false }  
+    process()
+    if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
     //
@@ -8053,7 +8085,7 @@ function applyFilter(cnv, filter) {
         G = srcdata[index + 1]
         B = srcdata[index + 2]
         A = srcdata[index + 3]
-        //  
+        //
         if (A == 0) { return } // blank
         if (R + G + B == 0  &&  A == 255) { return } // solid black
         //
@@ -8062,7 +8094,7 @@ function applyFilter(cnv, filter) {
         fillChannelsWith(x    , y - 1, filter[1]) // north
         fillChannelsWith(x + 1, y - 1, filter[2]) // northeast
         fillChannelsWith(x - 1, y    , filter[3]) // west
-        fillChannelsWith(x    , y    , filter[4]) // center 
+        fillChannelsWith(x    , y    , filter[4]) // center
         fillChannelsWith(x + 1, y    , filter[5]) // east
         fillChannelsWith(x - 1, y + 1, filter[6]) // southwest
         fillChannelsWith(x    , y + 1, filter[7]) // south
@@ -8072,9 +8104,9 @@ function applyFilter(cnv, filter) {
         let g = Math.floor(channels[1])
         let b = Math.floor(channels[2])
         //
-        if (r > 255) { r = 255 } 
-        if (g > 255) { g = 255 } 
-        if (b > 255) { b = 255 } 
+        if (r > 255) { r = 255 }
+        if (g > 255) { g = 255 }
+        if (b > 255) { b = 255 }
         //
         if (r < 0) { r = 0 } // necessary when some factor is negative
         if (g < 0) { g = 0 } // or else may fool 'avoid false outline' control
@@ -8084,7 +8116,7 @@ function applyFilter(cnv, filter) {
         //
         data[index    ] = r
         data[index + 1] = g
-        data[index + 2] = b  
+        data[index + 2] = b
         //
         if (R != r  ||  G != g  ||  B != b) { changed = true }
     }
@@ -8129,21 +8161,21 @@ function __getArea(cnv, x, y) {
     //
     const ctx = cnv.getContext("2d")
     const srcdata = ctx.getImageData(0, 0, width, height).data
-    // 
+    //
     let px = ctx.getImageData(x, y, 1, 1).data
     let R = px[0]
     let G = px[1]
     let B = px[2]
-    let A = px[3]  
+    let A = px[3]
     const isBlankArea = (R + G + B + A) == 0
-    //    
+    //
     const area = createCanvas(width, height)
     const areaCtx = area.getContext("2d")
     const imgdata = areaCtx.getImageData(0, 0, width, height)
     const data = imgdata.data
     //
-    let current = [] 
-    let future  = [] // each point is already painted; serves as center to search neighbours 
+    let current = []
+    let future  = [] // each point is already painted; serves as center to search neighbours
     process()
     areaCtx.putImageData(imgdata, 0, 0)
     return area
@@ -8153,19 +8185,19 @@ function __getArea(cnv, x, y) {
         while (future.length > 0) { walk() }
     }
     function walk() {
-        current = future 
+        current = future
         future  = []
-        while (current.length > 0) { 
+        while (current.length > 0) {
             const point = current.shift()
             processAround(point.x, point.y)
         }
-    }    
+    }
     function processAround(x, y) {
         processAt(x + 1, y)
         processAt(x - 1, y)
         processAt(x, y + 1)
         processAt(x, y - 1)
-    }    
+    }
     function processAt(x, y) {
         if (x < 0) { return }
         if (y < 0) { return }
@@ -8175,7 +8207,7 @@ function __getArea(cnv, x, y) {
         const index = 4 * (width * y + x)
         //
         if (data[index + 3] != 0) { return } // already processed
-        // 
+        //
         if (R != srcdata[index    ]) { return }
         if (G != srcdata[index + 1]) { return }
         if (B != srcdata[index + 2]) { return }
@@ -8184,17 +8216,17 @@ function __getArea(cnv, x, y) {
         if (isBlankArea) {
             // must mark desired area with some color;
             // no mess with fuchsia pixels from source because,
-            // in this case, we are picking only blank pixels from source 
+            // in this case, we are picking only blank pixels from source
             data[index    ] = 255
             data[index + 1] =   0
             data[index + 2] = 255
-            data[index + 3] = 255 
+            data[index + 3] = 255
         }
         else {
             data[index    ] = R
             data[index + 1] = G
             data[index + 2] = B
-            data[index + 3] = A         
+            data[index + 3] = A
         }
         //
         future.push(createPoint(x, y))
@@ -8210,20 +8242,20 @@ function __getArea(cnv, x, y) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function getAreaData(srcdata, width, height, x, y) {
-    // 
+    //
     const px = startingPixel()
     const R = px[0]
     const G = px[1]
     const B = px[2]
-    const A = px[3]  
+    const A = px[3]
     const isBlankArea = (R + G + B + A) == 0
-    //    
-    const data = srcdata.slice(0) // clones data 
-    const off = data.length 
+    //
+    const data = srcdata.slice(0) // clones data
+    const off = data.length
     for (let n = 0; n < off; n++) { data[n] = 0 }
     //
-    let current = [] 
-    let future  = [] // each point is already painted; serves as center to search neighbours 
+    let current = []
+    let future  = [] // each point is already painted; serves as center to search neighbours
     process()
     return data
     //
@@ -8232,19 +8264,19 @@ function getAreaData(srcdata, width, height, x, y) {
         while (future.length > 0) { walk() }
     }
     function walk() {
-        current = future 
+        current = future
         future  = []
-        while (current.length > 0) { 
+        while (current.length > 0) {
             const point = current.shift()
             processAround(point.x, point.y)
         }
-    }    
+    }
     function processAround(x, y) {
         processAt(x + 1, y)
         processAt(x - 1, y)
         processAt(x, y + 1)
         processAt(x, y - 1)
-    }    
+    }
     function processAt(x, y) {
         if (x < 0) { return }
         if (y < 0) { return }
@@ -8254,7 +8286,7 @@ function getAreaData(srcdata, width, height, x, y) {
         const index = 4 * (width * y + x)
         //
         if (data[index + 3] != 0) { return } // already processed
-        // 
+        //
         if (R != srcdata[index    ]) { return }
         if (G != srcdata[index + 1]) { return }
         if (B != srcdata[index + 2]) { return }
@@ -8263,17 +8295,17 @@ function getAreaData(srcdata, width, height, x, y) {
         if (isBlankArea) {
             // must mark desired area with some color;
             // no mess with fuchsia pixels from source because,
-            // in this case, we are picking only blank pixels from source 
+            // in this case, we are picking only blank pixels from source
             data[index    ] = 255
             data[index + 1] =   0
             data[index + 2] = 255
-            data[index + 3] = 255 
+            data[index + 3] = 255
         }
         else {
             data[index    ] = R
             data[index + 1] = G
             data[index + 2] = B
-            data[index + 3] = A         
+            data[index + 3] = A
         }
         //
         future.push(createPoint(x, y))
@@ -8286,7 +8318,7 @@ function getAreaData(srcdata, width, height, x, y) {
             srcdata[index + 1],
             srcdata[index + 2],
             srcdata[index + 3]
-        ]        
+        ]
     }
 }
 
@@ -8295,7 +8327,7 @@ function getAreaData(srcdata, width, height, x, y) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function greyScale(cnv) { 
+function greyScale(cnv) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
@@ -8303,7 +8335,7 @@ function greyScale(cnv) {
     const data = imgdata.data
     let changed = false
     //
-    process() 
+    process()
     if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
@@ -8312,7 +8344,7 @@ function greyScale(cnv) {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 processAt(x, y)
-            }   
+            }
         }
     }
     function processAt(x, y) {
@@ -8321,7 +8353,7 @@ function greyScale(cnv) {
         const G = data[index + 1]
         const B = data[index + 2]
         const A = data[index + 3]
-        //    
+        //
         if (A == 0) { return } // blank
         if (R + G + B == 0  &&  A == 255) { return } // solid black
         //
@@ -8368,8 +8400,8 @@ function __getGrey2(r, g, b) {
 // file: library/hsl.js //
 // "use strict"
 
-// Hue is a degree on the color wheel (from 0 to 359) - 0 (or 360) is red, 120 is green, 240 is blue. 
-// Saturation is a percentage value; 0% means a shade of gray and 100% is the full color. 
+// Hue is a degree on the color wheel (from 0 to 359) - 0 (or 360) is red, 120 is green, 240 is blue.
+// Saturation is a percentage value; 0% means a shade of gray and 100% is the full color.
 // Lightness is also a percentage; 0% is black, 100% is white.
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -8409,7 +8441,7 @@ function __hslToString(hsl) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function rgbToHsl(rgb) { 
+function rgbToHsl(rgb) {
     const r = rgb[0] / 255.0
     const g = rgb[1] / 255.0
     const b = rgb[2] / 255.0
@@ -8423,7 +8455,7 @@ function rgbToHsl(rgb) {
     const chroma = max - min
     //
     if (chroma == 0) { // no saturation
-        hue = 0 
+        hue = 0
         sat = 0
     }
     else {
@@ -8434,7 +8466,7 @@ function rgbToHsl(rgb) {
         }
         else {
             sat = chroma / (2 - 2 * lum)
-        }      
+        }
         //
         if (max == r  &&  g >= b) {
             hue = 1.0472 * (g - b) / chroma
@@ -8458,16 +8490,16 @@ function rgbToHsl(rgb) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function hslToRgb(hsl) { 
+function hslToRgb(hsl) {
     /*
-        const cnv = createCanvas(1, 1)    
+        const cnv = createCanvas(1, 1)
         const ctx = cnv.getContext("2d")
         ctx.fillStyle = hslToString(hsl)
         ctx.fillRect(0,0,1,1)
         const data = ctx.getImageData(0, 0, 1, 1).data
         return [data[0], data[1], data[2]]
     */
-    
+
     let   h = hsl[0]
     const s = hsl[1]
     const l = hsl[2]
@@ -8520,7 +8552,7 @@ function hslToRgb(hsl) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/* test (works fine) 
+/* test (works fine)
 
 function testHsl() {
     testHslCore([97, 193, 54])
@@ -8551,7 +8583,7 @@ function testHslCore(rgb) {
 
 /* retired
 
-function rgbToGrey(rgb) { 
+function rgbToGrey(rgb) {
     const hsl = rgbToHsl(rgb)
 //  const hue = hsl[0]
 //  const sat = hsl[1]
@@ -8581,11 +8613,11 @@ function luminosityToRgb(rgb, luminosity) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function inliner(cnv) { 
+function inliner(cnv) {
     return inlinerCore(cnv, RED, GREEN, BLUE, ALPHA)
 }
 
-function inlinerCore(cnv, R, G, B, A) { 
+function inlinerCore(cnv, R, G, B, A) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
@@ -8593,7 +8625,7 @@ function inlinerCore(cnv, R, G, B, A) {
     const data = imgdata.data
     let changed = false
     //
-    process() 
+    process()
     if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
@@ -8619,7 +8651,7 @@ function inlinerCore(cnv, R, G, B, A) {
         data[index    ] = R
         data[index + 1] = G
         data[index + 2] = B
-        data[index + 3] = A 
+        data[index + 3] = A
     }
     function hasBlankNeighbour(x, y) {
         if (isBlank(x    , y - 1)) { return true }
@@ -8646,7 +8678,7 @@ function inlinerCore(cnv, R, G, B, A) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function negative(cnv) { 
+function negative(cnv) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
@@ -8654,7 +8686,7 @@ function negative(cnv) {
     const data = imgdata.data
     let changed = false
     //
-    process() 
+    process()
     if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
@@ -8663,7 +8695,7 @@ function negative(cnv) {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 processAt(x, y)
-            }   
+            }
         }
     }
     function processAt(x, y) {
@@ -8672,7 +8704,7 @@ function negative(cnv) {
         const G = data[index + 1]
         const B = data[index + 2]
         const A = data[index + 3]
-        //    
+        //
         if (A == 0) { return } // blank
     //  if (R + G + B == 0  &&  A == 255) { return } // solid black
         //
@@ -8682,7 +8714,7 @@ function negative(cnv) {
         if (A == 255  &&  r + g + b == 0) { r = 1; g = 1; b = 1 } // avoids make false outline
         //
         data[index    ] = r
-        data[index + 1] = g 
+        data[index + 1] = g
         data[index + 2] = b
         //
         if (R != r) { changed = true; return }
@@ -8698,7 +8730,7 @@ function negative(cnv) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function addNoise(cnv) { 
+function addNoise(cnv) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
@@ -8707,7 +8739,7 @@ function addNoise(cnv) {
     let changed = false
     //
     process()
-    if (! changed) { return false } 
+    if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
     //
@@ -8715,7 +8747,7 @@ function addNoise(cnv) {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 processAt(x, y)
-            }   
+            }
         }
     }
     function processAt(x, y) {
@@ -8724,12 +8756,12 @@ function addNoise(cnv) {
         const G = data[index + 1]
         const B = data[index + 2]
         const A = data[index + 3]
-        //    
+        //
         if (A == 0) { return } // blank
         if (R + G + B == 0  &&  A == 255) { return } // solid black
-        //    
+        //
         if (Math.random() < 0.33) { return }
-        //  
+        //
         const signal = (Math.random() < 0.5) ? -1 : +1
         //
         const rgb = lightenDarkenColor([R,G,B], signal * 0.01)
@@ -8740,7 +8772,7 @@ function addNoise(cnv) {
         if (r + g + b == 0) { r = 1; g = 1; b = 1 } // avoids make false outline
         //
         data[index    ] = r
-        data[index + 1] = g 
+        data[index + 1] = g
         data[index + 2] = b
         //
         if (R != r) { changed = true; return }
@@ -8754,7 +8786,7 @@ function addNoise(cnv) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function outliner(cnv) { 
+function outliner(cnv) {
     return outlinerCore(cnv, RED, GREEN, BLUE, ALPHA)
 }
 
@@ -8762,13 +8794,13 @@ function outlinerCore(cnv, red, green, blue, alpha) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
-    const imgdata = ctx.getImageData(0, 0, width, height)    
+    const imgdata = ctx.getImageData(0, 0, width, height)
     const data = imgdata.data
     let changed = false
     //
     const ref = data.slice(0)
     //
-    process() 
+    process()
     if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
@@ -8787,7 +8819,7 @@ function outlinerCore(cnv, red, green, blue, alpha) {
         data[index]     = red
         data[index + 1] = green
         data[index + 2] = blue
-        data[index + 3] = alpha 
+        data[index + 3] = alpha
         changed = true
     }
     function hasContentNeighbour(x, y) {
@@ -8841,9 +8873,9 @@ function paintArea(cnv, x, y, r, g, b, a) {
         while (future.length > 0) { walk() }
     }
     function walk() {
-        current = future 
+        current = future
         future  = []
-        while (current.length > 0) { 
+        while (current.length > 0) {
             const point = current.shift()
             processAround(point.x, point.y)
         }
@@ -8853,7 +8885,7 @@ function paintArea(cnv, x, y, r, g, b, a) {
         processAt(x - 1, y)
         processAt(x, y + 1)
         processAt(x, y - 1)
-    }    
+    }
     function processAt(x, y) {
         if (x < 0) { return }
         if (y < 0) { return }
@@ -8881,7 +8913,7 @@ function paintArea(cnv, x, y, r, g, b, a) {
             data[index + 1],
             data[index + 2],
             data[index + 3]
-        ]        
+        ]
     }
 }
 
@@ -8897,9 +8929,9 @@ function paintArea(cnv, x, y, r, g, b, a) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function paintBorder(cnv, x, y, r, g, b, a) {  
-    const width  = cnv.width 
-    const height = cnv.height  
+function paintBorder(cnv, x, y, r, g, b, a) {
+    const width  = cnv.width
+    const height = cnv.height
     const ctx = cnv.getContext("2d")
     const imgdata = ctx.getImageData(0, 0, width, height)
     const data = imgdata.data
@@ -8916,13 +8948,13 @@ function paintBorder(cnv, x, y, r, g, b, a) {
     function process() {
         for(let y = 0; y < height; y += 1) {
             for(let x = 0; x < width; x += 1) { processAt(x, y) }
-        } 
+        }
     }
     function processAt(x, y) {
         const index = 4 * (width * y + x)
         if (refdata[index + 3] == 0) { return } // blank
         //
-        const north = isBlank(x, y - 1) 
+        const north = isBlank(x, y - 1)
         const south = isBlank(x, y + 1)
         const west  = isBlank(x - 1, y)
         const east  = isBlank(x + 1, y)
@@ -8938,13 +8970,13 @@ function paintBorder(cnv, x, y, r, g, b, a) {
         data[index + 1] = g
         data[index + 2] = b
         data[index + 3] = a
-    }    
+    }
     function isBlank(x, y) {
         if (y < 0  ||  x < 0) { return true }
         if (y > height - 1  ||  x > width - 1) { return true }
-        const index = 4 * (width * y + x) 
+        const index = 4 * (width * y + x)
         return refdata[index + 3] == 0
-    } 
+    }
     function startingPixel() {
         const index = 4 * (width * y + x)
         //
@@ -8953,8 +8985,8 @@ function paintBorder(cnv, x, y, r, g, b, a) {
             data[index + 1],
             data[index + 2],
             data[index + 3]
-        ]        
-    }  
+        ]
+    }
 }
 
 // file: library/paint-every.js //
@@ -9005,7 +9037,7 @@ function paintEvery(cnv, x, y, r, g, b, a) {
             data[index + 1],
             data[index + 2],
             data[index + 3]
-        ]        
+        ]
     }
 }
 
@@ -9014,20 +9046,20 @@ function paintEvery(cnv, x, y, r, g, b, a) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function pixelate2(cnv)  { 
-    pixelate(cnv,  2) 
+function pixelate2(cnv)  {
+    pixelate(cnv,  2)
 }
 
-function pixelate3(cnv)  { 
-    pixelate(cnv,  3) 
+function pixelate3(cnv)  {
+    pixelate(cnv,  3)
 }
 
-function pixelate4(cnv)  { 
-    pixelate(cnv,  4) 
+function pixelate4(cnv)  {
+    pixelate(cnv,  4)
 }
 
-function pixelate5(cnv)  { 
-    pixelate(cnv,  5) 
+function pixelate5(cnv)  {
+    pixelate(cnv,  5)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9043,11 +9075,11 @@ function pixelate(cnv, factor) {
         if (rest == 0) { return dim }
         return dim + factor - rest // ok (tested)
     }
-    //    
-    const source = createCanvas(width, height) 
+    //
+    const source = createCanvas(width, height)
     const sourceCtx = source.getContext("2d")
-    sourceCtx.drawImage(cnv, 0, 0)    
-    //    
+    sourceCtx.drawImage(cnv, 0, 0)
+    //
     const reduced = createCanvas(width / factor, height / factor)
     const reducedCtx = reduced.getContext("2d")
     reducedCtx["imageSmoothingEnabled"] = false
@@ -9057,17 +9089,17 @@ function pixelate(cnv, factor) {
     sourceCtx["imageSmoothingEnabled"] = false
     sourceCtx.drawImage(reduced, 0,0,reduced.width,reduced.height, 0,0,width,height)
     //
-    const ctx = cnv.getContext("2d") 
+    const ctx = cnv.getContext("2d")
     ctx.clearRect(0, 0, cnv.width, cnv.height)
-    ctx.drawImage(source, 0, 0)    
+    ctx.drawImage(source, 0, 0)
 }
 
 // file: library/reduce.js //
 // "use strict"
 
-// calling the same function again produces different result 
+// calling the same function again produces different result
 
-const reduxAZeroToOne = [ 0.95, 0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60, 0.55, 0.50, 
+const reduxAZeroToOne = [ 0.95, 0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60, 0.55, 0.50,
                           0.45, 0.40, 0.35, 0.30, 0.25, 0.20, 0.15, 0.10, 0.05 ]
 
 const reduxBZeroToOne = [ 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 ]
@@ -9083,7 +9115,7 @@ const reduxAZeroTo360  = [ 360, 350, 340, 330, 320, 310, 300, 290, 280, 270,
 
 const reduxBZeroTo360  = [ 350, 330, 310, 290, 270, 250, 230, 210, 190, 170,
                            150, 130, 110,  90,  70,  50,  30,  10 ]
-                           
+
 const reduxCZeroTo360  = [ 340, 300, 260, 220, 180, 140, 100, 60, 20 ]
 
 
@@ -9103,7 +9135,7 @@ function reduceC(cnv) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function reduce(cnv, hArr, sArr, lArr) { 
+function reduce(cnv, hArr, sArr, lArr) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
@@ -9111,7 +9143,7 @@ function reduce(cnv, hArr, sArr, lArr) {
     const data = imgdata.data
     let changed = false
     //
-    process() 
+    process()
     if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
@@ -9120,7 +9152,7 @@ function reduce(cnv, hArr, sArr, lArr) {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 processAt(x, y)
-            }   
+            }
         }
     }
     function processAt(x, y) {
@@ -9129,7 +9161,7 @@ function reduce(cnv, hArr, sArr, lArr) {
         const G = data[index + 1]
         const B = data[index + 2]
         const A = data[index + 3]
-        //    
+        //
         if (A == 0) { return } // blank
         if (R + G + B == 0  &&  A == 255) { return } // solid black
         //
@@ -9143,7 +9175,7 @@ function reduce(cnv, hArr, sArr, lArr) {
         const lum = adjustToArray(l, lArr)
         //
         const rgb = hslToRgb([hue, sat, lum])
-        //         
+        //
         let r = rgb[0]
         let g = rgb[1]
         let b = rgb[2]
@@ -9151,7 +9183,7 @@ function reduce(cnv, hArr, sArr, lArr) {
         if (r + g + b == 0  &&  a == 255) { r = 1; g = 1; b = 1 } // avoids make false outline
         //
         data[index    ] = r
-        data[index + 1] = g 
+        data[index + 1] = g
         data[index + 2] = b
         data[index + 3] = a
         //
@@ -9159,20 +9191,20 @@ function reduce(cnv, hArr, sArr, lArr) {
         if (G != g) { changed = true; return }
         if (B != b) { changed = true; return }
         if (A != a) { changed = true; return }
-    } 
+    }
     function adjustToArray(val, arr) {
         //
         for (const ref of arr) {
             if (val >= ref) { return ref }
         }
-        return 0 
+        return 0
     }
     function reduceChannel(m) {
         const factor = 25
         //
         const n = Math.round(m / factor) * factor
         if (n > 249) { return 255 }
-        return n 
+        return n
     }
 }
 
@@ -9181,7 +9213,7 @@ function reduce(cnv, hArr, sArr, lArr) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function horizontalReverse(src) { 
+function horizontalReverse(src) {
     const ctx = src.getContext("2d")
     const clone = cloneImage(src)
     //
@@ -9368,7 +9400,7 @@ function mixedReverse(dst) { // works in place
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function roundAlpha(cnv) { 
+function roundAlpha(cnv) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
@@ -9377,7 +9409,7 @@ function roundAlpha(cnv) {
     let changed = false
     //
     process()
-    if (! changed) { return false } 
+    if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
     //
@@ -9385,7 +9417,7 @@ function roundAlpha(cnv) {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 processAt(x, y)
-            }   
+            }
         }
     }
     //
@@ -9415,7 +9447,7 @@ function roundAlpha(cnv) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function sepiaTone(cnv) { 
+function sepiaTone(cnv) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
@@ -9423,7 +9455,7 @@ function sepiaTone(cnv) {
     const data = imgdata.data
     let changed = false
     //
-    process() 
+    process()
     if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
@@ -9432,7 +9464,7 @@ function sepiaTone(cnv) {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 processAt(x, y)
-            }   
+            }
         }
     }
     function processAt(x, y) {
@@ -9441,7 +9473,7 @@ function sepiaTone(cnv) {
         const G = data[index + 1]
         const B = data[index + 2]
         const A = data[index + 3]
-        //    
+        //
         if (A == 0) { return } // blank
         if (R + G + B == 0  &&  A == 255) { return } // solid black
         //
@@ -9467,7 +9499,7 @@ const swaps = [ "rgbToGbr", "rgbToGbr", "rgbToRbg", "rgbToGbr", "rgbToGbr", "rgb
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function swapRgb(cnv) { 
+function swapRgb(cnv) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
@@ -9478,7 +9510,7 @@ function swapRgb(cnv) {
     const swap = swaps[0]
     swaps.push(swaps.shift())
     //
-    process() 
+    process()
     if (! changed) { return false }
     ctx.putImageData(imgdata, 0, 0)
     return true
@@ -9487,7 +9519,7 @@ function swapRgb(cnv) {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 processAt(x, y)
-            }   
+            }
         }
     }
     function processAt(x, y) {
@@ -9496,16 +9528,16 @@ function swapRgb(cnv) {
         const g = data[index + 1]
         const b = data[index + 2]
         const a = data[index + 3]
-        //      
+        //
         if (a == 0) { return } // blank
-        if (swap == "rgbToGbr") { 
+        if (swap == "rgbToGbr") {
             data[index    ] = g
             data[index + 1] = b
             data[index + 2] = r
             //
             if (r != g  ||  g != b  ||  b != r) { changed = true }
         }
-        else {  
+        else {
             data[index    ] = r
             data[index + 1] = b
             data[index + 2] = g
@@ -9520,7 +9552,7 @@ function swapRgb(cnv) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function weakenBlack(cnv) { 
+function weakenBlack(cnv) {
     const width  = cnv.width
     const height = cnv.height
     const ctx = cnv.getContext("2d")
@@ -9528,16 +9560,16 @@ function weakenBlack(cnv) {
     const data = imgdata.data
     let changed = false
     //
-    process() 
+    process()
     if (! changed) { return false }
-    ctx.putImageData(imgdata, 0, 0)    
+    ctx.putImageData(imgdata, 0, 0)
     return true
     //
     function process() {
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 processAt(x, y)
-            }   
+            }
         }
     }
     function processAt(x, y) {
@@ -9562,12 +9594,12 @@ function weakenBlack(cnv) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function startBlur() { 
+function startBlur() {
     //
-    continueBlur() 
+    continueBlur()
 }
 
-function continueBlur() { 
+function continueBlur() {
     //
     if (toplayer == null) { return }
     //
@@ -9582,8 +9614,8 @@ function continueBlur() {
         const p = arr.shift()
         //
         paintLastX = p.x
-        paintLastY = p.y   
-        paintBlur(ctx, p.x, p.y) 
+        paintLastY = p.y
+        paintBlur(ctx, p.x, p.y)
     }
 }
 
@@ -9614,7 +9646,7 @@ function paintBlur(ctx, x, y) {
 
 function paintBlur2(ctx, left, top, width, height) {
     //
-    const imgdata = ctx.getImageData(left, top, width, height) 
+    const imgdata = ctx.getImageData(left, top, width, height)
     const data = imgdata.data
     //
     const refdata = paintControlCtx.getImageData(left, top, width, height).data
@@ -9627,7 +9659,7 @@ function paintBlur2(ctx, left, top, width, height) {
     //
     for (let x = 1; x < width-1; x++) {
         for (let y = 1; y < height-1; y++) {
-            const changed = paintBlurAt(data, refdata, width, x, y) 
+            const changed = paintBlurAt(data, refdata, width, x, y)
             if (changed) { anyChange = true }
         }
     }
@@ -9638,7 +9670,7 @@ function paintBlur2(ctx, left, top, width, height) {
     shallMemorizePaint = true
 }
 
-function paintBlurAt(data, refdata, width, x, y) { 
+function paintBlurAt(data, refdata, width, x, y) {
     //
     // bounds are ok because rectangle was previously expanded
     // any pixel outside layer comes as [0,0,0,0]
@@ -9657,23 +9689,23 @@ function paintBlurAt(data, refdata, width, x, y) {
     const r = data[index]
     const g = data[index + 1]
     const b = data[index + 2]
-    // 
+    //
     if (r != R  ||  g != G  ||   b != B) { return false } // already done
-    //     
-    return paintBlurAt2(data, refdata, width, x, y, R, G, B, A) 
+    //
+    return paintBlurAt2(data, refdata, width, x, y, R, G, B, A)
 }
-    
-function paintBlurAt2(data, refdata, width, x, y, R, G, B, A) { 
-    //  
+
+function paintBlurAt2(data, refdata, width, x, y, R, G, B, A) {
+    //
     const RGB = getBlurInfo(refdata, width, x, y) // fractionary values
     if (RGB == null) { return false }
     //
     let rate = intensityFor[tool]
     const rate2 = 1 - rate
-    //    
+    //
     let r, g, b
     //
-    if (shiftPressed) { 
+    if (shiftPressed) {
         // antiblur
         rate *= 1.25
         //
@@ -9685,13 +9717,13 @@ function paintBlurAt2(data, refdata, width, x, y, R, G, B, A) {
         // blur
         r = Math.round(RGB[0] * rate  +  R * rate2)
         g = Math.round(RGB[1] * rate  +  G * rate2)
-        b = Math.round(RGB[2] * rate  +  B * rate2)  
+        b = Math.round(RGB[2] * rate  +  B * rate2)
     }
-    // fix bounds 
+    // fix bounds
     if (r < 0) { r = 0 }
     if (g < 0) { g = 0 }
     if (b < 0) { b = 0 }
-    // fix bounds 
+    // fix bounds
     if (r > 255) { r = 255 }
     if (g > 255) { g = 255 }
     if (b > 255) { b = 255 }
@@ -9724,7 +9756,7 @@ function getBlurInfo(refdata, width, x, y) { // fractionary values
     addNeighbor(x+1, y-1, true) // northeast
     addNeighbor(x-1, y+1, true) // southwest
     addNeighbor(x+1, y+1, true) // southeast
-    // 
+    //
     if (count == 0) { return null } // no blur
     //
     arr[0] /= count
@@ -9744,7 +9776,7 @@ function getBlurInfo(refdata, width, x, y) { // fractionary values
         const a = refdata[index + 3]
         //
         if (a == 0) { return } // blank
-        if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return } 
+        if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return }
         //
         const factor = diagonal ? 1 : 2 // straight weighs double than diagonal
         arr[0] += r * factor
@@ -9765,7 +9797,7 @@ function startBrush() {
     continueBrush()
 }
 
-function continueBrush() { 
+function continueBrush() {
     //
     if (toplayer == null) { return }
     //
@@ -9778,8 +9810,8 @@ function continueBrush() {
         const p = arr.shift()
         //
         paintLastX = p.x
-        paintLastY = p.y   
-        paintBrush(ctx, p.x, p.y) 
+        paintLastY = p.y
+        paintBrush(ctx, p.x, p.y)
     }
 }
 
@@ -9801,13 +9833,13 @@ function paintBrush(ctx, x, y) {
     const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
-    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height) 
+    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height)
     const data = imgdata.data
     //
     let anyChange = false
     //
     let index = 0
-    while (index < data.length) {    
+    while (index < data.length) {
         const changed = paintHardPixel(data, index, shiftPressed)
         if (changed) { anyChange = true }
         index += 4
@@ -9829,7 +9861,7 @@ function startDarken() {
     continueDarken()
 }
 
-function continueDarken() { 
+function continueDarken() {
     //
     if (toplayer == null) { return }
     //
@@ -9844,8 +9876,8 @@ function continueDarken() {
         const p = arr.shift()
         //
         paintLastX = p.x
-        paintLastY = p.y   
-        paintDarken(ctx, p.x, p.y) 
+        paintLastY = p.y
+        paintDarken(ctx, p.x, p.y)
     }
 }
 
@@ -9869,7 +9901,7 @@ function paintDarken(ctx, x, y) {
     const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
-    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height) 
+    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height)
     const data = imgdata.data
     //
     const refimgdata = paintControlCtx.getImageData(rect.left, rect.top, rect.width, rect.height)
@@ -9878,7 +9910,7 @@ function paintDarken(ctx, x, y) {
     let anyChange = false
     //
     let index = 0
-    while (index < data.length) {    
+    while (index < data.length) {
         const changed = darkenPixel(data, refdata, index)
         if (changed) { anyChange = true }
         index += 4
@@ -9903,7 +9935,7 @@ function darkenPixel(data, refdata, index) {
     const a = data[index + 3]
     //
     if (a == 0) { return false } // blank
-    if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return false } 
+    if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return false }
     //
     const color = lightenDarkenColor([r, g, b], -intensityFor[tool])
     let r2 = color[0]
@@ -9912,7 +9944,7 @@ function darkenPixel(data, refdata, index) {
     //
     if (a == 255  &&  r2 + g2 + b2 == 0) { r2 = 1; g2 = 1; b2 = 1 } // avoid false outline
     //
-    if (r2 == r  &&  g2 == g  &&  b2 == b) { return false } // no change  
+    if (r2 == r  &&  g2 == g  &&  b2 == b) { return false } // no change
     //
     data[index]     = r2
     data[index + 1] = g2
@@ -9940,7 +9972,7 @@ function startEllipse() {
     continueEllipse()
 }
 
-function continueEllipse() { 
+function continueEllipse() {
     //
     if (mask == null) { return }
     //
@@ -9955,23 +9987,23 @@ function continueEllipse() {
     let endY = currentY
     //
     if (endX < startX) { startX = currentX; endX = paintStartX }
-    if (endY < startY) { startY = currentY; endY = paintStartY } 
+    if (endY < startY) { startY = currentY; endY = paintStartY }
     //
     const maskdata = maskImgData.data
     const width = mask.width
     const height = mask.height
     //
     strokeEllipse(maskdata, startX, startY, endX, endY, width, height) // must come before fillEllipse
-    if (shiftPressed) { fillEllipse(maskdata, startX, startY, endX, endY, width, height) } 
+    if (shiftPressed) { fillEllipse(maskdata, startX, startY, endX, endY, width, height) }
     //
     maskCtx.putImageData(maskImgData, 0, 0)
-} 
+}
 
 function finishEllipse() {
     //
     paintStartX = null
     paintStartY = null
-    // 
+    //
     if (mask == null) { return }
     //
     mask = null
@@ -9988,7 +10020,7 @@ function finishEllipse() {
 
 // stroke /////////////////////////////////////////////////////////////////////
 
-function strokeEllipse(data, startX, startY, endX, endY, width, height) { 
+function strokeEllipse(data, startX, startY, endX, endY, width, height) {
     //
     const centerX = Math.round((startX + endX) / 2)
     const centerY = Math.round((startY + endY) / 2)
@@ -10043,7 +10075,7 @@ function fillEllipse(data, startX, startY, endX, endY, width, height) {
     //
     const centerY = Math.round((startY + endY) / 2)
     //
-    for (let x = startX + 1; x < endX; x++) { 
+    for (let x = startX + 1; x < endX; x++) {
         fillEllipseHalfColumn(data, x, centerY, +1, startY, endY, width, height)     // center and inferior half
         fillEllipseHalfColumn(data, x, centerY - 1, -1, startY, endY, width, height) // superior half
     }
@@ -10082,7 +10114,7 @@ function startFeather() {
     continueFeather()
 }
 
-function continueFeather() { 
+function continueFeather() {
     //
     if (toplayer == null) { return }
     //
@@ -10097,8 +10129,8 @@ function continueFeather() {
         const p = arr.shift()
         //
         paintLastX = p.x
-        paintLastY = p.y   
-        paintFeather(ctx, p.x, p.y) 
+        paintLastY = p.y
+        paintFeather(ctx, p.x, p.y)
     }
 }
 
@@ -10121,7 +10153,7 @@ function paintFeather(ctx, x, y) {
     const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
-    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height) 
+    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height)
     const data = imgdata.data
     //
     const refimgdata = paintControlCtx.getImageData(rect.left, rect.top, rect.width, rect.height)
@@ -10130,7 +10162,7 @@ function paintFeather(ctx, x, y) {
     let anyChange = false
     //
     let index = 0
-    while (index < data.length) {    
+    while (index < data.length) {
         const changed = featherPixel(data, refdata, index)
         if (changed) { anyChange = true }
         index += 4
@@ -10174,7 +10206,7 @@ function continueLasso() {
     //
     if (selectionIsOn()) { alertSuperLayer(); return }
     //
-    if (mask == null) { 
+    if (mask == null) {
         //
         resetMask()
         //
@@ -10188,10 +10220,10 @@ function continueLasso() {
     x = Math.min(x, mask.width - 1)
     y = Math.min(y, mask.height - 1)
     //
-    if (paintStartX == null) { 
+    if (paintStartX == null) {
         //
         paintStartX = x
-        paintStartY = y 
+        paintStartY = y
         //
         paintLastX = x
         paintLastY = y
@@ -10225,7 +10257,7 @@ function continueLassoCore(x, y) {
     if (x < lassoWest)  { lassoWest  = x }
     if (x > lassoEast)  { lassoEast  = x }
     //
-    maskCtx.clearRect(x, y, 1, 1) // clearing: not necessary when using opaque colors 
+    maskCtx.clearRect(x, y, 1, 1) // clearing: not necessary when using opaque colors
     maskCtx.fillRect(x,  y, 1, 1) // filling
 }
 
@@ -10283,12 +10315,12 @@ function finishLasso2(left, top, width, height) {
     //
     shallMemorize = ! canvasesAreEqual(lassoCnv, superlayer.canvas)
     //
-    superlayer.canvas = lassoCnv 
+    superlayer.canvas = lassoCnv
     superlayer.left = toplayer.left + left
     superlayer.top  = toplayer.top + top
     //
     if (shallMemorize) { memorizeLayer(superlayer) }
-    changeLayerVisibility(0) 
+    changeLayerVisibility(0)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -10298,27 +10330,27 @@ function finishLasso2(left, top, width, height) {
 function fillLassoCanvas(data, width, height) { // works on the edge
     //
     // start at first row
-    for (let x = 0; x < width; x++) { fillLassoCanvasAt(data, x, 0, width, height) } 
-    // 
+    for (let x = 0; x < width; x++) { fillLassoCanvasAt(data, x, 0, width, height) }
+    //
     // start at last row
-    for (let x = 0; x < width; x++) { fillLassoCanvasAt(data, x, height-1, width, height) } 
+    for (let x = 0; x < width; x++) { fillLassoCanvasAt(data, x, height-1, width, height) }
     //
     // start at first col
     for (let y = 0; y < height; y++) { fillLassoCanvasAt(data, 0, y, width, height) }
     //
     // start at last col
     for (let y = 0; y < height; y++) { fillLassoCanvasAt(data, width-1, y, width, height) }
-}  
+}
 
 function fillLassoCanvasAt(data, x, y, width, height) { // fills outside blanks
     //
     const start = 4 * (y * width + x)
     if (data[start + 3] != 0) { return }
     //
-    let current = [] 
-    let future  = [] 
+    let current = []
+    let future  = []
     process()
-    return 
+    return
     //
     function process() {
         processAt(x, y) // must paint starting pixel
@@ -10326,20 +10358,20 @@ function fillLassoCanvasAt(data, x, y, width, height) { // fills outside blanks
     }
     //
     function walk() {
-        current = future 
+        current = future
         future  = []
-        while (current.length > 0) { 
+        while (current.length > 0) {
             const point = current.shift()
             processAround(point.x, point.y)
         }
-    }   
-    // 
+    }
+    //
     function processAround(x, y) {
         processAt(x + 1, y)
         processAt(x - 1, y)
         processAt(x, y + 1)
         processAt(x, y - 1)
-    }    
+    }
     //
     function processAt(x, y) {
         if (x < 0) { return }
@@ -10350,12 +10382,12 @@ function fillLassoCanvasAt(data, x, y, width, height) { // fills outside blanks
         const index = 4 * (width * y + x)
         //
         if (data[index + 3] != 0) { return } // original lasso or already processed
-        // 
+        //
         data[index] = 255 - RED // making it different of the trace by the user
-        data[index + 3] = 255 
+        data[index + 3] = 255
         future.push(createPoint(x, y))
     }
-} 
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -10382,9 +10414,9 @@ function passLassoData(layerdata, lassodata, width, height) {
                 lassodata[index + 1] = 0
                 lassodata[index + 2] = 0
                 lassodata[index + 3] = 0
-                continue 
+                continue
             }
-            //            
+            //
             lassodata[index] = layerR
             lassodata[index + 1] = layerG
             lassodata[index + 2] = layerB
@@ -10415,7 +10447,7 @@ function startLighten() {
     continueLighten()
 }
 
-function continueLighten() { 
+function continueLighten() {
     //
     if (toplayer == null) { return }
     //
@@ -10430,8 +10462,8 @@ function continueLighten() {
         const p = arr.shift()
         //
         paintLastX = p.x
-        paintLastY = p.y   
-        paintLighten(ctx, p.x, p.y) 
+        paintLastY = p.y
+        paintLighten(ctx, p.x, p.y)
     }
 }
 
@@ -10455,7 +10487,7 @@ function paintLighten(ctx, x, y) {
     const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
-    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height) 
+    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height)
     const data = imgdata.data
     //
     const refimgdata = paintControlCtx.getImageData(rect.left, rect.top, rect.width, rect.height)
@@ -10464,7 +10496,7 @@ function paintLighten(ctx, x, y) {
     let anyChange = false
     //
     let index = 0
-    while (index < data.length) {    
+    while (index < data.length) {
         const changed = lightenPixel(data, refdata, index)
         if (changed) { anyChange = true }
         index += 4
@@ -10498,7 +10530,7 @@ function lightenPixel(data, refdata, index) {
     //
     if (a == 255  &&  r2 + g2 + b2 == 0) { r2 = 1; g2 = 1; b2 = 1 } // avoid false outline
     //
-    if (r2 == r  &&  g2 == g  &&  b2 == b) { return false } // no change  
+    if (r2 == r  &&  g2 == g  &&  b2 == b) { return false } // no change
     //
     data[index]     = r2
     data[index + 1] = g2
@@ -10527,7 +10559,7 @@ function startLine() {
 }
 
 function continueLine() {
-    setTask(function () { continueLineCore() }) 
+    setTask(function () { continueLineCore() })
 }
 
 function continueLineCore() {
@@ -10549,7 +10581,7 @@ function continueLineCore() {
     //
     while (arr.length > 0) {
         //
-        const p = arr.shift() 
+        const p = arr.shift()
         //
         const x = p.x
         const y = p.y
@@ -10557,13 +10589,13 @@ function continueLineCore() {
     }
     //
     maskCtx.putImageData(maskImgData, 0, 0)
-} 
- 
+}
+
 function finishLine() {
     //
     paintStartX = null
     paintStartY = null
-    // 
+    //
     if (mask == null) { return }
     //
     mask = null
@@ -10576,7 +10608,7 @@ function finishLine() {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////   
+///////////////////////////////////////////////////////////////////////////////
 
 function paintLineSegment(centerX, centerY, maskdata, width, height) {
     //
@@ -10609,7 +10641,7 @@ function paintLineSegment(centerX, centerY, maskdata, width, height) {
 
 // used to draw line, ellipse, rectangle, lasso and select
 
-var mask = null // also used for validation 
+var mask = null // also used for validation
 
 var maskCtx = null // may keep obsolet value
 
@@ -10619,13 +10651,13 @@ var maskOn = false
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function resetMask() { 
+function resetMask() {
     //
     mask = createCanvas(toplayer.canvas.width, toplayer.canvas.height)
     //
     maskCtx = mask.getContext("2d")
     //
-    maskImgData = getFullImageData(mask)    
+    maskImgData = getFullImageData(mask)
     //
     maskOn = true
 }
@@ -10685,7 +10717,7 @@ function applyMaskPixel(data, maskdata, index) {
     //
     if (shallProtectBlank  &&  a == 0) { return }
     if (shallProtectBlack  &&  a == 255  &&  r+g+b == 0) { return }
-    // 
+    //
     data[index    ] = maskR
     data[index + 1] = maskG
     data[index + 2] = maskB
@@ -10720,7 +10752,7 @@ function mirrorPen() {
     let y0 = null
     //
     const n = executedsA.length
-    if (n != 0) { 
+    if (n != 0) {
         const last = executedsA[n - 1]
         x0 = last.x
         y0 = last.y
@@ -10730,11 +10762,11 @@ function mirrorPen() {
     //
     while (arr.length > 0) {
         const p = arr.shift()
-        paintMirrorPen(ctx, p.x, p.y, width)    
+        paintMirrorPen(ctx, p.x, p.y, width)
     }
 }
 
-function paintMirrorPen(ctx, x, y, width) { 
+function paintMirrorPen(ctx, x, y, width) {
     //
     const x2 = width - x - 1
     //
@@ -10799,7 +10831,7 @@ var intensitiesFor = {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function changeToolSize(delta) { 
+function changeToolSize(delta) {
     //
     const size = toolSizeFor[tool]
     if (size == undefined) { return }
@@ -10815,8 +10847,8 @@ function changeToolSize(delta) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function changeIntensity(delta) {  
-    // 
+function changeIntensity(delta) {
+    //
     const int = intensityFor[tool]
     if (int == undefined) { return }
     //
@@ -10852,8 +10884,8 @@ function paintHardPixel(data, index, erasing) {
     //
     if (r == R  &&  g == G  &&  b == B  &&  a == A) { return false }
     //
-    if (shallProtectBlank  &&  a == 0) { return false } 
-    if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return false } 
+    if (shallProtectBlank  &&  a == 0) { return false }
+    if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return false }
     //
     data[index]     = R
     data[index + 1] = G
@@ -10868,7 +10900,7 @@ function paintHardPixel(data, index, erasing) {
 function paintAnyHardPixel(data, erasing) { // for spray not fail by chance
     //
     const indexes = [ ]
-    let index = 0 // index of first channel of rgba color 
+    let index = 0 // index of first channel of rgba color
     //
     while (index < data.length) {
         indexes.push(index)
@@ -10882,7 +10914,7 @@ function paintAnyHardPixel(data, erasing) { // for spray not fail by chance
         index = indexes[position]
         indexes.splice(position, 1) // removing used index
         //
-        const changed = paintHardPixel(data, index, erasing)        
+        const changed = paintHardPixel(data, index, erasing)
         if (changed) { return true }
     }
     //
@@ -10970,7 +11002,7 @@ function startPen() {
     continuePen()
 }
 
-function continuePen() { 
+function continuePen() {
     //
     if (toplayer == null) { return }
     //
@@ -10983,8 +11015,8 @@ function continuePen() {
         const p = arr.shift()
         //
         paintLastX = p.x
-        paintLastY = p.y 
-        paintPen(ctx, p.x, p.y) 
+        paintLastY = p.y
+        paintPen(ctx, p.x, p.y)
     }
 }
 
@@ -11006,13 +11038,13 @@ function paintPen(ctx, x, y) {
     const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
-    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height) 
+    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height)
     const data = imgdata.data
     //
     let anyChange = false
     //
     let index = 0
-    while (index < data.length) {    
+    while (index < data.length) {
         const changed = paintHardPixel(data, index, shiftPressed)
         if (changed) { anyChange = true }
         index += 4
@@ -11061,7 +11093,7 @@ function paintPerfectPixel(ctx, x, y, controlList) {
     const G = shiftPressed ? 0 : GREEN
     const B = shiftPressed ? 0 : BLUE
     const A = shiftPressed ? 0 : ALPHA
-    // 
+    //
     const imgdata = ctx.getImageData(x, y, 1, 1)
     const data = imgdata.data
     const r = data[0]
@@ -11076,16 +11108,16 @@ function paintPerfectPixel(ctx, x, y, controlList) {
     //
     if (r==R && g==G && b==B && a==A) { return false }
     //
-    if (shallProtectBlank  &&  a == 0) { return false } 
+    if (shallProtectBlank  &&  a == 0) { return false }
     if (shallProtectBlack  &&  a == 255  &&  r + g + b == 0) { return false }
     //
     data[0] = R
     data[1] = G
     data[2] = B
     data[3] = A
-    //    
-    ctx.putImageData(imgdata, x, y)    
-    resetPerfectCorner(ctx, controlList)  
+    //
+    ctx.putImageData(imgdata, x, y)
+    resetPerfectCorner(ctx, controlList)
     //
     return true
 }
@@ -11093,13 +11125,13 @@ function paintPerfectPixel(ctx, x, y, controlList) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function resetPerfectCorner(ctx, controlList) {
-    // 
+    //
     if (controlList.length < 3) { return }
     //
     const last = controlList[2]
     const corner = controlList[1]
     const first  = controlList[0]
-    // 
+    //
     if (! isDiagonal(last, first)) { return }
     if (isDiagonal(last, corner))  { return }
     //
@@ -11121,7 +11153,7 @@ function resetCornerPixel(ctx, corner) {
     data[1] = corner.g
     data[2] = corner.b
     data[3] = corner.a
-    ctx.putImageData(imgdata, corner.x, corner.y)    
+    ctx.putImageData(imgdata, corner.x, corner.y)
 }
 
 function isDiagonal(a, b) {
@@ -11140,7 +11172,7 @@ function startRubber() {
     continueRubber()
 }
 
-function continueRubber() { 
+function continueRubber() {
     //
     if (toplayer == null) { return }
     //
@@ -11153,8 +11185,8 @@ function continueRubber() {
         const p = arr.shift()
         //
         paintLastX = p.x
-        paintLastY = p.y   
-        paintRubber(ctx, p.x, p.y) 
+        paintLastY = p.y
+        paintRubber(ctx, p.x, p.y)
     }
 }
 
@@ -11176,13 +11208,13 @@ function paintRubber(ctx, x, y) {
     const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
-    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height) 
+    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height)
     const data = imgdata.data
     //
     let anyChange = false
     //
     let index = 0
-    while (index < data.length) {    
+    while (index < data.length) {
         const changed = paintHardPixel(data, index, true)
         if (changed) { anyChange = true }
         index += 4
@@ -11199,7 +11231,7 @@ function paintRubber(ctx, x, y) {
 
 // validation by (mask != null)
 
-var rectangleIsDot = true // 1 x 1 px 
+var rectangleIsDot = true // 1 x 1 px
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -11217,7 +11249,7 @@ function startRectangle() {
     continueRectangle()
 }
 
-function continueRectangle() { 
+function continueRectangle() {
     //
     if (mask == null) { return }
     //
@@ -11232,12 +11264,12 @@ function continueRectangle() {
     let endY = currentY
     //
     if (endX < startX) { startX = currentX; endX = paintStartX }
-    if (endY < startY) { startY = currentY; endY = paintStartY } 
+    if (endY < startY) { startY = currentY; endY = paintStartY }
     //
     const width  = endX - startX + 1
     const height = endY - startY + 1
     rectangleIsDot = (width < 2  &&  height < 2)
-    // 
+    //
     maskCtx.fillRect(startX, startY, width, height) // filling
     //
     if (shiftPressed) { return } // done!
@@ -11245,18 +11277,18 @@ function continueRectangle() {
     if (height < 3)   { return }
     // erasing inside:
     maskCtx.clearRect(startX + 1, startY + 1, width -2, height -2)
-}    
- 
+}
+
 function finishRectangle() {
     //
     paintStartX = null
     paintStartY = null
-    // 
+    //
     if (mask == null) { return }
     //
     if (rectangleIsDot) { mask = null; maskOn = false; return }
     //
-    maskImgData = getFullImageData(mask) 
+    maskImgData = getFullImageData(mask)
     //
     mask = null
     maskOn = false
@@ -11314,14 +11346,14 @@ function finishScale() {
     paintLastX = null
     paintLastY = null
     //
-    if (originalPaint == null) { return } 
+    if (originalPaint == null) { return }
     //
     let different = false
     if (toplayer.width  != originalPaint.width)  { different = true }
     if (toplayer.height != originalPaint.height) { different = true }
     //
     if (different) { memorizeTopLayer() }
-    originalPaint = null 
+    originalPaint = null
 }
 
 // file: tools/select.js //
@@ -11344,7 +11376,7 @@ function continueSelect() {
     //
     if (selectionIsOn()) { alertSuperLayer(); return }
     //
-    if (mask == null) { 
+    if (mask == null) {
         //
         resetMask()
         //
@@ -11374,12 +11406,12 @@ function continueSelect2() {
     //
     let startY = paintStartY
     let endY = paintLastY
-    if (endY < startY) { startY = paintLastY; endY = paintStartY } 
+    if (endY < startY) { startY = paintLastY; endY = paintStartY }
     //
     const width  = endX - startX + 1
     const height = endY - startY + 1
-    // 
-    maskCtx.clearRect(0, 0, mask.width, mask.height)    
+    //
+    maskCtx.clearRect(0, 0, mask.width, mask.height)
     //
     maskCtx.fillRect(startX, startY, width, height) // filling
     //
@@ -11403,16 +11435,16 @@ function finishSelect() {
     const height = bottom - top + 1
     //
     maskOn = false
-    mask = null    
+    mask = null
     //
     paintStartX = null
     paintStartY = null
     //
     paintLastX = null
     paintLastY = null
-    // 
-    if (width  < 1) { return } 
-    if (height < 1) { return } 
+    //
+    if (width  < 1) { return }
+    if (height < 1) { return }
     if (width + height == 2) { return }
     //
     const cnv = createCanvas(width, height)
@@ -11431,13 +11463,13 @@ function finishSelect2(cnv, deltaLeft, deltaTop) {
     //
     const shallMemorize = ! canvasesAreEqual(cnv, superlayer.canvas)
     //
-    superlayer.canvas = cnv 
+    superlayer.canvas = cnv
     superlayer.left = toplayer.left + deltaLeft
     superlayer.top  = toplayer.top + deltaTop
     //
     if (shallMemorize) { memorizeLayer(superlayer) }
-    //    
-    changeLayerVisibility(0) 
+    //
+    changeLayerVisibility(0)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -11445,19 +11477,19 @@ function finishSelect2(cnv, deltaLeft, deltaTop) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function tryEraseRectangleInTopLayer(ctx, left, top, width, height) {
-    //    
+    //
     if (! shiftPressed) { return }
     //
     // does nothing if selected area is blank
     //
     const data = ctx.getImageData(0, 0, width, height).data
     //
-    for (const value of data) { 
+    for (const value of data) {
         if (value != 0) {
             toplayer.canvas.getContext("2d").clearRect(left, top, width, height)
-            memorizeTopLayer() 
+            memorizeTopLayer()
             return
-        }   
+        }
     }
 }
 
@@ -11484,8 +11516,8 @@ function continueSpray() {
         const p = arr.shift()
         //
         paintLastX = p.x
-        paintLastY = p.y   
-        paintSpray(ctx, p.x, p.y) 
+        paintLastY = p.y
+        paintSpray(ctx, p.x, p.y)
     }
 }
 
@@ -11507,20 +11539,20 @@ function paintSpray(ctx, x, y) {
     const rect = getMouseRectangle(toplayer, x, y, toolSizeFor[tool])
     if (rect == null) { return }
     //
-    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height) 
+    const imgdata = ctx.getImageData(rect.left, rect.top, rect.width, rect.height)
     const data = imgdata.data
     //
     let anyChange = false
     //
     let index = 0
-    while (index < data.length) { 
-        if (Math.random() < 0.02) { 
+    while (index < data.length) {
+        if (Math.random() < 0.02) {
             const changed = paintHardPixel(data, index, shiftPressed)
             if (changed) { anyChange = true }
         }
         index += 4
     }
-    //    
+    //
     if (! anyChange) { anyChange = paintAnyHardPixel(data, shiftPressed) }
     //
     if (! anyChange) { return }
@@ -11534,7 +11566,7 @@ function paintSpray(ctx, x, y) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function thinPen() { 
+function thinPen() {
     //
     if (toplayer == null) { resetPerfectAny(); return }
     //
@@ -11550,7 +11582,7 @@ function thinPen() {
     let y0 = null
     //
     const n = executeds.length
-    if (n != 0) { 
+    if (n != 0) {
         const last = executeds[n - 1]
         x0 = last.x
         y0 = last.y
@@ -11586,7 +11618,7 @@ function createAnimationObject(favIndex) {
     //
     if (favIndex == undefined) { favIndex = -1 }
     //
-    const obj = new AnimationObject()  
+    const obj = new AnimationObject()
     Object.seal(obj)
     //
     obj.favIndex = favIndex
@@ -11614,18 +11646,18 @@ function prepareAnimation(pic) {
         //
         if (obj.isCanvas) { temp.push(obj); continue }
         //
-        if (obj.favIndex < favorites.length) { temp.push(obj); continue }    
+        if (obj.favIndex < favorites.length) { temp.push(obj); continue }
     }
     //
     animationObjs = temp
     //
     const count = Math.min(13, favorites.length + 1) // the frame canvas + up to 12 favorites
     //
-    while (animationObjs.length < count) { 
+    while (animationObjs.length < count) {
         //
         const index = animationObjs.length - 1 // less one because canvas is already there
         //
-        const obj = createAnimationObject(index) 
+        const obj = createAnimationObject(index)
         animationObjs.push(obj)
     }
 }
@@ -11683,7 +11715,7 @@ function indexOfNextAnimationObj() {
         //
         if (obj.isOn) { return n }
     }
-    // 
+    //
     for (let m = 0; m < off; m++) {
         //
         const obj = animationObjs[m]
@@ -11711,7 +11743,7 @@ function updateCurrentColor(color) {
     RED    = color[0]
     GREEN  = color[1]
     BLUE   = color[2]
-    ALPHA  = color[3] 
+    ALPHA  = color[3]
     //
     paintCurrentColorOnTopBar()
     //
@@ -11721,7 +11753,7 @@ function updateCurrentColor(color) {
 // file: engine/display-info.js //
 // "use strict"
 
-// not all info goes here 
+// not all info goes here
 
 
 var infoToolSize = null
@@ -11840,9 +11872,9 @@ function displayLayerOpacity() {
 // file: engine/favorites.js //
 // "use strict"
 
-const favorites = [ ] 
+const favorites = [ ]
 
-var indexOfSelectedFavorite = -1 
+var indexOfSelectedFavorite = -1
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -11899,7 +11931,7 @@ function showFavorite(kind, delta) {
     toplayer.canvas = cloneImage(f.canvas)
     memorizeLayerFromFavorites(toplayer)
 }
-   
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function deleteFavorite() {
@@ -11915,7 +11947,7 @@ function exchangeFavorites(a, b) {
     //
     const favoriteA = favorites[a]
     const favoriteB = favorites[b]
-    // 
+    //
     favorites[a] = favoriteB
     favorites[b] = favoriteA
     //
@@ -11926,12 +11958,12 @@ function exchangeFavorites(a, b) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function fileToFavorites(cnv) { 
+function fileToFavorites(cnv) {
     //
     toFavoritesCore(cnv)
 }
 
-function pictureToFavorites() { 
+function pictureToFavorites() {
     //
     if (toplayer == null) { return }
     //
@@ -11960,7 +11992,7 @@ var currentHelp = 0
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function showOrHideHelp() { 
+function showOrHideHelp() {
     currentHelp += 1
     //
     if (currentHelp == 1) { showHelp1(); return }
@@ -11972,7 +12004,7 @@ function showOrHideHelp() {
     hideHelp()
 }
 
-function showHelp1() {    
+function showHelp1() {
     MODE = "help"
     startBlinkingIconOnTopBar("help")
     showOverlay()
@@ -11981,17 +12013,17 @@ function showHelp1() {
 }
 
 function showHelp2() {
-    paintCanvasHelp2()    
+    paintCanvasHelp2()
 }
 
 function showHelp3() {
-    paintCanvasHelp3()    
+    paintCanvasHelp3()
 }
 
 function showHelp4() {
-    paintCanvasHelp4()    
+    paintCanvasHelp4()
 }
-    
+
 function hideHelp() {
     MODE = "standard"
     //
@@ -12061,7 +12093,7 @@ function helpMoveLayer(x, y) {
 }
 
 function helpMoveLayers(x, y) {
-    y += 20   
+    y += drawIconOnCanvasHelp("hand", x + 170, y)
     y += writeOnCanvasHelp("Move all active layers", x, y)
     y += writeOnCanvasHelp("  > drag the mouse while Spacebar is pressed", x, y)
     return y
@@ -12139,7 +12171,7 @@ function helpRubber(x, y) {
     return y
 }
 
-///////////////////////////////////////////////////////////////////////////////   
+///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 function paintCanvasHelp1Right() {
@@ -12613,7 +12645,6 @@ function paintCanvasHelp4Right() {
     let y = 30
     let x = 895
     y = 20 + helpPanelLayers(x, y)
-    y = 20 + helpPanelLayersMergeDown(x, y)
     y = 20 + helpPanelOpacity(x, y)
     y = 20 + helpVersion(x, y)
 }
@@ -12624,17 +12655,14 @@ function helpPanelLayers(x, y) {
     y += writeOnCanvasHelp("  > there are 5 standard layers: A, B, C, D and E", x, y)
     y += writeOnCanvasHelp("  > the special layer Selection shows the result of", x, y)
     y += writeOnCanvasHelp("     using selection tools", x, y)
-    y += writeOnCanvasHelp("  > drag a layer button to *swap* the contents of layers;", x, y)
-    y += writeOnCanvasHelp("     their names do not change", x, y)
-    y += writeOnCanvasHelp("  > hotkeys: 0, 1, 2, 3, 4, 5", x, y)
-    return y
-}
-
-function helpPanelLayersMergeDown(x, y) {
-    y += 30
-    y += writeOnCanvasHelp("Panel Layers - Other Hotkeys", x, y)
-    y += writeOnCanvasHelp("  > CTRL V: merge down unprotected", x, y)
-    y += writeOnCanvasHelp("  > CTRL SHIFT V: merge down protected", x, y)
+    y += writeOnCanvasHelp("  > drag a layer button to change its order", x, y)
+    y += writeOnCanvasHelp("     the button of the layer \"selection\" is static:", x, y)
+    y += writeOnCanvasHelp("      merge the selection with another layer or", x, y)
+    y += writeOnCanvasHelp("      memorize the selection and recover on another layer", x, y)
+    y += writeOnCanvasHelp("  > hotkeys:", x, y)
+    y += writeOnCanvasHelp("      0, 1, 2, 3, 4, 5", x, y)
+    y += writeOnCanvasHelp("      CTRL V: merge down unprotected", x, y)
+    y += writeOnCanvasHelp("      CTRL SHIFT V: merge down protected", x, y)
     return y
 }
 
@@ -12651,7 +12679,7 @@ function helpPanelOpacity(x, y) {
 function helpVersion(x, y) {
     y += 30
     y += writeOnCanvasHelp("Version", x, y)
-    y += writeOnCanvasHelp("  > July 2023", x, y)
+    y += writeOnCanvasHelp("  > May 2024", x, y)
     return y
 }
 
@@ -12726,17 +12754,17 @@ function keyDownHandler(e) {
     //
     ctrlPressed = e.ctrlKey
     shiftPressed = e.shiftKey
-    // 
+    //
     if (low == "f5")  { return true }
     if (low == "f11") { return true }
     if (low == "f12") { return true }
-    // 
+    //
     if (low == "-"  &&  e.ctrlKey) { return true }
     if (low == "+"  &&  e.ctrlKey) { return true }
     if (low == "="  &&  e.ctrlKey) { return true }
     if (low == "j"  &&  e.ctrlKey  &&  e.shiftKey) { return true }
     if (low == "u"  &&  e.ctrlKey) { return true }
-    // 
+    //
     if (MODE == "help") { setTask(showOrHideHelp); return true }
     if (MODE == "tile-set") { setTask(hideTileSet); return true }
     if (MODE == "favorites") { setTask(hideFavorites); return true }
@@ -12794,9 +12822,9 @@ function keyDownHandlerStandardMode(low) {
     //
     if (low == "l"  &&  ctrlPressed)  { loadImage(); return }
     if (low == "s"  &&  ctrlPressed)  { saveImage("png"); return }
-    if (low == "v"  &&  ctrlPressed)  { 
+    if (low == "v"  &&  ctrlPressed)  {
         if (shiftPressed) { mergeDownProtected() } else { mergeDownUnprotected() }
-        return         
+        return
     }
     if (low == "y"  &&  ctrlPressed)  { setTask(redo); return }
     if (low == "z"  &&  ctrlPressed)  { setTask(undo); return }
@@ -12811,7 +12839,7 @@ function keyDownHandlerStandardMode(low) {
     if (low == "v") { applyEffect(verticalReverse); return }
     if (low == "x") { applyEffect(mixedReverse); return }
     if (low == "-") { setTask(decreaseZoom); return }
-    if (low == "+") { setTask(increaseZoom); return }    
+    if (low == "+") { setTask(increaseZoom); return }
 }
 
 // file: engine/layers.js //
@@ -12819,7 +12847,7 @@ function keyDownHandlerStandardMode(low) {
 
 var layers = [ ] // superlayer is the layer for selection
 
-var toplayer = null 
+var toplayer = null
 
 // constructor ////////////////////////////////////////////////////////////////
 
@@ -12890,8 +12918,8 @@ function alertSuperLayer() {
 
 function getTopLayer() {
     //
-    for (const layer of layers) { 
-        if (layer.enabled) { return layer } 
+    for (const layer of layers) {
+        if (layer.enabled) { return layer }
     }
     //
     return null
@@ -12937,7 +12965,7 @@ function getNumberOfTopLayer() {
     //
     let n = -1
     //
-    for (const layer of layers) { 
+    for (const layer of layers) {
         //
         n += 1
         if (layer.enabled) { return n }
@@ -12950,7 +12978,7 @@ function getNumberOfBottomLayer() {
     //
     const last = layers.length - 1
     //
-    for (let n = last; n > -1; n--) { 
+    for (let n = last; n > -1; n--) {
         //
         const layer = layers[n]
         if (layer.enabled) { return n }
@@ -12969,7 +12997,7 @@ function reverseOrder() { // ignores hidden layers
     //
     for (let n = 0; n < layers.length; n++) { if (layers[n].enabled) { list.push(n) } }
     //
-    while (list.length > 1) { 
+    while (list.length > 1) {
         const a = list.shift()
         const b = list.pop()
         exchangeLayers(a, b)
@@ -12984,6 +13012,18 @@ function exchangeLayers(a, b) {
     //
     shallRepaint = true
     //
+    const buttonA = panelLayersGadgets[a]
+    const buttonB = panelLayersGadgets[b]
+    //
+    const labelA = buttonA.text
+    const labelB = buttonB.text
+    //
+    buttonA.text = labelB
+    buttonB.text = labelA
+    //
+    updateButtonImages(buttonA)
+    updateButtonImages(buttonB)
+    //
     const layerA = layers[a]
     const layerB = layers[b]
     //
@@ -12993,18 +13033,18 @@ function exchangeLayers(a, b) {
     updateLayerButtons()
     toplayer = getTopLayer()
     //
-    startBlinkingButton(panelLayersGadgets[a])
-    startBlinkingButton(panelLayersGadgets[b])
+    startBlinkingButton(buttonA)
+    startBlinkingButton(buttonB)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function centerLayers() { 
+function centerLayers() {
     //
     if (getTopLayer() == null) { return }
     //
-    shallRepaint = true 
-    startBlinkingIconOnTopBar("center")   
+    shallRepaint = true
+    startBlinkingIconOnTopBar("center")
     //
     for (const layer of layers) {
         if (! layer.enabled) { continue }
@@ -13018,7 +13058,7 @@ function centerLayerCore(layer) { // ignores zoom level
     layer.left = stageCenterX - Math.floor(layer.canvas.width / 2)
     layer.top  = stageCenterY - Math.floor(layer.canvas.height / 2)
 }
- 
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function sendImageToTopLayer(cnv) {
@@ -13046,7 +13086,7 @@ function mouseColorOnVisibleLayer(layer) {
     if (x < 0) { return null }
     if (x > layer.width - 1) { return null}
     //
-    //    
+    //
     const y = stageY - layer.top
     //
     if (y < 0) { return null }
@@ -13078,14 +13118,14 @@ function mergeUpCore() {
     if (! canvasesAreEqual(toplayer.canvas, cnv)) {
         //
         toplayer.canvas = cnv
-        memorizeTopLayer() 
+        memorizeTopLayer()
     }
     //
     for (const layer of layers) { layer.enabled = false }
     //
     toplayer.enabled = true
     //
-    updateLayerButtons()  
+    updateLayerButtons()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -13095,7 +13135,7 @@ function mergeDown() {
     customConfirm("protect blank and black pixels of bottom layer?", mergeDownProtected, mergeDownUnprotected)
 }
 
-function mergeDownUnprotected() {    
+function mergeDownUnprotected() {
     //
     setTask(function () { mergeDownCore(false) })
 }
@@ -13112,13 +13152,13 @@ function mergeDownCore(protect) {
     const cnv = makeBottomPicture(protect)
     //
     if (cnv == null) { return }
-    //    
+    //
     const bottomlayer = layers[getNumberOfBottomLayer()]
-    //    
+    //
     if (! canvasesAreEqual(bottomlayer.canvas, cnv)) {
         //
         bottomlayer.canvas = cnv
-        memorizeLayer(bottomlayer) 
+        memorizeLayer(bottomlayer)
     }
     //
     for (const layer of layers) { layer.enabled = false }
@@ -13127,7 +13167,7 @@ function mergeDownCore(protect) {
     //
     toplayer = getTopLayer()
     //
-    updateLayerButtons()  
+    updateLayerButtons()
 }
 
 // file: engine/manager.js //
@@ -13162,7 +13202,7 @@ function loadImage() {
     //
     if (toplayer == null) { customAlert("no layer on for image loading"); return }
     //
-    startBlinkingIconOnTopBar("load") 
+    startBlinkingIconOnTopBar("load")
     //
     isPaletteFile = false
     loadImageFile()
@@ -13181,7 +13221,7 @@ function saveImage(style) {
     //
     if (toplayer == null) { return }
     //
-    startBlinkingIconOnTopBar("save") 
+    startBlinkingIconOnTopBar("save")
     //
     isPaletteFile = false
     saveStyle = style
@@ -13243,7 +13283,7 @@ function managerCapture() { // very fast, need not to be set as task
     if (tool == "capture") { recoverToolBeforeCapture() }
     //
     const color = [ mouseRed, mouseGreen, mouseBlue, mouseAlpha ]
-    updateCurrentColor(color) 
+    updateCurrentColor(color)
     //
     maybeRepaintColorPanel()
 }
@@ -13261,12 +13301,12 @@ function managerPaintAreaCore() {
     //
     if (x == null  ||  y == null) { return }
     //
-    let changed 
+    let changed
     if (shiftPressed) {
         changed = paintArea(toplayer.canvas, x, y, 0, 0, 0, 0)
     }
     else {
-        changed = paintArea(toplayer.canvas, x, y, RED, GREEN, BLUE, ALPHA)    
+        changed = paintArea(toplayer.canvas, x, y, RED, GREEN, BLUE, ALPHA)
     }
     if (changed) { memorizeLayer(toplayer) }
 }
@@ -13284,12 +13324,12 @@ function managerPaintEveryCore() {
     //
     if (x == null  ||  y == null) { return }
     //
-    let changed 
+    let changed
     if (shiftPressed) {
         changed = paintEvery(toplayer.canvas, x, y, 0, 0, 0, 0)
     }
     else {
-        changed = paintEvery(toplayer.canvas, x, y, RED, GREEN, BLUE, ALPHA)    
+        changed = paintEvery(toplayer.canvas, x, y, RED, GREEN, BLUE, ALPHA)
     }
     if (changed) { memorizeLayer(toplayer) }
 }
@@ -13307,12 +13347,12 @@ function managerPaintBorderCore() {
     //
     if (x == null  ||  y == null) { return }
     //
-    let changed 
+    let changed
     if (shiftPressed) {
         changed = paintBorder(toplayer.canvas, x, y, 0, 0, 0, 0)
     }
     else {
-        changed = paintBorder(toplayer.canvas, x, y, RED, GREEN, BLUE, ALPHA)    
+        changed = paintBorder(toplayer.canvas, x, y, RED, GREEN, BLUE, ALPHA)
     }
     if (changed) { memorizeLayer(toplayer) }
 }
@@ -13371,7 +13411,7 @@ function topBottomToCenter() {
     //
     if (toplayer == null) { return }
     //
-    startBlinkingIconOnTopBar("halves") 
+    startBlinkingIconOnTopBar("halves")
     //
     let height = toplayer.canvas.height
     if (height % 2 != 0) { height += 1 }
@@ -13427,7 +13467,7 @@ function memorizeLayer(layer) {
         memoryCount += 1
     }
     else {
-     // console.log("Memory spooling at loop", LOOP) 
+     // console.log("Memory spooling at loop", LOOP)
         memorySpool = layer
     }
 }
@@ -13446,8 +13486,8 @@ function MemoryObject(canvas, reviewing) {
 
 function memorizeLayerAfterEdition(layer) { // keeps any old memory object
     //
-    const clone = cloneImage(layer.canvas) 
-    //   
+    const clone = cloneImage(layer.canvas)
+    //
     pushToMemory(layer, clone, false)
     //
     relieveLayerMemory(layer)
@@ -13459,9 +13499,9 @@ function memorizeLayerAfterEdition(layer) { // keeps any old memory object
 
 function memorizeLayerFromFavorites(layer) { // doesn't relieve memory
     //
-    tryDeleteLastMemoryObject(layer) 
+    tryDeleteLastMemoryObject(layer)
     //
-    const clone = cloneImage(layer.canvas)   
+    const clone = cloneImage(layer.canvas)
     //
     pushToMemory(layer, clone, true)
     //
@@ -13472,18 +13512,18 @@ function memorizeLayerFromFavorites(layer) { // doesn't relieve memory
 
 function memorizeLayerAfterUndoOrRedo(layer) {  // doesn't relieve memory; doesn't change layer.memoryIndex
     //
-    tryDeleteLastMemoryObject(layer) 
+    tryDeleteLastMemoryObject(layer)
     //
-    const clone = cloneImage(layer.canvas)   
+    const clone = cloneImage(layer.canvas)
     //
     pushToMemory(layer, clone, true)
-}    
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function undo() {
     //
-    if (toplayer == null) { return } 
+    if (toplayer == null) { return }
     //
     const index = toplayer.memoryIndex - 1
     if (index < 0) { return }
@@ -13510,7 +13550,7 @@ function redo() {
     recoverLayerByUndoOrRedo(toplayer)
 }
 
-function recoverLayerByUndoOrRedo(layer) { 
+function recoverLayerByUndoOrRedo(layer) {
     shallRepaint = true
     //
     const obj = layer.memory[layer.memoryIndex]
@@ -13537,7 +13577,7 @@ function tryDeleteLastMemoryObject(layer) {
     //
     const lastObj = layer.memory[layer.memory.length - 1]
     //
-    if (lastObj.reviewing) { 
+    if (lastObj.reviewing) {
         //
         const excluded = layer.memory.pop().canvas // pops!
         layer.memorySize -= excluded.width * excluded.height
@@ -13548,7 +13588,7 @@ function relieveLayerMemory(layer) {
     //
     if (layer.memorySize < maxMemorySize) { return }
     //
-    while (layer.memorySize > maxMemorySize   &&  layer.memory.length > 1) { 
+    while (layer.memorySize > maxMemorySize   &&  layer.memory.length > 1) {
         //
         const excluded = layer.memory.shift().canvas // shifts!
         layer.memorySize -= excluded.width * excluded.height
@@ -13573,7 +13613,7 @@ function updateStageXY() { // also called by module "zoom"
     stageX = null
     stageY = null
     //
-    if (stageRawX == null) { return } 
+    if (stageRawX == null) { return }
     //
     const deltaXZoomed = stageRawX - stageCenterX
     const deltaYZoomed = stageRawY - stageCenterY
@@ -13603,8 +13643,8 @@ function mouseWheelHandler(e) {
     else {
         if (e.deltaY > 0) { decreaseZoom(); return false }
         if (e.deltaY < 0) { increaseZoom(); return false }
-    }    
-}  
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -13621,7 +13661,7 @@ function mouseUpHandler() {
 
 function mouseLeaveHandler() {
     //
-    shallRepaint = true 
+    shallRepaint = true
     mouseBusy = false
     //
     stageRawX = null
@@ -13629,7 +13669,7 @@ function mouseLeaveHandler() {
     updateStageXY()
     //
     finishMouseAction()
-    eraseMouseColor()    
+    eraseMouseColor()
     return false
 }
 
@@ -13669,7 +13709,7 @@ function mouseDownHandler(e) {
     if (superHandOn) { return false }
     //
     if (e.buttons != 1)  { return false } // avoid mess with right button click
-    //    
+    //
     if (tool == "hand")        { return false }
     if (tool == "thin-pen")    { thinPen(); return false }
     if (tool == "pen")         { startPen(); return false }
@@ -13692,9 +13732,9 @@ function mouseDownHandler(e) {
     if (tool == "blur-border") { managerBlurBorder(); return false }
     if (tool == "every")       { managerPaintEvery(); return false }
     if (tool == "border")      { managerPaintBorder(); return false }
-    //    
+    //
     return false
-}  
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -13711,13 +13751,13 @@ function mouseMoveHandler(e) {
     const oldStageY = stageY
     updateStageXY()
     //
-    if (! mouseBusy) { return false } 
+    if (! mouseBusy) { return false }
     //
     resetFocusedGadget()
-    //    
+    //
     if (superHandOn) { moveLayers(e["movementX"], e["movementY"]); return false }
     //
-    if (tool == "hand") { moveTopLayer(e["movementX"], e["movementY"]); return false } 
+    if (tool == "hand") { moveTopLayer(e["movementX"], e["movementY"]); return false }
     //
     if (stageX == oldStageX  &&  stageY == oldStageY) { return false }
     //
@@ -13778,7 +13818,7 @@ function eraseMouseColor() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function displayMouseColor() { // called by main loop 
+function displayMouseColor() { // called by main loop
     //
     if (mustDisplayMouseColor) {
         mustDisplayMouseColor = false
@@ -13796,7 +13836,7 @@ function displayMouseColorCore() {
     oldMouseBlue  = mouseBlue
     oldMouseAlpha = mouseAlpha
     //
-    paintMouseColorOnBottomBar() 
+    paintMouseColorOnBottomBar()
 }
 
 function mouseColorChanged() {
@@ -13820,10 +13860,10 @@ function updateMouseColorByStage() {
     for (const layer of layers) {
         //
         color = mouseColorOnVisibleLayer(layer)
-        if (color != null) { break }        
+        if (color != null) { break }
     }
     //
-    changeMouseColor(color) 
+    changeMouseColor(color)
 }
 
 // file: engine/mouse-rectangle.js //
@@ -13832,7 +13872,7 @@ function updateMouseColorByStage() {
 function getMouseRectangle(layer, x, y, toolSize) { // stage coordinates
     //
     if (ZOOM < 1) { return getMouseRectangleZoomedIn(layer, x, y, toolSize) }
-    //    
+    //
     return getMouseRectangleStandard(layer, x, y, toolSize)
 }
 
@@ -13861,15 +13901,15 @@ function getMouseRectangleZoomedIn(layer, x, y, toolSize) { // stage coordinates
     const stageLeft = x - delta
     const stageTop  = y - delta
     //
-    // not checking if right and bottom goes 
+    // not checking if right and bottom goes
     // beyond the stage (not WYSIWIG)
     //
     const stageRight  = x + delta
-    const stageBottom = y + delta 
+    const stageBottom = y + delta
     //
     return getMouseRectangleCore(layer, stageLeft, stageTop, stageRight, stageBottom)
-}   
-    
+}
+
 function getMouseRectangleCore(layer, stageLeft, stageTop, stageRight, stageBottom) {
     //
     // projecting the stage rectangle on layer
@@ -13925,7 +13965,7 @@ function moveLayers(rawDeltaX, rawDeltaY) {
     //
     if (toplayer == null) { return }
     //
-    const deltas = calcMoveValues(rawDeltaX, rawDeltaY) 
+    const deltas = calcMoveValues(rawDeltaX, rawDeltaY)
     //
     for (const layer of layers) {
         if (! layer.enabled) { continue }
@@ -13941,7 +13981,7 @@ function moveTopLayer(rawDeltaX, rawDeltaY) {
     //
     if (toplayer == null) { return }
     //
-    const deltas = calcMoveValues(rawDeltaX, rawDeltaY)  
+    const deltas = calcMoveValues(rawDeltaX, rawDeltaY)
     //
     if (! ctrlPressed) {
         //
@@ -14012,7 +14052,7 @@ function moveTopLayerByKeyboard() { // no more than once per loop!
     //
     let deltaLeft = 0
     let deltaTop = 0
-    // 
+    //
     if (upPressed)    { deltaTop  = -1 }
     if (downPressed)  { deltaTop  = +1 }
     if (leftPressed)  { deltaLeft = -1 }
@@ -14061,14 +14101,14 @@ var paletteName = "bob"
 
 var loadingPaletteName = ""
 
-var paletteNames = ["bob", "custom 1", "custom 2", "custom 3", "custom 4", "custom 5", "custom 6"] 
+var paletteNames = ["bob", "custom 1", "custom 2", "custom 3", "custom 4", "custom 5", "custom 6"]
 
 const palettes = {
 
     "bob": [
-    
-        "255,50,43", "255,0,0", "232,2,0", "192,0,0", "160,0,0", "131,0,0", 
-        "247,170,48", "255,144,0", "255,128,0", "224,96,16", "255,79,0", "208,48,0", 
+
+        "255,50,43", "255,0,0", "232,2,0", "192,0,0", "160,0,0", "131,0,0",
+        "247,170,48", "255,144,0", "255,128,0", "224,96,16", "255,79,0", "208,48,0",
         "5,17,85", "75,75,150", "60,150,170", "0,128,128", "136,146,111", "160,144,112",
         "250,47,122", "230,28,247", "153,47,124", "224,192,80", "212,168,60", "112,108,96",
         "35,93,19", "15,141,0", "81,225,19", "255,255,255", "128,128,128", "0,0,0"
@@ -14076,9 +14116,9 @@ const palettes = {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-    
+
 function defaultCustomPalette() {
-    return [ 
+    return [
         "blank", "blank", "blank", "blank", "blank", "blank",
         "blank", "blank", "blank", "blank", "blank", "blank",
         "blank", "blank", "blank", "blank", "blank", "blank",
@@ -14096,7 +14136,7 @@ function erasePalettePixelsInLayer(cnv) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function savePalette() { 
+function savePalette() {
     isPaletteFile = true
     saveStyle = "png"
     //
@@ -14126,12 +14166,12 @@ function loadPalette() {
      //
     customConfirm(msg, loadPalette2)
 }
- 
-function loadPalette2() { 
+
+function loadPalette2() {
     //
     isPaletteFile = true
     loadingPaletteName = paletteName
-    loadImageFile() 
+    loadImageFile()
 }
 
 function paletteLoaded(cnv) {
@@ -14157,7 +14197,7 @@ function paletteLoaded(cnv) {
     while(raws.length < 30) { raws.push("blank") }
     //
     palettes[loadingPaletteName] = raws
-    //    
+    //
     updateSurfacePalette()
     paintPanelPalette()
 }
@@ -14195,7 +14235,7 @@ function rgbColorsFromPalette() {
             if (color[1] != newcolor[1]) { continue }
             if (color[2] != newcolor[2]) { continue }
             //
-            return true 
+            return true
         }
         return false
     }
@@ -14230,8 +14270,8 @@ function makeCheckedPicture(callback) {
     //
     if (index != null) { callback(makePictureCore(index)); return }
     //
-    customAlert("layers do not match:\nthe resulting picture may not be what you expect", 
-    
+    customAlert("layers do not match:\nthe resulting picture may not be what you expect",
+
         function () { callback(makeBottomPicture(false)) }
     )
 }
@@ -14270,8 +14310,8 @@ function makeBottomPicture(protect) {
         return makeBottomPictureCoreProtected(bottom)
     }
     else {
-        return makePictureCore(bottom)    
-    }    
+        return makePictureCore(bottom)
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -14290,7 +14330,7 @@ function makePictureCore(n) { // expecting 'n' to be a valid index
     //
     const last = layers.length - 1
     //
-    for (let n = last; n > -1; n--) { 
+    for (let n = last; n > -1; n--) {
         //
         const layer = layers[n]
         //
@@ -14323,7 +14363,7 @@ function makeBottomPictureCoreProtected(bottom) { // expects at least 1 layer ov
     //
     const start = bottom - 1
     //
-    for (let n = start; n > -1; n--) { 
+    for (let n = start; n > -1; n--) {
         //
         const layer = layers[n]
         //
@@ -14331,9 +14371,9 @@ function makeBottomPictureCoreProtected(bottom) { // expects at least 1 layer ov
         //
         const overcanvas = makeOverCanvasForMergeDown(layer, reflayer.left, reflayer.top, width, height, refdata)
         //
-        ctx.drawImage(overcanvas, 0, 0) 
+        ctx.drawImage(overcanvas, 0, 0)
     }
-    //    
+    //
     return cnv
 }
 
@@ -14367,11 +14407,11 @@ function makeOverCanvasForMergeDown(layer, refleft, reftop, width, height, refda
         }
         //
         index += 4
-    } 
+    }
     //
     ctx.putImageData(imgdata, 0, 0)
     //
-    return cnv 
+    return cnv
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -14382,7 +14422,7 @@ function indexOfBaseLayer() { // most relevant layer
     //
     const last = layers.length - 1
     //
-    for (let n = last; n > -1; n--) { 
+    for (let n = last; n > -1; n--) {
     //
         if (layerContainsAllOthers(n)) { return n }
     }
@@ -14398,7 +14438,7 @@ function layerContainsAllOthers(index) {
     //
     const off = layers.length
     //
-    for (let n = 0; n < off; n++) { 
+    for (let n = 0; n < off; n++) {
         //
         if (n == index) { continue }
         //
@@ -14416,7 +14456,7 @@ function layerContainsAllOthers(index) {
         //
         const layerBottom = layer.top + layer.canvas.height
         const candidateBottom = candidate.top + candidate.canvas.height
-        if (candidateBottom < layerBottom) { return false } 
+        if (candidateBottom < layerBottom) { return false }
     }
     //
     return true
@@ -14427,7 +14467,7 @@ function layerContainsAllOthers(index) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function resetTopLayerByMemory() { 
+function resetTopLayerByMemory() {
     //
     if (toplayer == null) { return }
     //
@@ -14468,7 +14508,7 @@ function polyModelRotateLayer(value) {
     //
     const halfWidth  = Math.floor(cnv.width / 2)
     const halfHeight = Math.floor(cnv.height / 2)
-    //    
+    //
     ctx.clearRect(0, 0, cnv.width, cnv.height)
     ctx.save()
     ctx["imageSmoothingEnabled"] = false
@@ -14488,7 +14528,7 @@ function shearLayer() {
     setTask(polyModelShearLayer)
 }
 
-function polyModelShearLayer() { 
+function polyModelShearLayer() {
     //
     if (toplayer == null) { panelShearResetGadgets(); return }
     //
@@ -14496,19 +14536,19 @@ function polyModelShearLayer() {
     const model = (mem[mem.length - 1]).canvas
     //
     shallRepaint = true
-    // 
+    //
     const cnv = toplayer.canvas
     const ctx = cnv.getContext("2d")
     //
     const rawV = sliderShearV.value
     const rawH = sliderShearH.value
     //
-    const v =  3 * (0.5 - rawV) 
-    const h =  3 * (0.5 - rawH) 
+    const v =  3 * (0.5 - rawV)
+    const h =  3 * (0.5 - rawH)
     //
     const halfWidth  = Math.floor(cnv.width / 2)
     const halfHeight = Math.floor(cnv.height / 2)
-    //    
+    //
     ctx.clearRect(0, 0, cnv.width, cnv.height)
     ctx.save()
     ctx["imageSmoothingEnabled"] = false
@@ -14528,7 +14568,7 @@ function colorizeLayer() {
     setTask(polyModelColorizeLayer)
 }
 
-function polyModelColorizeLayer() { 
+function polyModelColorizeLayer() {
     //
     if (toplayer == null) { panelColorizeResetGadgets(); return }
     //
@@ -14536,8 +14576,8 @@ function polyModelColorizeLayer() {
     const model = (mem[mem.length - 1]).canvas
     //
     shallRepaint = true
-    // 
-    const intensityOfNewHue = sliderColorizeHue.value 
+    //
+    const intensityOfNewHue = sliderColorizeHue.value
     const sat = sliderColorizeSat.value
     const lum = softLumValue(sliderColorizeLum.value)
     const opacity = sliderColorizeOpa.value
@@ -14586,7 +14626,7 @@ function softLumValueHigh(value) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function useRoll() {
-    //    
+    //
     if (toplayer == null) { return }
     //
     shallRepaint = true
@@ -14600,7 +14640,7 @@ function useRoll() {
     //
     ctx.clearRect(0, 0, width, height)
     //
-    if (! shiftPressed) { 
+    if (! shiftPressed) {
         ctx.fillStyle = "rgba(" + RED + "," + GREEN + "," + BLUE + "," + ALPHA / 255 + ")"
         ctx.fillRect(0, 0, width, height)
     }
@@ -14612,7 +14652,7 @@ function useRoll() {
 // "use strict"
 
 /* NEVER FORGET:
-    
+
     (experimental technology)
     context["imageSmoothingQuality"] = "high" // medium, low // default is "low"
 
@@ -14626,7 +14666,7 @@ var desiredHeight = 80
 function resizeLayer() {
     //
     shallRepaint = true
-    // 
+    //
     if (toplayer == null) { return }
     //
     const src = toplayer.canvas
@@ -14646,10 +14686,10 @@ function resizeLayer() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function scaleLayer() { 
+function scaleLayer() {
     //
     shallRepaint = true
-    // 
+    //
     if (toplayer == null) { return }
     //
     const src = toplayer.canvas
@@ -14674,14 +14714,14 @@ function scaleLayer() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function autocropLayer() { 
+function autocropLayer() {
     //
     shallRepaint = true
-    // 
+    //
     if (toplayer == null) { return }
     //
     const cnv = autocrop(toplayer.canvas)
-    //    
+    //
     const deltaWidth = cnv.width - toplayer.canvas.width
     const deltaHeight = cnv.height - toplayer.canvas.height
     //
@@ -14703,17 +14743,17 @@ var zooms = [ 0.5, 1, 2, 3, 4, 5, 6, 10, 15, 20 ]
 function decreaseZoom() {
     if (mouseBusy) { return }
     if (ZOOM == 0.5) { return }
-    //    
-    startBlinkingIconOnTopBar("minus") 
-    setZoom(-1) 
+    //
+    startBlinkingIconOnTopBar("minus")
+    setZoom(-1)
 }
 
 function increaseZoom() {
     if (mouseBusy)  { return }
     if (ZOOM == 20) { return }
-    //    
-    startBlinkingIconOnTopBar("plus") 
-    setZoom(+1) 
+    //
+    startBlinkingIconOnTopBar("plus")
+    setZoom(+1)
 }
 
 function setZoom(delta) {
@@ -14729,7 +14769,7 @@ function setZoom(delta) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function zoomedLeft(layer) { 
+function zoomedLeft(layer) {
     //
     const layerCenterX = layer.left + (layer.canvas.width / 2)
     //
@@ -14742,7 +14782,7 @@ function zoomedLeft(layer) {
     return Math.floor(layerZoomedCenterX - halfZoomedWidth)
 }
 
-function zoomedTop(layer) { 
+function zoomedTop(layer) {
     //
     const layerCenterY = layer.top + (layer.canvas.height / 2)
     //
