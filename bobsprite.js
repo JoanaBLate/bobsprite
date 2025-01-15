@@ -12041,6 +12041,16 @@ function drawIconOnCanvasHelp(id, x, y) {
     return 35
 }
 
+function drawRectangleOnCanvasHelp(color, x, y, width, height) {
+    //
+    const oldColor = canvasHelpCtx.fillStyle
+    //
+    canvasHelpCtx.fillStyle = color
+    canvasHelpCtx.fillRect(x, y, width, height)
+    //
+    canvasHelpCtx.fillStyle = oldColor
+}
+
 // file: engine/help-1.js //
 // "use strict"
 
@@ -12690,9 +12700,11 @@ function helpPanelOpacity(x, y) {
 function helpVersion(x, y) {
     y += 30
     y += writeOnCanvasHelp("Version: January 2025", x, y)
-    y += writeOnCanvasHelp("", x, y)
+    y += 5
+    drawRectangleOnCanvasHelp("fuchsia", x, y, 330, 30)
+    y += 40
     y += writeOnCanvasHelp("*RECENT CHANGES*", x, y)
-    y += writeOnCanvasHelp("  > now layer 'selection' may be exchanged", x, y)
+    y += writeOnCanvasHelp("  > now layer 'selection' may be exchanged!!!", x, y)
     y += writeOnCanvasHelp("  > hotkeys for rotation and inversion (R, H, V, X)", x, y)
     return y
 }
