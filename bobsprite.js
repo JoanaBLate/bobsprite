@@ -1976,6 +1976,7 @@ var iconGuide = {
     "favorites": [17, 1],
     "mirror-pen": [17, 2],
     "light": [17, 3],
+    "rotation": [17, 4],
     "color": [17,5],
     "size": [18, 6]
 }
@@ -4872,7 +4873,7 @@ var panelLayersGadgets
 
 var panelLayersDragCandidate = null
 
-const layerDragMessage = 'dragging a layer button changes its order\n(the layer button "selection" is static)'
+const layerDragMessage = 'dragging a layer button changes its order)'
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -4992,7 +4993,7 @@ function panelLayersDragControl(kind, x, y, gadget, dragging) {
         //
         if (gadget == null) { cancelPanelLayersDrag() }
         //
-        if (gadget.id == "layer-0") { cancelPanelLayersDrag(); return }
+    //  if (gadget.id == "layer-0") { cancelPanelLayersDrag(); return } // now layer selection may be exchanged
         //
         panelLayersDragCandidate = gadget
         //
@@ -5011,7 +5012,7 @@ function panelLayersDragControl(kind, x, y, gadget, dragging) {
     //
     if (gadget == null) { cancelPanelLayersDrag(); return }
     //
-    if (gadget.id == "layer-0") { cancelPanelLayersDrag(); return }
+ // if (gadget.id == "layer-0") { cancelPanelLayersDrag(); return } // now layer selection may be exchanged
     //
     if (panelLayersDragCandidate == null) { cancelPanelLayersDrag(); return }
     //
@@ -12303,7 +12304,7 @@ function helpColorCapture(x, y) {
     y += drawIconOnCanvasHelp("capture", x + 170, y)
     y += writeOnCanvasHelp("Color Capture Tool", x, y)
     y += writeOnCanvasHelp("  > only for use on the layer", x, y)
-    y += writeOnCanvasHelp("  > hotkey: Tab", x, y)
+    y += writeOnCanvasHelp("  > hotkeys: Tab, CapsLock", x, y)
     return y
 }
 
@@ -12607,6 +12608,7 @@ function paintCanvasHelp4Center() {
     y = 20 + helpPanelShear(x, y)
     y = 20 + helpPanelConfig(x, y)
     y = 20 + helpMonitorBox(x, y)
+    y = 20 + helpRotation(x, y)
 }
 
 function helpPanelColorize(x, y) {
@@ -12638,6 +12640,18 @@ function helpMonitorBox(x, y) {
     return y
 }
 
+function helpRotation(x, y) {
+  //  y += drawIconOnCanvasHelp("rotation", x + 170, y)
+    y += writeOnCanvasHelp("", x, y)
+    y += writeOnCanvasHelp("", x, y)
+    y += writeOnCanvasHelp("Rotations and Inversions", x, y)
+    y += writeOnCanvasHelp("  > hotkey R: rotate 90 degrees", x, y)
+    y += writeOnCanvasHelp("  > hotkey H: flip horizontally", x, y)
+    y += writeOnCanvasHelp("  > hotkey V: flip vertically", x, y)
+    y += writeOnCanvasHelp("  > hotkey X: flip in both ways", x, y)
+    return y
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -12656,9 +12670,6 @@ function helpPanelLayers(x, y) {
     y += writeOnCanvasHelp("  > the special layer Selection shows the result of", x, y)
     y += writeOnCanvasHelp("     using selection tools", x, y)
     y += writeOnCanvasHelp("  > drag a layer button to change its order", x, y)
-    y += writeOnCanvasHelp("     the button of the layer \"selection\" is static:", x, y)
-    y += writeOnCanvasHelp("      merge the selection with another layer or", x, y)
-    y += writeOnCanvasHelp("      memorize the selection and recover on another layer", x, y)
     y += writeOnCanvasHelp("  > hotkeys:", x, y)
     y += writeOnCanvasHelp("      0, 1, 2, 3, 4, 5", x, y)
     y += writeOnCanvasHelp("      CTRL V: merge down unprotected", x, y)
@@ -12678,8 +12689,11 @@ function helpPanelOpacity(x, y) {
 
 function helpVersion(x, y) {
     y += 30
-    y += writeOnCanvasHelp("Version", x, y)
-    y += writeOnCanvasHelp("  > May 2024", x, y)
+    y += writeOnCanvasHelp("Version: January 2025", x, y)
+    y += writeOnCanvasHelp("", x, y)
+    y += writeOnCanvasHelp("*RECENT CHANGES*", x, y)
+    y += writeOnCanvasHelp("  > now layer 'selection' may be exchanged", x, y)
+    y += writeOnCanvasHelp("  > hotkeys for rotation and inversion (R, H, V, X)", x, y)
     return y
 }
 
@@ -13014,6 +13028,8 @@ function exchangeLayers(a, b) {
     //
     const buttonA = panelLayersGadgets[a]
     const buttonB = panelLayersGadgets[b]
+
+/*  not exchanging layer buttons anymore
     //
     const labelA = buttonA.text
     const labelB = buttonB.text
@@ -13024,6 +13040,8 @@ function exchangeLayers(a, b) {
     updateButtonImages(buttonA)
     updateButtonImages(buttonB)
     //
+*/
+
     const layerA = layers[a]
     const layerB = layers[b]
     //
